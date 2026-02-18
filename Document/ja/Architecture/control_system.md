@@ -26,7 +26,8 @@ Unreal Engineの標準的な開発において発生しやすい、移動ロジ�
 
 ## 📐 アーキテクチャの4つのレイヤー
 
-[![Movement System Architecture](../Assets/Images/control_system.drawio.png)](../Assets/Images/control_system.drawio.png)
+<img width="7569" height="7299" alt="control_system drawio" src="https://github.com/user-attachments/assets/97115d82-d51a-46f8-a7e0-a036e7f816b5" />
+
 *▲ クラス図の細部を確認される際は、画像をクリックするかダウンロードして拡大してご覧ください。*
 
 クラス図に基づく本システムの構造は、大きく以下の4層に分かれています。
