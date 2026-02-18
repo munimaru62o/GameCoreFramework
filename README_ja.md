@@ -120,7 +120,7 @@ GameCoreFramework/Content/Sample
 
 ### 🖥️ Sample動画  
 
-[動画リンクをここに追加]
+https://github.com/user-attachments/assets/8a15b152-5af3-4229-9f05-af8823d93742
 
 #### **💡 本動画の見どころ**
 ポゼッション（憑依）を変更した瞬間に、古い肉体の入力バインドが安全に破棄され、**新しいPawnの `InputBinding` が動的に更新される様子**や、新しい肉体に付与されたAbilityが即座に有効化・ルーティングされる「ライフサイクルの完全な同期」を確認できます。
@@ -143,7 +143,7 @@ GameCoreFramework/Content/Sample
 
 ### 🌐 Client Sample動画（Network Lag Simulation）  
 
-[動画リンクをここに追加]
+https://github.com/user-attachments/assets/212a420c-ef0d-4caa-8247-e3068315acb4
 
 #### **💡 本動画の見どころ**
 劣悪な通信環境下において、通信遅延による「初期化順序の逆転」や「非同期ロード時のライフサイクルのズレ（レースコンディション）」が発生しても、GFCMによる厳格な状態管理がそれらを完全に吸収している様子が確認できます。
