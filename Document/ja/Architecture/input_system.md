@@ -26,7 +26,8 @@
 
 ## 📐 アーキテクチャの4つのレイヤー
 
-[![Input System Architecture](../Assets/Images/input_system.drawio.png)](../Assets/Images/input_system.drawio.png)
+<img width="10509" height="5289" alt="input_system drawio" src="https://github.com/user-attachments/assets/6bb5c28e-f7a7-423f-add1-d2f1173a91a5" />
+
 *▲ クラス図の細部を確認される際は、画像をクリックするかダウンロードして拡大してご覧ください。*
 
 本システムのクラス図は、大きく4つのレイヤーに分類されます。
