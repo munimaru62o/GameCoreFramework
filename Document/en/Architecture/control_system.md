@@ -26,7 +26,8 @@ This system solves these issues through "Abstraction via Interfaces" and "Domain
 
 ## 📐 The 4 Layers of the Architecture
 
-[![Movement System Architecture](../Assets/Images/control_system.drawio.png)](../Assets/Images/control_system.drawio.png)
+<img width="7569" height="7299" alt="control_system drawio" src="https://github.com/user-attachments/assets/97115d82-d51a-46f8-a7e0-a036e7f816b5" />
+
 *▲ Click or download the image to view the class diagram in detail.*
 
 Based on the class diagram, the structure of this system is broadly divided into the following four layers:

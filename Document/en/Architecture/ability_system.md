@@ -26,7 +26,8 @@ This system resolves these issues at the architectural level through "Complete D
 
 ## 📐 The 5 Layers of the Architecture
 
-[![Ability System Architecture](../Assets/Images/ability_system.drawio.png)](../Assets/Images/ability_system.drawio.png)
+<img width="8061" height="3999" alt="ability_system drawio" src="https://github.com/user-attachments/assets/a273a2ef-33df-42cc-bd43-3275f328efce" />
+
 *▲ Click or download the image to view the class diagram in detail.*
 
 Based on the class diagram, the structure of this system is composed of five distinct layers with clearly defined responsibilities:

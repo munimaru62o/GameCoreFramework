@@ -26,7 +26,8 @@ This system resolves these issues at the architectural level by dividing the inp
 
 ## 📐 The 4 Layers of the Architecture
 
-[![Input System Architecture](../Assets/Images/input_system.drawio.png)](../Assets/Images/input_system.drawio.png)
+<img width="10509" height="5289" alt="input_system drawio" src="https://github.com/user-attachments/assets/6bb5c28e-f7a7-423f-add1-d2f1173a91a5" />
+
 *▲ Click or download the image to view the class diagram in detail.*
 
 The class structure of this system is broadly categorized into four layers:
