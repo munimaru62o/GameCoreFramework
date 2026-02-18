@@ -1,0 +1,145 @@
+classDiagram
+    direction LR
+
+    %% データ関連クラス
+    class UGCFPawnData {
+        <<DataAsset>>
+        +UGCFMovementConfig
+    }
+    class UGCFMovementConfig {
+        <<DataAsset>>
+        +VelociySettings
+    }
+    class UGCFPawnExtensionComponent {
+        <<PawnComponent>>
+        +GetPawnData
+    }
+
+    %% Subsystem
+    class UGameplayMessageSubsystem {
+        <<Subsystem>>
+        +BroadcastMessage
+    }
+
+    %% Actorクラス
+    class AGCFCharacter {
+        +HandleMoveInput()
+        +HandleMoveUpInput()
+    }
+    class AGCFWheeledVehiclePawn {
+        +HandleMoveInput()
+        +HandleMoveUpInput()
+    }
+    class APawn {
+        +AddControllerPitchInput()
+        +AddControllerInput()
+    }
+    class AGCFPawn {
+        +HandleMoveInput()
+        +HandleMoveUpInput()
+    }
+    class IGCFLocomotionHandler {
+        <<interface>>
+        +HandleMoveInput()
+        +HandleMoveUpInput()
+    }
+
+    class AGCFPlayerController {
+        <<InputAuthority>>
+        -UGCFInputComponent
+    }
+    class UGCFInputComponent {
+        <<UEnhancedInputComponent>>
+    }
+
+    %% Controllerドメインクラス
+    class UGCFMovementControlComponent {
+        <<ControllerComponent>>
+        -Input_Move()
+        -CalcMovementRotation()
+    }
+    class UGCFCameraControlComponent {
+        <<ControllerComponent>>
+        -Input_Zoom()
+        -Input_Look()
+    }
+
+    %% Pawnドメインクラス
+    class UGCFCharacterControlComponent {
+        <<PawnComponent>>
+        -Input_Jump()
+        -Input_Crouch()
+    }
+    class UGCFVehicleControlComponent {
+        <<PawnComponent>>
+        -Input_HandBrake()
+        -Input_HeadLight()
+    }
+    class UGCFCharacterMovementComponent {
+        <<CharacterMovementComponent>>
+        +ApplyMovementConfig()
+    }
+    class UGCFMoverComponent {
+        <<UMoverComponent>>
+        +ApplyMovementConfig()
+    }
+    class IGCFMovementConfigReceiver {
+        <<interface>>
+        +ApplyMovementConfig()
+    }
+
+    %% カメラ関連クラス
+    class GCFCameraComponent {
+        <<CameraComponent>>
+        +GetCameraView()
+        -GCFCameraMode
+    }
+    class GCFCameraMode {
+        <<Abstract>>
+        -CameraPolicy
+    }
+    class GCFCameraMode_Orbit {
+        <<GCFCameraMode>>
+        -CameraPolicy
+    }
+    class GCFCameraMode_ThirdPerson {
+        <<GCFCameraMode>>
+        -CameraPolicy
+    }
+
+
+    AGCFPlayerController o-- UGCFInputComponent
+    UGCFPawnExtensionComponent o-- UGCFPawnData
+    UGCFPawnData o-- UGCFMovementConfig
+    AGCFCharacter o-- UGCFCharacterMovementComponent
+    AGCFPawn o-- UGCFMoverComponent
+    GCFCameraComponent o-- GCFCameraMode
+
+    GCFCameraMode <|-- GCFCameraMode_Orbit
+    GCFCameraMode <|-- GCFCameraMode_ThirdPerson
+
+    APawn <|-- AGCFPawn
+    APawn <|-- AGCFCharacter
+    APawn <|-- AGCFWheeledVehiclePawn
+
+    IGCFMovementConfigReceiver <|.. UGCFMoverComponent
+    IGCFMovementConfigReceiver <|.. UGCFCharacterMovementComponent
+
+    IGCFLocomotionHandler <|.. AGCFPawn
+    IGCFLocomotionHandler <|.. AGCFCharacter
+    IGCFLocomotionHandler <|.. AGCFWheeledVehiclePawn
+
+    UGCFMovementControlComponent --> IGCFLocomotionHandler : exec movement input
+    UGCFCameraControlComponent --> APawn : add controller pitch
+    UGCFCameraControlComponent --> GCFCameraComponent : set zoom ratio
+    UGCFCharacterControlComponent --> AGCFCharacter : control character action
+    UGCFVehicleControlComponent --> AGCFWheeledVehiclePawn : control vehicle action
+
+    UGCFPawnExtensionComponent ..> IGCFMovementConfigReceiver : apply movement config
+    GCFCameraComponent ..> UGameplayMessageSubsystem : send camera policy message
+    UGCFMovementControlComponent ..> UGameplayMessageSubsystem : observe camera policy message
+    
+    UGCFInputComponent ..> UGCFCharacterControlComponent : bind input actions
+    UGCFInputComponent ..> UGCFMovementControlComponent : bind input actions
+    UGCFInputComponent ..> UGCFCameraControlComponent : bind input actions
+    UGCFInputComponent ..> UGCFVehicleControlComponent : bind input actions

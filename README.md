@@ -1,6 +1,6 @@
 # GameCoreFramework (GCF)
 
-![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.6+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
+![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *Read this in other languages: [English](README.md), [日本語 (Japanese)](README_ja.md)*
@@ -48,57 +48,59 @@ For a deep dive into the GCF design philosophy and individual systems, please re
 
 ---
 
+## 🚀 Quick Start (Demo Environment Setup)
 
-## 🚀 Quick Start (Installation Guide)
+This repository is structured as an all-in-one package, containing both the core framework (plugin) and a sample project where you can immediately test its behavior.
 
-To maximize extensibility and robustness, this framework relies on the latest foundational plugins included in Epic Games' "Lyra Starter Game" (such as `GameplayMessageRouter` and `UIExtension`).
-Please follow the steps below to install.
+To maximize extensibility and robustness, this framework relies on the latest foundational plugins included in Epic Games' "Lyra Starter Game". Please follow the steps below to set up the demo environment.
 
-### ⚠️ Prerequisites
+### Step 1: Clone the Repository
 
-To run this plugin, you must download the **Lyra Starter Game (UE5.6 compatible version)** from the Epic Games Launcher and port specific plugins to your own project.
+1. Clone this repository to your local machine, or download and extract the ZIP file.
 
-#### Step 1: Copy Lyra Dependencies
+### Step 2: Port Lyra Dependencies (Required)
+
+To compile and run this framework, you must download the **Lyra Starter Game (UE5.7 compatible version)** from the Epic Games Launcher and copy specific plugins into this repository.
 
 1. Open the Lyra Starter Game project directory (`[LyraProjectDirectory]/Plugins/`).
 
-2. Copy the following Lyra-specific plugin folders into your project's `Plugins` folder (create the folder if it doesn't exist):
+2. Copy the following Lyra-specific plugin folders into the `Plugins` folder of this cloned repository:
 
   - CommonGame
   - CommonUser
   - CommonLoadingScreen
-  - ModularGameplayActors
   - GameplayMessageRouter
+  - ModularGameplayActors
   - GameSubtitles
   - UIExtension
 
-*(Note: Built-in engine plugins like `GameFeatures`, and `Mover` do not need to be copied as they are included in the engine).*
+*(Note: Built-in engine plugins like `GameFeatures` and `Mover` do not need to be copied as they are already included in the engine).*
 
-#### Step 2: Install GameCoreFramework
-
-1. Clone or download this repository (`GameCoreFramework`).
-
-2. Place it inside your project's `Plugins` folder.
-
-Your final directory structure should look like this:
-
+▼ Final Directory Structure
 ```text
-YourProject/
-  ├── Plugins/
-  │   ├── GameCoreFramework/    <-- This framework
-  │   ├── CommonGame/           <-- Copied from Lyra
-  │   ├── GameplayMessageRouter/<-- Copied from Lyra
-  │   └── ...
-  └── YourProject.uproject
+GameCoreFramework/ (Cloned repository root)
+ ├── GCF_SampleProject.uproject
+ ├── Source/
+ └── Plugins/
+     ├── GameCoreFramework/      <-- This framework (Included by default)
+     ├── CommonGame/             <-- 📥 Copied from Lyra
+     ├── GameplayMessageRouter/  <-- 📥 Copied from Lyra
+     └── ... (Other copied plugins)
 ```
 
-#### Step 3: Build the Project
+### Step 3: Build the Project
 
-1. Right-click your `.uproject` file and select **"Generate Visual Studio project files"**.
+1. Right-click the `GCF_SampleProject.uproject` file in the repository root and select **"Generate Visual Studio project files"**.
 
 2. Open the generated `.sln` (or your IDE's project file) and build the project (e.g., Development Editor).
 
 3. Once the editor launches, go to `Edit > Plugins` and ensure that this plugin and its dependencies (`GameplayAbilities`, `EnhancedInput`, `Mover`, etc.) are Enabled.
+
+---
+
+### Integrating into Your Own Project
+
+If you wish to integrate this framework into your own game project, simply copy the `Plugins/GameCoreFramework` folder from this repository, along with the Lyra dependency plugins prepared in `Step 2`, directly into your own project's `Plugins` folder.
 
 
 ## 🎬 Demos & Samples

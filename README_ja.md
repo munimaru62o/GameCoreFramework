@@ -1,6 +1,6 @@
 # GameCoreFramework (GCF)
 
-![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.6+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
+![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *他の言語で読む: [English](README.md), [日本語 (Japanese)](README_ja.md)*
@@ -51,18 +51,21 @@ GCFの設計思想や各システムの詳細については、以下のドキ�
 
 ## 🚀 クイックスタート（インストール手順）
 
-本フレームワークは、拡張性と堅牢性を最大化するため、Epic Games公式の「Lyra Starter Game」に含まれる最新の基盤プラグイン（GameplayMessageRouter や UIExtension など）に依存しています。
-導入手順は以下の通りです。
+本リポジトリは、フレームワーク本体（プラグイン）と、すぐに挙動を確認できるサンプルプロジェクトが一体となった構成になっています。
 
-### ⚠️ 重要な前提条件 (Prerequisites)
+拡張性と堅牢性を最大化するため、本フレームワークはEpic Games公式の「Lyra Starter Game」に含まれる最新の基盤プラグインに依存しています。以下の手順に沿ってデモ環境を構築してください。
 
-本プラグインを動作させるには、Epic Games Launcherから Lyra Starter Game（UE5.6対応版）をダウンロードし、特定のプラグインをあなたのプロジェクトに移植する必要があります。
+### Step 1: リポジトリの取得
 
-#### Step 1: Lyra依存プラグインのコピー
+1. 本リポジトリをローカルにクローン、またはZIPでダウンロードして展開します。
+
+### Step 2: Lyra依存プラグインの移植 (必須)
+
+本フレームワークをコンパイル・動作させるには、Epic Games Launcherから「Lyra Starter Game（UE5.7対応版）」をダウンロードし、特定のプラグインを本リポジトリ内にコピーしてくる必要があります。
 
 1. Lyra Starter Gameのプロジェクトフォルダを開きます（`[LyraProjectDirectory]/Plugins/`）。
 
-2. あなたのプロジェクトの `Plugins` フォルダ（存在しない場合は作成）に、以下のLyra専用プラグインフォルダをコピーしてください。
+2. クローンした本リポジトリの `Plugins` フォルダ内に、以下のLyra専用プラグインフォルダをコピーしてください。
 
   - CommonGame
   - CommonUser
@@ -74,32 +77,31 @@ GCFの設計思想や各システムの詳細については、以下のドキ�
 
 *(※ GameFeatures、Mover などのエンジンプラグインはUE本体に組み込まれているためコピー不要です)*
 
-#### Step 2: GameCoreFrameworkの導入
-
-1. 本リポジトリ（`GameCoreFramework`）をクローン、またはダウンロードします。
-
-2. あなたのプロジェクトの `Plugins` フォルダ内に配置します。
-
-最終的なディレクトリ構成のイメージ
-
+▼ 最終的なディレクトリ構成のイメージ
 ```text
-YourProject/
-  ├── Plugins/
-  │   ├── GameCoreFramework/    <-- 本フレームワーク
-  │   ├── CommonGame/           <-- Lyraからコピー
-  │   ├── GameplayMessageRouter/<-- Lyraからコピー
-  │   └── ...
-  └── YourProject.uproject
+GameCoreFramework/ (クローンしたリポジトリのルート)
+ ├── GCF_SampleProject.uproject
+ ├── Source/
+ └── Plugins/
+     ├── GameCoreFramework/      <-- 本フレームワーク（最初から含まれています）
+     ├── CommonGame/             <-- 📥 Lyraからコピーして配置
+     ├── GameplayMessageRouter/  <-- 📥 Lyraからコピーして配置
+     └── ... (その他のコピーしたプラグイン)
 ```
 
-#### Step 3: プロジェクトのビルド
+### Step 3: プロジェクトのビルド
 
-1. あなたのプロジェクトの `.uproject` ファイルを右クリックし、「Generate Visual Studio project files」 を実行します。
+1. リポジトリのルートにある `GCF_SampleProject.uproject` を右クリックし、「Generate Visual Studio project files」を実行します。
 
 2. 生成された `.sln`（またはIDEのプロジェクトファイル）を開き、プロジェクトをビルド（Development Editor等）してください。
 
 3. エディタが起動したら、`Edit > Plugins` から本プラグインおよび依存プラグイン（GameplayAbilities, EnhancedInput, Mover など）が有効化（Enabled）されていることを確認してください。
 
+---
+
+### ご自身のプロジェクトへ導入（移植）する場合
+
+このフレームワークをご自身のゲームプロジェクトに導入したい場合は、上記の `Step 2` で用意したLyraの依存プラグイン群と一緒に、本リポジトリ内の `Plugins/GameCoreFramework` フォルダを、**ご自身のプロジェクトの `Plugins` フォルダへそのままコピー**してください。
 
 ## 🎬 デモ & サンプル
 

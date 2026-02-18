@@ -1,0 +1,153 @@
+classDiagram
+    %% マネージャーと設定
+    class UGameFrameworkComponentManager {
+        <<Subsystem>>
+        +SendGameFrameworkComponentExtensionEvent(Receiver, EventName)
+    }
+
+    %% ---- データ ----
+    class UGCFExperienceDefinition {
+        <<DataAsset>>
+        +FName GameFeatureToEnable
+        +UGCFPawnData* PawnData
+        +Array<UGameFeatureAction> ActionList
+    }
+    UGCFExperienceDefinition "1" o-- "1" UGCFPawnData : 所有
+
+    class UGCFPawnData {
+        <<DataAsset>>
+        +TSubclassOf~UGCFCameraMode~ DefaultCameraMode
+        +UGCFInputConfig* InputConfig
+        +UGCFMovementConfig* MovementConfig
+    }
+    UGCFPawnData "1" o-- "1" UGCFInputConfig : 所有
+    UGCFPawnData "1" o-- "1" UGCFMovementConfig : 所有
+
+    class FGCFInputAction {
+        <<struct>>
+        +UInputAction* InputAction
+        +FGameplayTag InputTag
+    }
+
+    class UGCFInputConfig {
+        <<DataAsset>>
+        +TArray~FGCFInputAction~ NativeInputActions
+        +TArray~FGCFInputAction~ AbilityInputActions
+    }
+
+    class UGCFMovementConfig {
+        <<DataAsset>>
+        +float MaxSpeed
+        +float Acceleration
+        +float Deceleration
+        +float RotationRate
+    }
+    
+    UGCFInputConfig "1" *-- "many" FGCFInputAction : Composition
+    %% --------
+
+    class UGameFeatureAction {
+        <<Abstract>>
+    }
+
+    class UGCFCameraMode {
+        <<Abstract>>
+    }
+
+    %% アクター側
+    class AGCFPlayerController {
+        +UInputComponent* InputComponent
+    }
+    AGCFPlayerController "1" o-- "1" UGCFControlHubComponent : 所有
+    AGCFPlayerController "1" o-- "1" UGCFInputComponent : 所有
+
+    class AGCFPawn {
+    }
+    AGCFPawn "1" o-- "1" UGCFPawnExtensionComponent : 所有
+    AGCFPawn "1" o-- "1" UGCFCameraComponent : 所有
+
+    %% 機能コンポーネント（発信源）
+    class IGCFPawnDataProviderInterface {
+        <<interface>>
+        +GetPawnData()
+    }
+    class UGCFPawnExtensionComponent {
+        -UGCFPawnData* PawnData
+        +Event_PawnReadyToInitialize (To Pawn)
+        +Event_InputReady (To Controller)
+    }
+    UGCFPawnExtensionComponent ..|> IGCFPawnDataProviderInterface
+
+    class IGCFMovementInterface {
+        <<interface>>
+        +ApplyMovementConfig()
+    }
+    class UGCFFloatingPawnMovement {
+        +ApplyMovementConfig()
+    }
+    UGCFFloatingPawnMovement ..|> IGCFMovementInterface
+    UGCFFloatingPawnMovement .. AGCFPawn : 注入
+
+    class UGCFCharacterMovement {
+        +ApplyMovementConfig()
+    }
+    UGCFCharacterMovement ..|> IGCFMovementInterface
+    UGCFCharacterMovement .. AGCFPawn : 注入
+
+    class IGCFInteractableInterface {
+        <<interface>>
+        +OnInteract()
+    }
+
+    %% 入力系コンポーネント（受信・自律型）
+    class UGCFControlHubComponent {
+        +RegisterForInputBinding()
+        +RegisterForPawnDataReady()
+    }
+    
+    class UGCFCameraControlComponent {
+    }
+    
+    class UGCFMovementControlComponent {
+    }
+
+    class UGCFInteractionComponent {
+    }
+
+    %% カメラ系コンポーネント（受信・自律型）
+    class UGCFCameraComponent {
+    }
+
+    %% 拡張クラス
+    class UGCFInputComponent {
+        <<EnhancedInputComponent>>
+        +BindNativeAction()
+        +BindAbilityActions()
+    }
+
+
+    %% 継承と依存関係
+    UGameFrameworkComponentManager .. UGCFPawnExtensionComponent : 通知
+    UGCFPawnExtensionComponent .. UGCFControlHubComponent : 通知
+
+    UGCFCameraControlComponent ..> UGCFControlHubComponent : InputBinding
+    UGCFMovementControlComponent ..> UGCFControlHubComponent : InputBinding
+    UGCFInteractionComponent ..> UGCFControlHubComponent : InputBinding
+    
+    UGCFControlHubComponent ..> UGCFInputComponent : InputBinding
+    UGCFControlHubComponent ..> IGCFPawnDataProviderInterface : PawnData参照
+
+    UGCFInteractionComponent ..> IGCFInteractableInterface : Interact通知
+
+    %% 関連
+    UGCFExperienceDefinition ..> UGameFeatureAction : 所持
+    AGCFPawn ..> GCFCameraComponent : 所持
+    UGCFPawnExtensionComponent ..> UGCFPawnData : 所持
+    UGCFCameraComponent ..> UGCFCameraMode : 所持
+
+    UGameFeatureAction .. AGCFPawn : Component注入
+    UGameFeatureAction .. AGCFPlayerController : Component注入
+
+    %% データの流れ
+    UGCFCameraControlComponent ..> UGCFCameraComponent : 管理
+    UGCFMovementControlComponent ..> IGCFMovementInterface : 管理

@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    title Phase 2: Aggregating & Binding Configs
+    
+    participant Context as InputContextComp
+    participant InputMgr as InputBindingManager
+    participant P_Bridge as PlayerInputBridge
+    participant PawnBridge as PawnInputBridge
+    participant UE_Input as EnhancedInputSystem
+
+    Context->>InputMgr: Trigger: Ready State Reached
+
+    Note over InputMgr: 複数のソースからConfigを収集
+
+    InputMgr->>P_Bridge: GetInputConfig()
+    P_Bridge-->>InputMgr: Return [Menu, Move, Look]
+
+    InputMgr->>PawnBridge: GetInputConfig()
+    PawnBridge-->>InputMgr: Return [Jump, Skill_A, Vehicle_Fire]
+
+    Note over InputMgr, UE_Input: UEのシステムへ登録開始
+
+    InputMgr->>UE_Input: Add Mapping Context (IMC)
+
+    loop For Each Action in Configs
+        alt is Native Action (Move/Look)
+            InputMgr->>UE_Input: Bind to ControlComponent Functions
+        else is Ability Action (GAS)
+            InputMgr->>UE_Input: Bind to RouterComponent::RouteInputTag
+        end
+    end

@@ -1,0 +1,105 @@
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Portions Copyright (c) 2026 62o. All rights reserved.
+
+#pragma once
+
+#include "NativeGameplayTags.h"
+
+#define UE_API GAMECOREFRAMEWORK_API
+
+namespace GCFGameplayTags
+{
+UE_API	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString = false);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(FeatureState_Initial);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(FeatureState_Ready);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Gameplay_Movement_Stop);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Dead);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEffect_DamageType_Basic);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEffect_DamageType_Heal);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dying);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dying);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dead);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_Spawned);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_DataAvailable);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_DataInitialized);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_GameplayReady);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_IsDead);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_Cooldown);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_Cost);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_TagsBlocked);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_TagsMissing);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_Networking);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ActivateFail_ActivationGroup);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Behavior_SurvivesDeath);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_MoveUp);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look_Mouse);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look_Stick);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_AutoRun);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Camera_Zoom);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Interact);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Character_Crouch);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Character_Jump);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Vehicle_HandBrake);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Vehicle_Light);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Ability_Player);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Ability_Pawn);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Camera_Mode_TopDown);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Camera_Mode_ThirdPerson);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Reset);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_RequestReset);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Heal);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cheat_GodMode);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cheat_UnlimitedHealth);
+
+UE_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Crouching);
+UE_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_AutoRunning);
+
+UE_API  UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_JumpBlocked);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_Game);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_GameMenu);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_Menu);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Layer_Modal);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(UI_Action_Escape);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_Elimination);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_Camera_ModeChange);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_PolicyChange_Cursor);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_PolicyChange_MovementRotation);
+
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_Debug_Log);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_Debug_State);
+UE_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Message_Debug_Input);
+
+// These are mappings from MovementMode enums to GameplayTags associated with those enums (below)
+UE_API extern const TMap<uint8, FGameplayTag> MovementModeTagMap;
+UE_API extern const TMap<uint8, FGameplayTag> CustomMovementModeTagMap;
+
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Walking);
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_NavWalking);
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Falling);
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Swimming);
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Flying);
+
+UE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Mode_Custom);
+};
+
+#undef UE_API

@@ -1,0 +1,96 @@
+classDiagram
+    direction LR
+
+    %% データ関連クラス
+    class UGCFInputConfig {
+        <<DataAsset>>
+        +AbilityInputActions
+    }
+    class GameFeatureAction {
+        +AddAbility()
+        +AddInputConfig()
+    }
+    
+    %% Actor関連クラス
+    class UGCFPlayerState {
+        <<ModularPlayerState>>
+        -AbilitySystemComponent
+    }
+    class UGCFCharacterWithAbilities {
+        <<AGCFCharacter>>
+        -AbilitySystemComponent
+    }
+    class AGCFPlayerController {
+        <<InputAuthority>>
+    }
+    class UGCFAbilitySystemComponent {
+        <<AbilitySystemComponent>>
+        +AbilityInputTagPressed()
+        +AbilityInputTagReleased()
+    }
+
+    %% ライフサイクル管理Componentクラス
+    class UGCFPawnExtensionComponent {
+        <<PawnComponent>>
+        +OnPossessed()
+        +OnUnpossessed()
+        -UGCFAbilitySystemComponent
+    }
+    class UGCFPlayerExtensionComponent {
+        <<PlayerStateComponent>>
+        -InitializeAbilitySystem()
+        -UGCFAbilitySystemComponent
+    }
+
+    %% Input関連クラス
+    class UGCFInputBindingManagerComponent {
+        <<ControllerComponent>>
+        -ClearBindingsOnContextChange()
+        -ExecuteInputBinding()
+        -ProcessPendingBindings()
+    }
+    class UGCFInputComponent {
+        <<UEnhancedInputComponent>>
+    }
+
+    %% InputRouting関連クラス
+    class UGCFPlayerInputBridgeComponent {
+        <<ControllerComponent>>
+        +GetInputConfig()
+    }
+    class UGCFPawnInputBridgeComponent {
+        <<PawnComponent>>
+        +GetInputConfig()
+    }
+    class UGCFAbilityInputRouterComponent {
+        <<ControllerComponent>>
+        +RouteInputTag()
+    }
+    note for UGCFAbilityInputRouterComponent "Routes based on Tag Prefix: Ability.Player.* -> PlayerState ASC Ability.Pawn.* -> Pawn ASC"
+
+
+
+    %% 所有関
+    UGCFPlayerInputBridgeComponent o-- UGCFInputConfig
+    UGCFPawnInputBridgeComponent o-- UGCFInputConfig
+    UGCFPlayerState o-- UGCFPlayerExtensionComponent
+    UGCFPlayerState o-- UGCFAbilitySystemComponent
+    UGCFCharacterWithAbilities o-- UGCFPawnExtensionComponent
+    UGCFCharacterWithAbilities o-- UGCFAbilitySystemComponent
+    AGCFPlayerController o-- UGCFAbilityInputRouterComponent
+    AGCFPlayerController o-- UGCFInputComponent
+
+    %% 参照・依存関係
+    AGCFPlayerController --> UGCFCharacterWithAbilities : possesssion
+    UGCFCharacterWithAbilities --> UGCFPawnExtensionComponent : refresh ability actorInfo on possessed
+    UGCFPawnInputBridgeComponent --> UGCFAbilityInputRouterComponent : route input tag
+    UGCFPlayerInputBridgeComponent --> UGCFAbilityInputRouterComponent : route input tag
+    UGCFAbilityInputRouterComponent --> UGCFAbilitySystemComponent : notify ability input tag
+
+    UGCFPawnInputBridgeComponent ..> UGCFInputBindingManagerComponent : request ability binding
+    UGCFPlayerInputBridgeComponent ..> UGCFInputBindingManagerComponent : request ability binding
+    UGCFInputBindingManagerComponent ..> UGCFInputComponent : bind ability input
+
+    UGCFPawnExtensionComponent ..> UGCFPawnInputBridgeComponent : set input config
+    GameFeatureAction ..> UGCFPlayerInputBridgeComponent : set input config
+    GameFeatureAction ..> UGCFPlayerState : injection player ability

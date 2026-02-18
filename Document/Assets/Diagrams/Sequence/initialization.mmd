@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant World
+    participant Controller as AGCFPlayerController
+    participant Pawn as ACharacter
+    participant PawnExt as UGCFPawnExtensionComponent
+    participant PossessComp as UGCFControllerPossessionComponent
+
+    World->>Pawn: Spawn Pawn
+    Pawn->>PawnExt: BeginPlay
+    PawnExt->>PawnExt: CheckDefaultInitialization()
+
+    World->>Controller: Spawn Controller
+    Controller->>Pawn: Possess(Pawn)
+
+    Pawn->>PawnExt: HandleControllerChanged
+    PawnExt->>PawnExt: RefreshAbilityActorInfo
+    PawnExt-->>PossessComp: PawnControllerAssigned Event
+
+    alt Controller already exists
+        PossessComp->>PossessComp: Immediate Bind
+    else Wait for Event
+        PossessComp->>PossessComp: Wait PawnControllerAssigned
+    end
+
+    PossessComp->>Controller: SetNewPawn(Pawn)
+    Controller->>Controller: Initialize Input / Camera / Movement

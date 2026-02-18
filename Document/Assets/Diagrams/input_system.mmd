@@ -1,0 +1,154 @@
+classDiagram
+    direction LR
+
+    %% データ関連クラス
+    class UGCFPawnData {
+        <<DataAsset>>
+        +DefaultMappingContexts
+        +UGCFInputConfig
+    }
+    class UGCFInputConfig {
+        <<DataAsset>>
+    }
+    class FGCFInputMappingContextInfo {
+        <<Struct>>
+        +InputMapping
+        +Priority
+    }
+    class GameFeatureAction {
+        +AddInputBinding()
+    }
+
+    %% マネージャークラス/サブシステム
+    class UGameFrameworkComponentManager {
+        <<Subsystem>>
+        +SendExtensionEvent
+        +ReadyFeature
+        +InitFeature
+    }
+    class UEnhancedInputLocalPlayerSubsystem {
+        <<Subsystem>>
+        +AddMappingContext()
+        +RemoveMappingContext()
+    }
+
+    %% ライフサイクル管理Componentクラス
+    class UGCFPawnExtensionComponent {
+        <<PawnComponent>>
+        -HandleInitStateChange()
+    }
+    class UGCFPlayerExtensionComponent {
+        <<PlayerStateComponent>>
+        -HandleInitStateChange()
+    }
+  
+    %% 状態管理Componentクラス
+    class UGCFPawnReadyStateComponent {
+        <<PawnComponent>>
+        +OnStateChanged
+    }
+    class UGCFPlayerReadyStateComponent {
+        <<PlayerStateComponent>>
+        +OnStateChanged
+    }
+    class UGCFInputContextComponent {
+        <<ControllerComponent>>
+        +OnContextChanged
+    }
+    class UGCFPossessionContextComponent {
+        <<ControllerComponent>>
+        +OnContextChanged
+    }
+    class FGCFContextBinder {
+    }
+    
+    %% InputBridgeクラス
+    class UGCFPlayerInputBridgeComponent {
+        <<ControllerComponent>>
+        +GetInputConfig()
+    }
+    class UGCFPawnInputBridgeComponent {
+        <<PawnComponent>>
+        +GetInputConfig()
+    }
+    %% インターフェース
+    class IUGCFInputConfigProvider {
+        <<interface>>
+        +GetInputConfig() UGCFInputConfig
+    }
+    class IGCFPawnDataProvider {
+        <<interface>>
+        +GetPawnData()
+    }
+
+    %% InputManager関連クラス
+    class UGCFInputBindingManagerComponent {
+        <<ControllerComponent>>
+        +RegisterBinding()
+        -ApplyPawnMappingContexts()
+        -ClearPawnMappingContexts()
+        -ClearBindingsOnContextChange()
+        -ExecuteInputBinding()
+        -ProcessPendingBindings()
+    }
+    class UGCFInputComponent {
+        <<UEnhancedInputComponent>>
+        +BindInput()
+    }
+    class AGCFPlayerController {
+        <<InputAuthority>>
+    }
+
+    %% InputBinding関連Componentクラス
+    class UGCFMovementControlComponent {
+        <<ControllerComponent>>
+    }
+    class UGCFCameraControlComponent {
+        <<ControllerComponent>>
+    }
+    class UGCFCharacterControlComponent {
+        <<PawnComponent>>
+    }
+
+    %% 継承関係
+    IUGCFInputConfigProvider <|.. UGCFPlayerInputBridgeComponent
+    IUGCFInputConfigProvider <|.. UGCFPawnInputBridgeComponent
+    IGCFPawnDataProvider <|.. UGCFPawnExtensionComponent
+
+    %% 所有関
+    AGCFPlayerController o-- UGCFInputComponent
+    UGCFInputContextComponent o -- FGCFContextBinder
+    UGCFPawnData o-- FGCFInputMappingContextInfo
+    UGCFPawnData o-- UGCFInputConfig
+    UGCFPawnExtensionComponent o-- UGCFPawnData
+    UGCFPawnInputBridgeComponent o-- UGCFInputConfig
+    UGCFPlayerInputBridgeComponent o-- UGCFInputConfig
+
+    %% 参照・依存関係
+    FGCFContextBinder ..> UGCFPawnReadyStateComponent : observes state
+    FGCFContextBinder ..> UGCFPlayerReadyStateComponent : observes state
+
+    UGCFInputBindingManagerComponent ..> UGCFInputComponent : input binding
+    UGCFInputBindingManagerComponent ..> IUGCFInputConfigProvider : get input config
+    UGCFInputBindingManagerComponent ..> IGCFPawnDataProvider : get pawn data
+    UGCFInputBindingManagerComponent ..> UEnhancedInputLocalPlayerSubsystem : add / remove mapping context
+    UGCFInputBindingManagerComponent ..> UGCFPossessionContextComponent : observes possession context changed / clear bindings
+    UGCFInputBindingManagerComponent ..> UGCFInputContextComponent : observe input context changed / excute bindings
+
+    UGCFMovementControlComponent ..> UGCFInputBindingManagerComponent : request input binding
+    UGCFCameraControlComponent ..> UGCFInputBindingManagerComponent : request input binding
+    UGCFCharacterControlComponent ..> UGCFInputBindingManagerComponent : request input binding
+    UGCFPawnInputBridgeComponent ..> UGCFInputBindingManagerComponent : request ability binding
+    UGCFPlayerInputBridgeComponent ..> UGCFInputBindingManagerComponent : request ability binding
+
+    UGCFPawnExtensionComponent ..> UGCFPawnInputBridgeComponent : set input config
+    GameFeatureAction ..> UGCFPlayerInputBridgeComponent : set input config
+
+    %% イベント関係
+    UGCFPossessionContextComponent ..> UGameFrameworkComponentManager : sync feature state
+    UGCFPawnExtensionComponent ..> UGameFrameworkComponentManager : sync feature state
+    UGCFPlayerExtensionComponent ..> UGameFrameworkComponentManager : sync feature state
+    UGCFPawnReadyStateComponent ..> UGameFrameworkComponentManager : observe feature state
+    UGCFPlayerReadyStateComponent ..> UGameFrameworkComponentManager : observe feature state
+
+    

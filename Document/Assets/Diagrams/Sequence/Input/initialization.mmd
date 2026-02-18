@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    title Phase 1: Possession & Synchronization
+    
+    participant PC as PlayerController
+    participant InputMgr as InputBindingManager
+    participant Context as InputContextComp
+    participant Pawn as ACharacter
+    participant PawnExt as PawnExtension
+
+    Note over PC, Pawn: 物理的なポゼッション開始
+    PC->>Pawn: Possess(Pawn)
+    PC->>InputMgr: OnPossess(Pawn)
+    
+    InputMgr->>InputMgr: UnbindInputs()
+    Note right of InputMgr: 古いバインドを即座に破棄<br/>(誤操作防止)
+
+    InputMgr->>Context: Reset Ready Flags
+    
+    par Parallel Loading
+        Pawn->>PawnExt: BeginPlay / OnPossessed
+        PawnExt->>PawnExt: Load PawnData (Async)
+    and Check Player State
+        PC->>Context: Notify PlayerState Ready
+    end
+
+    PawnExt-->>Context: Notify Pawn Data Ready
+
+    Context->>Context: Check Flags (Possession | Gameplay)
+    
+    alt All Flags Set
+        Context->>InputMgr: OnContextChanged(Ready=True)
+    else Still Loading
+        Context->>Context: Wait...
+    end

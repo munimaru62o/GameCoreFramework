@@ -1,0 +1,27 @@
+sequenceDiagram
+    autonumber
+    title Phase 3: Runtime Input Execution
+    
+    participant User as Hardware Input
+    participant UE_Input as EnhancedInput
+    participant MoveComp as MovementControl
+    participant Router as InputRouter
+    participant ASC as AbilitySystemComponent
+
+    User->>UE_Input: Press Button
+
+    alt Case A: Movement (Native)
+        UE_Input->>MoveComp: Input_Move(Vector)
+        MoveComp->>MoveComp: Calc Velocity / Rotation
+        MoveComp-->>ACharacter: AddMovementInput()
+    
+    else Case B: Skill Attack (GAS)
+        UE_Input->>Router: RouteInputTag("Ability.Pawn.Attack")
+        
+        Router->>Router: Analyze Prefix "Ability.Pawn.*"
+        
+        opt Target is Pawn ASC
+            Router->>ASC: AbilityInputTagPressed(Tag)
+            ASC->>ASC: TryActivateAbility(Tag)
+        end
+    end
