@@ -26,7 +26,8 @@
 
 ## 📐 アーキテクチャの5つのレイヤー
 
-[![Ability System Architecture](../Assets/Images/ability_system.drawio.png)](../Assets/Images/ability_system.drawio.png)
+<img width="8061" height="3999" alt="ability_system drawio" src="https://github.com/user-attachments/assets/a273a2ef-33df-42cc-bd43-3275f328efce" />
+
 *▲ クラス図の細部を確認される際は、画像をクリックするかダウンロードして拡大してご覧ください。*
 
 クラス図に基づく本システムの構造は、明確に責務が分かれた以下の5層で構成されています。
