@@ -95,16 +95,16 @@ The lifecycle from a player pressing a button to an ability executing flows as f
    When adding new skills, programmers no longer need to write C++ code for input bindings. Game designers simply register tags in the DataAsset ([`UGCFInputConfig`][GCFInputConfig]), and the system automatically wires them to the appropriate ASC.
 
 
-[GCFInputConfig]: ../../Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputConfig]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
 
-[GCFInputBindingManagerComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFInputComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputBindingManagerComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
+[GCFInputComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
 
-[GCFPlayerInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFAbilityInputRouterComponent]: ../../Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
+[GCFPlayerInputBridgeComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFAbilityInputRouterComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
 
-[GCFPlayerState]: ../../Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
-[GCFAbilitySystemComponent]: ../../Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
+[GCFPlayerState]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
+[GCFAbilitySystemComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
 
-[GCFCharacterWithAbilities]: ../../Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h
+[GCFCharacterWithAbilities]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h

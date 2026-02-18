@@ -91,19 +91,19 @@
 ポゼッションが解除された際、Managerが `ClearBindingsOnContextChange()` を呼び出し、古い肉体の入力を綺麗にクリーンアップするため、入力のゴースト（操作できないのに処理が走るバグ）を防ぎます。
 
 
-[GCFPawnData]: ../../Source/GameCoreFramework/Public/Actor/Data/GCFPawnData.h
+[GCFPawnData]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Data/GCFPawnData.h
 
-[GCFContextBinder]: ../../Source/GameCoreFramework/Public/System/Binder/GCFContextBinder.h
-[GCFPawnReadyStateComponent]: ../../Source/GameCoreFramework/Public/System/Lifecycle/GCFPawnReadyStateComponent.h
-[GCFPlayerReadyStateComponent]: ../../Source/GameCoreFramework/Public/System/Lifecycle/GCFPlayerReadyStateComponent.h
+[GCFContextBinder]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Binder/GCFContextBinder.h
+[GCFPawnReadyStateComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPawnReadyStateComponent.h
+[GCFPlayerReadyStateComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPlayerReadyStateComponent.h
 
-[GCFInputContextComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputContextComponent.h
-[GCFInputComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputComponent.h
-[GCFInputConfig]: ../../Source/GameCoreFramework/Public/Input/GCFInputConfig.h
-[GCFInputBindingManagerComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFPlayerInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFInputConfigProvider]: ../../Source/GameCoreFramework/Public/Input/GCFInputConfigProvider.h
+[GCFInputContextComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputContextComponent.h
+[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputBindingManagerComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
+[GCFPlayerInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFInputConfigProvider]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfigProvider.h
 
-[GCFMovementControlComponent]: ../../Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFCameraControlComponent]: ../../Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
+[GCFMovementControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+[GCFCameraControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h

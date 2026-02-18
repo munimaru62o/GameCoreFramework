@@ -103,23 +103,23 @@ Moverの Simulated Proxy（他プレイヤーのキャラクター）は、通�
    次世代の移動システムである Mover プラグインはTickベースの入力予測（Prediction）を要求しますが、本フレームワークはイベント駆動を採用しています。このパラダイムの違いを吸収するため、入力結果を一旦ベクトルとして合成・保持し、Mover側のProducer（[`UGCFCachedInputProducer`][GCFCachedInputProducer]）がInterface経由で安全に読み取る「入力キャッシュ機構」を構築しました。これにより、イベント駆動の軽快さを保ちながら、Moverの強力なロールバック機構を完全サポートしています。
 
 
-[GCFMovementControlComponent]: ../../Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFCameraControlComponent]: ../../Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
+[GCFMovementControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+[GCFCameraControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
 
-[GCFCharacter]: ../../Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
-[GCFWheeledVehiclePawn]: ../../Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
-[GCFCharacterControlComponent]: ../../Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
-[GCFVehicleControlComponent]: ../../Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
-[GCFLocomotionHandler]: ../../Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFCharacter]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
+[GCFWheeledVehiclePawn]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
+[GCFCharacterControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
+[GCFVehicleControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
+[GCFLocomotionHandler]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
 
-[GCFMoverComponent]: ../../Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
-[GCFCharacterMovementComponent]: ../../Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
+[GCFMoverComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
+[GCFCharacterMovementComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
 
-[GCFMovementConfig]: ../../Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
-[GCFMovementConfigReceiver]: ../../Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
-[GCFLocomotionHandler]: ../../Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-[GCFCachedInputProducer]: ../../Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
+[GCFMovementConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
+[GCFMovementConfigReceiver]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
+[GCFLocomotionHandler]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFCachedInputProducer]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
 
-[GCFCameraMode]: ../../Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
+[GCFCameraMode]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
 
-[GCFInputComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h

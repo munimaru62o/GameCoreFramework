@@ -99,16 +99,16 @@
    新しいスキルを追加する際、プログラマがC++で入力バインドのコードを書く必要がなくなります。プランナーがDataAsset（[`UGCFInputConfig`][GCFInputConfig]）にタグを登録するだけで、システムが自動的に適切なASCへ繋ぎ込みを行います。
 
 
-[GCFInputConfig]: ../../Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
 
-[GCFInputBindingManagerComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFInputComponent]: ../../Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputBindingManagerComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
+[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
 
-[GCFPlayerInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]: ../../Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFAbilityInputRouterComponent]: ../../Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
+[GCFPlayerInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFAbilityInputRouterComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
 
-[GCFPlayerState]: ../../Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
-[GCFAbilitySystemComponent]: ../../Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
+[GCFPlayerState]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
+[GCFAbilitySystemComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
 
-[GCFCharacterWithAbilities]: ../../Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h
+[GCFCharacterWithAbilities]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h
