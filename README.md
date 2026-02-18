@@ -120,7 +120,7 @@ GameCoreFramework/Content/Sample
 
 ### 🖥️ Sample Video  
 
-*[Insert Video/GIF Link Here]*
+https://github.com/user-attachments/assets/8a15b152-5af3-4229-9f05-af8823d93742
 
 #### **💡 Video Highlights**
 You can observe the "perfect synchronization of lifecycles": the moment possession changes, the old body's input bindings are safely discarded, **the new Pawn's `InputBinding` is dynamically updated**, and the abilities granted to the new body are immediately activated and routed.
@@ -143,7 +143,7 @@ To prove the architecture's loose coupling, the framework seamlessly transitions
 
 ### 🌐 Client Sample Video (Network Lag Simulation)  
 
-*[Insert Video/GIF Link Here]*
+https://github.com/user-attachments/assets/212a420c-ef0d-4caa-8247-e3068315acb4
 
 #### **💡 Video Highlights**
 Even in poor network environments where "reversed initialization orders" or "lifecycle discrepancies during asynchronous loading (race conditions)" occur due to lag, you can see how GFCM's strict state management perfectly absorbs these issues.
