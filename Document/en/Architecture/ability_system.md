@@ -3,7 +3,9 @@
 ## Overview
 This system is a core module designed to adapt Unreal Engine's Gameplay Ability System (GAS) for large-scale multiplayer games and complex possession requirements.
 
-Its most prominent features are the adoption of the **"Dual ASC Architecture"**, where both the `PlayerState` (the "Soul") and the `Pawn` (the "Body") have their own Ability System Component (ASC), and the implementation of the **"Ability Router Pattern"**, which automatically dispatches player inputs to the appropriate ASC based on tag prefixes.
+Its most prominent feature is the adoption of the **"Dual ASC Architecture"**, where both the `PlayerState` (the "Soul") and the `Pawn` (the "Body") have their own Ability System Component (ASC). By physically separating the domains of "abilities the player should permanently retain (e.g., Interact, global cooldowns)" and "abilities strictly dependent on the current vessel (e.g., magic attacks, driving a car)", this design **structurally and completely prevents ability attachment/detachment bugs and state loss that frequently occur during complex possession (body-swapping)**.
+
+Furthermore, by implementing the **"Ability Router Pattern"**—which automatically dispatches player inputs to the appropriate ASC based on tag prefixes—it achieves dynamic and safe context switching.
 
 ---
 
@@ -85,6 +87,11 @@ The lifecycle from a player pressing a button to an ability executing flows as f
 ---
 
 ## 🎯 Benefits of This Design
+
+- **Domain Separation to Handle Complex Possession Without Bugs**  
+   By separately placing ASCs on both the `PlayerState` (Soul) and the `Pawn` (Body), this system eradicates fatal bugs caused by manual management of abilities and buffs.
+  * **The Soul's ASC (`PlayerState`):** Manages persistent states that must be maintained across vessel transfers, such as "Interact" or "Global Cooldowns". Even if the Pawn dies and is destroyed, it prevents bugs where cooldown timers or buffs disappear (reset) and cause unintended invincibility.
+  * **The Body's ASC (`Pawn`):** Manages capabilities inherent to that specific vessel, such as "Magic Attacks" or a "Vehicle Accelerator". The moment the player possesses a different Pawn, the old ASC and its abilities are simply "left behind" (removed from processing). This fundamentally eliminates detachment bugs, such as forgetting to manually remove an ability and ending up "able to shoot magic while driving a car".
 
 - **Ultimate Decoupling**  
    The input side (Controller) does not need to know anything about the ability implementations, and the ability side does not need to know which physical buttons they are bound to. Everything communicates exclusively through the universal language of "Tags."

@@ -169,7 +169,7 @@ If you find the design philosophy of this framework useful, please feel free to 
 
 ## 💖 Credits & Acknowledgments
 
-- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-starter-game-in-unreal-engine)** by Epic Games: 
+- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine)** by Epic Games: 
   Heavily inspired the application of modular design philosophies.
 - **Unreal Engine Community**: 
   Thanks to all developers who share their best practices.

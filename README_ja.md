@@ -159,7 +159,7 @@ Listen Serverに接続したClient環境にて、マルチプレイで頻発す�
 
 ## 📌 プロジェクトのステータスと貢献（Contribution）について
 
-本プロジェクトは、Unreal Engine 5におけるモダンなアーキテクチャ設計の実証、および**学習・参考用（Reference purpose）**として個人的に公開しているものです。
+本プロジェクトは、Unreal Engine 5におけるモダンなアーキテクチャ設計の実証、および **学習・参考用（Reference purpose）** として個人的に公開しているものです。
 
 そのため、バグ修正を除く「新機能の追加」や「設計の根幹に関わる大規模なプルリクエスト（PR）」については、**原則として受け付けておりません**。
 
@@ -169,7 +169,7 @@ Listen Serverに接続したClient環境にて、マルチプレイで頻発す�
 
 ## 💖 Credits & Acknowledgments
 
-- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-starter-game-in-unreal-engine)** by Epic Games: 
+- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine)** by Epic Games: 
   モジュラーな設計思想の活用において多大な影響を受けました。
 - **Unreal Engine Community**: 
   ベストプラクティスを共有してくれたすべての開発者に感謝します。
