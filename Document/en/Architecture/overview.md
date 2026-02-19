@@ -57,10 +57,10 @@ Therefore, we transitioned to a **hybrid architecture that treats these as "Stat
 ### 3. Gameplay Expansion via Data-Driven Design
 We adopted a design where behaviors and abilities are not hardcoded in C++, but rather expanded through variations in DataAssets. Pawn and Ability configurations can be flexibly switched according to the gameplay.
 
-### 4. Performance Maximization via Tickless Design
-Fundamentally built on an **Event-Driven Model**, this framework completely eliminates reliance on per-frame `Tick` processing by enforcing `PrimaryComponentTick.bCanEverTick = false`.
-By deeply integrating with Gameplay Messages, Component Extension Events, and multicast delegates, unnecessary state polling has been reduced. In real-world demo environment measurements using `stat unit`, we succeeded in keeping the **Game Thread processing time down to 3–4 ms**.
-This maximizes scalability and ensures ample CPU headroom for complex gameplay logic and physics simulations.
+### 4. Minimizing Baseline Overhead via Tickless Design
+Fundamentally built on an **Event-Driven Model**, this framework strictly eliminates reliance on per-frame `Tick` processing by enforcing `PrimaryComponentTick.bCanEverTick = false` across its core components.
+By deeply integrating with Gameplay Messages, Component Extension Events, and multicast delegates, unnecessary state polling has been eradicated.
+This architectural approach effectively **reduces the framework's baseline CPU overhead to near zero**. By doing so, it maximizes overall scalability and ensures ample CPU headroom is preserved for what truly matters: complex gameplay logic, high-density actor management, and physics simulations.
 
 ---
 
