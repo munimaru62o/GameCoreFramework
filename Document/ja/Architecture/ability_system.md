@@ -5,7 +5,7 @@
 
 最大の特徴は、PlayerState（魂）とPawn（肉体）の **両方にASC（Ability System Component）を持たせる「Dual ASC構成」** を採用している点です。これにより、「プレイヤー自身が永続して持つべき能力（Interactや全体クールダウン等）」と「現在の器に完全に依存する能力（魔法攻撃や車の運転等）」のドメインを物理的に分割し、 **複雑なポゼッション（乗り換え）において頻発するアビリティの着脱バグや状態消失を、構造レベルで完全に防ぐ** ことができます。
 
-さらに、プレイヤーの入力をタグのプレフィックスによって各ASCへ自動的に振り分ける**「Ability Router パターン」**を実装することで、動的かつ安全なコンテキストの切り替えを実現しています。
+さらに、プレイヤーの入力をタグのプレフィックスによって各ASCへ自動的に振り分ける **「Ability Router パターン」** を実装することで、動的かつ安全なコンテキストの切り替えを実現しています。
 
 ---
 
@@ -79,7 +79,7 @@
    プレイヤーがボタンを押すと、[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] 経由で [`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent] または [`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent] にイベントが到達します。
 
 2. **タグの送信 (Bridge):**  
-   Bridgeコンポーネントは「どのボタンが押されたか」ではなく、InputConfigに定義された**「GameplayTag」**（例：`Ability.Pawn.Jump`）のみをRouterへ送信します。
+   Bridgeコンポーネントは「どのボタンが押されたか」ではなく、InputConfigに定義された **「GameplayTag」**（例：`Ability.Pawn.Jump`）のみをRouterへ送信します。
 
 3. **動的ルーティング (Router):**  
    [`UGCFAbilityInputRouterComponent`][GCFAbilityInputRouterComponent] がタグのプレフィックスを解析します。
