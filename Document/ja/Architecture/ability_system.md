@@ -35,11 +35,13 @@
 クラス図に基づく本システムの構造は、明確に責務が分かれた以下の5層で構成されています。
 
 ### 1. Feature & Data Layer (データ駆動レイヤー)
-能力や入力の定義をデータとして保持し、システムに動的に注入するレイヤーです。
+能力や入力の定義をC++にハードコーディングせず、データとして保持してシステムに動的に注入するレイヤーです。
 
-- **[`UGCFInputConfig`][GCFInputConfig] (DataAsset)**: どのアクションがどのGameplayTagを発火させるかを定義します。
+- **[`UGCFAbilitySet`][GCFAbilitySet] (DataAsset)**: キャラクターに付与するアビリティクラス（GA）と、それを起動するための入力タグ（InputTag）の紐付けを定義します。
 
-- **`GameFeatureAction`**: GameFeatureの機能を利用し、既存のコードを汚さずに動的にアビリティ（魂用・肉体用）やInputConfigを注入します。
+- **[`UGCFInputConfig`][GCFInputConfig] (DataAsset)**: プレイヤーの物理的な操作（InputAction）と、上記の入力タグ（InputTag）の紐付けを定義します。
+
+- **`GameFeatureAction`**: GameFeatureの機能を利用し、既存のコードを汚さずに上記のアセット（魂用・肉体用のアビリティと入力設定）を動的に注入します。
 
 ### 2. Input Binding Layer (入力受付レイヤー)
 プレイヤーからの物理的な入力（ボタン押下など）を安全に受け付けるレイヤーです。
@@ -52,8 +54,8 @@
 - **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: 入力レイヤーに対してバインドを要求し、入力発生時には「GameplayTag」のみをRouterへ送信する橋渡しを行います。
 
 - **[`UGCFAbilityInputRouterComponent`][GCFAbilityInputRouterComponent]**: 入力されたGameplayTagのプレフィックスを解析し、以下のルールに従って自動でルーティングを行います。
-  - **`Ability.Player.*`** のタグ → **PlayerState の ASC** へ送信
-  - **`Ability.Pawn.*`** のタグ → **Pawn の ASC** へ送信
+  - **`InputTag.Ability.Player.*`** のタグ → **PlayerState の ASC** へ送信
+  - **`InputTag.Ability.Pawn.*`** のタグ → **Pawn の ASC** へ送信
 
 ### 4. Player Domain Layer (魂の領域)
 永続的なデータと能力を管理するレイヤーです。
@@ -79,7 +81,7 @@
    プレイヤーがボタンを押すと、[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] 経由で [`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent] または [`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent] にイベントが到達します。
 
 2. **タグの送信 (Bridge):**  
-   Bridgeコンポーネントは「どのボタンが押されたか」ではなく、InputConfigに定義された **「GameplayTag」**（例：`Ability.Pawn.Jump`）のみをRouterへ送信します。
+   Bridgeコンポーネントは「どのボタンが押されたか」ではなく、InputConfigに定義された **「GameplayTag」**（例：`InputTag.Ability.Pawn.Jump`）のみをRouterへ送信します。
 
 3. **動的ルーティング (Router):**  
    [`UGCFAbilityInputRouterComponent`][GCFAbilityInputRouterComponent] がタグのプレフィックスを解析します。
@@ -94,7 +96,7 @@
 
 - **複雑なポゼッションをバグなしで捌くドメイン分離**  
   「PlayerState（魂）」と「Pawn（肉体）」の両方にASCを分離配置することで、アビリティやバフの手動管理に起因する致命的なバグを根絶します。
-  * **魂のASC (PlayerState):** 「Interact」や「全体クールダウン」など、器を乗り換えても維持されるべき永続的な状態を管理します。Pawnが死亡・破棄されても、クールダウンタイマーやバフが消失（リセット）して無敵化してしまうバグを防ぎます。
+  * **魂のASC (PlayerState):**  「Interact」や「全体クールダウン」など、器を乗り換えても維持されるべき永続的な状態を管理します。Pawnが死亡・破棄されても、クールダウンタイマーやバフが消失（リセット）して無敵化してしまうバグを防ぎます。
   * **肉体のASC (Pawn):** 「魔法攻撃」や「車両のアクセル」など、その器固有の能力を管理します。別のPawnに乗り移った瞬間、古いASCごと能力を「置いていく（処理対象から外れる）」ことになるため、手動でアビリティをRemoveし忘れて「車に乗っているのに魔法が撃てる」といった着脱漏れのバグが原理的に発生しません。
 
 - **究極の疎結合（Decoupling）**  
@@ -107,16 +109,15 @@
    新しいスキルを追加する際、プログラマがC++で入力バインドのコードを書く必要がなくなります。プランナーがDataAsset（[`UGCFInputConfig`][GCFInputConfig]）にタグを登録するだけで、システムが自動的に適切なASCへ繋ぎ込みを行います。
 
 
-[GCFInputConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
-
+[GCFInputConfig]:                   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputComponent]:                ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
 [GCFInputBindingManagerComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFPlayerInputBridgeComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFAbilityInputRouterComponent]:   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
 
-[GCFPlayerInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFAbilityInputRouterComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
+[GCFAbilitySet]:                    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySet.h
+[GCFAbilitySystemComponent]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
 
-[GCFPlayerState]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
-[GCFAbilitySystemComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
-
-[GCFCharacterWithAbilities]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h
+[GCFPlayerState]:                   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
+[GCFCharacterWithAbilities]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h

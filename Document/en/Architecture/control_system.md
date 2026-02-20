@@ -86,23 +86,21 @@ The flow from the player tilting the stick to the character moving is as follows
   The next-generation Mover plugin requires Tick-based input prediction, whereas this framework operates on an Event-Driven architecture. To absorb this paradigm shift, we built an "Input Cache Mechanism" where input results are temporarily synthesized and held as vectors, allowing the Mover's Producer ([`UGCFCachedInputProducer`][GCFCachedInputProducer]) to safely read them via an Interface. This fully supports Mover's powerful rollback mechanics while preserving the lightweight nature of event-driven execution.
 
 
-[GCFMovementControlComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFCameraControlComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
+[GCFCharacter]:                  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
+[GCFWheeledVehiclePawn]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
+[GCFCharacterControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
+[GCFVehicleControlComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
 
-[GCFCharacter]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
-[GCFWheeledVehiclePawn]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
-[GCFCharacterControlComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
-[GCFVehicleControlComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
-[GCFLocomotionHandler]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-
-[GCFMoverComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
+[GCFMovementControlComponent]:   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFMoverComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
 [GCFCharacterMovementComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
+[GCFMovementConfig]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
+[GCFMovementConfigReceiver]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
+[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFCachedInputProducer]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
 
-[GCFMovementConfig]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
-[GCFMovementConfigReceiver]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
-[GCFLocomotionHandler]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-[GCFCachedInputProducer]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
+[GCFCameraMode]:                 ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
+[GCFCameraControlComponent]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
 
-[GCFCameraMode]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
-
-[GCFInputComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h

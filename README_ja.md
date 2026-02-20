@@ -38,7 +38,7 @@ GCFの設計思想や各システムの詳細については、以下のドキ�
 - **[アーキテクチャ概要](Document/ja/Architecture/overview.md)**
   - マルチプレイ開発で頻発する「初期化のレースコンディション」や「責務の肥大化」をシステムレベルで防ぐための根幹思想（魂と肉体の分離など）と、実務の失敗から得た教訓をまとめています。
 
-- **[GAS統合とAbilityルーティング (Dual ASC & Router パターン))](Document/ja/Architecture/ability_system.md)** 
+- **[GAS統合とAbilityルーティング (Dual ASC & Router パターン)](Document/ja/Architecture/ability_system.md)** 
   - PlayerStateとPawnの両方にASCを持たせる高度な「Dual ASC構成」を採用。入力とアビリティの密結合を排除し、タグのプレフィックスで発動先を動的に切り替えるルーティング機構を解説しています。
 
 - **[インプットシステム (InputBridge & Manager パターン)](Document/ja/Architecture/input_system.md)** 

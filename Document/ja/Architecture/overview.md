@@ -74,10 +74,10 @@ Gameplay MessageやComponent Extension Event、マルチキャストデリゲー
 入力が特定のAbilityクラスやASCを直接参照する密結合を排除するため、本フレームワークでは `InputBridge` と `AbilityRouter` を構築しました。
 
 `UGCFAbilityInputRouterComponent` は、入力時に渡されるタグの階層に基づき、以下のルールで入力を自動的に振り分けます。
-- 🟢`Ability.Player.*` のタグが来た場合 
+- 🟢`InputTag.Ability.Player.*` のタグが来た場合 
     - **PlayerState の ASC** へルーティング (インタラクトなど、魂の永続的な能力として処理)
 
-- 🟠`Ability.Pawn.*` のタグが来た場合 
+- 🟠`InputTag.Ability.Pawn.*` のタグが来た場合 
     - **Pawn の ASC** へルーティング （ジャンプや射撃など、現在の肉体に依存する能力として処理）
 
 これにより、入力側（ControllerやInputComponent）は「誰のASCか」を一切知る必要がなく、 **単に「タグ」を投げるだけで処理主体を動的に切り替える** ことが可能になっています。

@@ -75,10 +75,10 @@ The greatest technical challenge in this unique setup is the input routing probl
 To eliminate tight coupling where inputs directly reference specific Ability classes or ASCs, this framework introduces the `InputBridge` and `AbilityRouter`.
 
 The `UGCFAbilityInputRouterComponent` automatically dispatches inputs based on the hierarchy of the tag passed during input, following these rules:
-- 🟢 When an `Ability.Player.*` tag is received:
+- 🟢 When an `InputTag.Ability.Player.*` tag is received:
     - Routed to the **PlayerState's ASC** (Handled as a persistent ability of the soul, e.g., interaction).
 
-- 🟠 When an `Ability.Pawn.*` tag is received:
+- 🟠 When an `InputTag.Ability.Pawn.*` tag is received:
     - Routed to the **Pawn's ASC** (Handled as an ability dependent on the current body, e.g., jumping or shooting).
 
 As a result, the input side (Controller or InputComponent) does not need to know "whose ASC it is." It becomes possible to **dynamically switch the execution target simply by throwing a "Tag."**
