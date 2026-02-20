@@ -38,6 +38,7 @@ By adopting this framework, development teams will reap the following benefits:
 ## 📐 Core Design Philosophy
 
 ### 1. Complete Separation of "Soul" (Player) and "Body" (Pawn)
+
 This framework clearly separates the responsibilities of persistent data and temporary vessels.
 
 - **Player (Soul / Persistent):**
@@ -66,38 +67,94 @@ This architectural approach effectively **reduces the framework's baseline CPU o
 
 ## ✨ Technical Highlights of This Framework
 
-### Dual ASC Architecture and Tag-Based Routing
+### 1. Dual ASC Architecture and Tag-Based Routing
+
 In standard Gameplay Ability System (GAS) design, it is customary to place the Ability System Component (ASC) on *either* the PlayerState or the Pawn. However, to completely separate persistent abilities from swappable abilities, this framework adopts a **"Dual ASC Architecture," equipping both the PlayerState (Soul) and the Pawn (Body) with an ASC**.
 
 The greatest technical challenge in this unique setup is the input routing problem: "When a player presses a button, to which ASC (Soul or Body) should the input be dispatched?"
 To eliminate tight coupling where inputs directly reference specific Ability classes or ASCs, this framework introduces the `InputBridge` and `AbilityRouter`.
 
 The `UGCFAbilityInputRouterComponent` automatically dispatches inputs based on the hierarchy of the tag passed during input, following these rules:
-- 🟢 When an `Ability.Player.*` tag is received:
+- 🟢 When an `InputTag.Ability.Player.*` tag is received:
     - Routed to the **PlayerState's ASC** (Handled as a persistent ability of the soul, e.g., interaction).
 
-- 🟠 When an `Ability.Pawn.*` tag is received:
+- 🟠 When an `InputTag.Ability.Pawn.*` tag is received:
     - Routed to the **Pawn's ASC** (Handled as an ability dependent on the current body, e.g., jumping or shooting).
 
 As a result, the input side (Controller or InputComponent) does not need to know "whose ASC it is." It becomes possible to **dynamically switch the execution target simply by throwing a "Tag."**
+
+### 2. Lag Mitigation and Optimization for Next-Gen Network Sync (NPP / Mover)
+
+When deploying Unreal Engine 5's next-generation network synchronization foundations—the Network Prediction Plugin (NPP) and the Mover plugin—in a production environment, this system solves fatal sync discrepancies and extrapolation runaways caused by the engine's internal specifications at the architectural level.
+
+- **Maintaining Clock Sync in Hybrid Environments (Adopting the Adapter Pattern):**  
+  In a game environment where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` coexist, NPP's simulation clock tends to isolate and sleep per system. As a result, when a player operates a CMC, network packets from others' Movers (e.g., drones) are discarded as "future data," causing freezing issues (Extrapolation Starvation). This system builds a robust infrastructure that keeps the NPP clock globally synchronized regardless of the Pawn the player possesses, by placing a "lightweight, physics-less dummy Mover" on the `PlayerController` side as an Adapter that constantly communicates with the server.
+
+- **Input Sanitization to Safely Prevent Extrapolation Runaway:**  
+  When packet loss occurs, Mover's Simulated Proxies reuse the last received input data to predict future positions (Extrapolation). However, in low-friction situations like flying, this "stale input" causes the character to accelerate and move forward infinitely, triggering severe rubber-banding (Rollback) upon packet arrival. This system implements a hack that strictly clears only the direction vector of the "disposable input snapshot for prediction calculations" generated every frame, just before processing, without polluting the NPP core buffer. This completely prevents fatal overshooting in laggy environments while fully ensuring the safety of NPP's rollback mechanism.
+
+---
+
+## 🛠 Developer Experience (DX): Simple Extensibility Hiding Complex Internal Structures
+
+Although this framework executes extremely complex asynchronous processing and routing internally, **it completely hides (encapsulates) this complexity from the programmers and planners (users) who actually implement the gameplay.**
+
+When adding new features, users do not need to modify the existing core code at all. Safe expansion is possible with only the following extremely simple steps.
+
+### Example 1: Binding New Abilities and Inputs by Planners (Data-Driven)
+There is no need to write a single line of C++ code. By simply configuring two DataAssets that separate "ability definition" and "physical input," the system automatically determines the appropriate ASC (Soul or Body) and performs the routing.
+
+#### 1. Assign an "Input Tag" to the Ability (`UGCFAbilitySet`)
+Open the target ability set and configure the following elements:
+
+- **Granted Gameplay Abilities:**
+  - **Ability:** `GA_Jump` (The ability class to add)
+  - **InputTag:** `InputTag.Ability.Pawn.Jump` (Target domain is automatically determined by the prefix)
+
+#### 2. Bind Physical Operations (InputAction) to the Tag (`UGCFInputConfig`)
+Open the input configuration and simply bind the standard Unreal InputAction to the tag defined above.
+
+- **Ability Input Actions:**
+  - **InputAction:** `IA_Jump` (Physical input such as Spacebar or gamepad button)
+  - **GameplayTag:** `InputTag.Ability.Pawn.Jump`
+
+### Example 2: Adding a "New Vehicle" by Programmers (Interface-Driven)
+For example, if you want to add a "Hoverboard" with entirely new physics behavior, you do not need to rewrite the input processing (`Input_Move`, etc.) on the controller side.
+Simply implement the `IGCFLocomotionHandler` interface in the new Pawn class and convert the received universal vector into its unique propulsion force.
+
+```cpp
+// AGCFHoverboardPawn.cpp
+// Just by overriding the interface function, it accepts universal operations from the controller.
+void AGCFHoverboardPawn::HandleMoveInput(const FVector& MovementVector)
+{
+    // Receive the "desired direction (MovementVector)" calculated by the controller,
+    // and simply convert it into physics thruster processing specific to the hoverboard.
+    HoverThrusterComponent->AddForce(MovementVector * HoverThrustPower);
+}
+```
+
+In this way, simply by operating "inside the rules of the architecture," we provide a foundation where anyone can safely and rapidly mass-produce features.
 
 ---
 
 ## 🎯 Non-Goals and Target Scope
 
 ### Design Philosophy: Robustness over Speed
-Rather than prototyping speed, this framework clearly prioritizes **Scalability** and **Deterministic Behavior**.
-Adding a single button requires multiple steps (creating a DataAsset, assigning tags, etc.). However, this enforced structure ensures that "adding the 100th ability" is done with the same safety and order as "adding the 1st," preventing the project from devolving into spaghetti code.
 
-**[Suitable Projects]**
-- Large-scale multiplayer games or live-service titles.
-- Developers looking to flexibly change Pawn compositions based on gameplay.
-- Those seeking a robust design premised on multiplayer and Possession.
+Rather than the initial speed of prototyping, this framework makes ensuring **"Mid-to-Long-Term Scalability"** and **"Deterministic Behavior"** its top design priorities.
 
-**[Unsuitable Projects]**
-- Quick prototypes where "it just needs to work" (initial setup carries a learning curve).
-- Simple games intended for a single Pawn and a single perspective.
-- Complete replacements of official Unreal Engine implementations.
+To add a single button, it requires explicit procedures (rules) such as "creating a DataAsset" and "assigning a tag." Therefore, initial setup and learning require a certain cost. However, because of this enforced structure, **"adding the 100th ability" can be done with the exact same safety and order as "adding the 1st."**
+
+When entering the mid-to-long-term specification changes or the mass-production phase with a team of dozens, the iteration speed enabled by this "unbreakable foundation" will ultimately vastly outperform traditional prototype-style development.
+
+**[Projects Where It Delivers the Most Value]**
+- Large-scale multiplayer games or long-term live-service titles planned for years of operation.
+- Teams wanting to drastically reduce programmer QA (debugging) costs during content mass production.
+- Games where "boarding vehicles" or "dynamic character changes (Possession)" are core mechanics.
+
+**[Projects Where It Might Be Over-Engineering]**
+- Mockup development intended to be thrown away in a few weeks without considering scalability.
+- Small-scale games completed with only a single Pawn and single perspective, without any multiplayer or state transitions expected.
 
 ---
 
