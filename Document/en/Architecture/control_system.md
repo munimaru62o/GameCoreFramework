@@ -71,20 +71,6 @@ The flow from the player tilting the stick to the character moving is as follows
 
 ---
 
-## 🌐 Network Synchronization and Network Prediction Optimization
-
-When deploying Unreal Engine 5's next-generation network synchronization framework, the Network Prediction Plugin (NPP), and the Mover plugin into a live environment, fatal sync discrepancies and prediction runaways caused by the engine's internal specifications can occur. This system resolves these critical issues through its unique architectural design.
-
-### 1. Maintaining Clock Sync in a Hybrid Environment (Adapter Pattern)
-In game environments where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` coexist, NPP's simulation clock sleeps in isolation per system. Consequently, when a player is controlling a CMC, network packets from other players' Movers (e.g., drones) are discarded as "future data," causing freezing issues known as **Extrapolation Starvation**. 
-This system establishes a robust infrastructure that keeps the NPP clock globally synchronized regardless of which Pawn the player is possessing. It achieves this by attaching a **"lightweight dummy Mover with no physical collision"** to the `PlayerController` (which is always communicating with the server) to act as an Adapter.
-
-### 2. Safe Input Sanitization to Prevent Extrapolation Runaway
-Mover's Simulated Proxies (other players' characters) predict future positions (Extrapolation) by reusing the last received input data when packet loss occurs. However, in low-friction states such as flying, this "stale input" causes the character to accelerate and move forward infinitely, resulting in severe rubber-banding when packets finally arrive. 
-Without polluting NPP's core buffer, this system implements a hack that **forcibly clears only the directional vector of the "disposable input snapshot for prediction calculation"** generated every frame. This prevents fatal overshooting under laggy conditions while completely ensuring the safety of NPP's Rollback mechanism.
-
----
-
 ## 🎯 Benefits of This Design
 
 - **Ultimate Plug & Play:**  
