@@ -1,5 +1,5 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
-// Portions Copyright (c) 2026 62o. All rights reserved.
+// Portions Copyright (c) 2026 munimaru62o. All rights reserved.
 
 #include "Actor/Pawn/GCFPawn.h"
 #include "Actor/Data/GCFPawnData.h"
