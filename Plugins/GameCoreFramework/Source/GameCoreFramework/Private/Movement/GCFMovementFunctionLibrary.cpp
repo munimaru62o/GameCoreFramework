@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "Movement/GCFMovementFunctionLibrary.h"
-
+#include "GCFShared.h"
 #include "Movement/GCFMovementConfigReceiver.h"
 #include "Movement/GCFLocomotionHandler.h"
 
