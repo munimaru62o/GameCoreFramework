@@ -35,10 +35,13 @@ This system resolves these issues at the architectural level through "Complete D
 Based on the class diagram, the structure of this system is composed of five distinct layers with clearly defined responsibilities:
 
 ### 1. Feature & Data Layer (Data-Driven Layer)
-This layer holds the definitions of abilities and inputs as data, injecting them dynamically into the system.
+This layer holds the definitions of abilities and inputs as data, rather than hardcoding them in C++, and injects them dynamically into the system.
 
-- **[`UGCFInputConfig`][GCFInputConfig] (DataAsset)**: Defines which input action triggers which `GameplayTag`.
-- **`GameFeatureAction`**: Utilizes GameFeature functionality to dynamically inject abilities (for both soul and body) and InputConfigs without polluting the base codebase.
+- **[`UGCFAbilitySet`][GCFAbilitySet] (DataAsset)**: Defines the binding between the ability classes (GA) granted to the character and the input tags (`InputTag`) used to trigger them.
+
+- **[`UGCFInputConfig`][GCFInputConfig] (DataAsset)**: Defines the binding between the player's physical operations (`InputAction`) and the aforementioned input tags (`InputTag`).
+
+- **`GameFeatureAction`**: Utilizes GameFeature functionality to dynamically inject the above assets (abilities and input configurations for both soul and body) without polluting the existing codebase.
 
 ### 2. Input Binding Layer (Reception Layer)
 Safely handles physical inputs from the player (e.g., button presses).
@@ -49,20 +52,23 @@ Safely handles physical inputs from the player (e.g., button presses).
 Receives the input and dispatches it to the appropriate ASC.
 
 - **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: Requests bindings from the Input Layer. When an input occurs, they act as a bridge, sending *only* the `GameplayTag` to the Router.
+
 - **[`UGCFAbilityInputRouterComponent`][GCFAbilityInputRouterComponent]**: Parses the prefix of the incoming `GameplayTag` and automatically routes it according to the following rules:
-  - Tags starting with **`Ability.Player.*`** → Routed to the **PlayerState's ASC**.
-  - Tags starting with **`Ability.Pawn.*`** → Routed to the **Pawn's ASC**.
+  - 🟢 Tags starting with **`InputTag.Ability.Player.*`** → Routed to the **PlayerState's ASC** (Handled as a persistent ability of the soul, e.g., interaction).
+  - 🟠 Tags starting with **`InputTag.Ability.Pawn.*`** → Routed to the **Pawn's ASC** (Handled as an ability dependent on the current body, e.g., jumping or shooting).
 
 ### 4. Player Domain Layer (The Realm of the Soul)
 Manages persistent data and abilities.
 
 - **[`UGCFPlayerState`][GCFPlayerState]**: Acts as the player's "Soul" and holds its own dedicated **[`UGCFAbilitySystemComponent`][GCFAbilitySystemComponent]**.
+
 - **Role:** Manages abilities that must be maintained even when the player switches bodies, such as level-up skills, inventory item effects, and global cooldowns.
 
 ### 5. Pawn Domain Layer (The Realm of the Body)
 Manages the temporary vessel and its physical capabilities.
 
 - **[`UGCFCharacterWithAbilities`][GCFCharacterWithAbilities]**: The physical "Body" controlled by the player, which also holds its own dedicated **[`UGCFAbilitySystemComponent`][GCFAbilitySystemComponent]**.
+
 - **Role:** Manages innate abilities strictly dependent on that specific Pawn, such as "bipedal jumping," "firing a weapon," or "stepping on a car's accelerator."
 
 ---
@@ -75,7 +81,7 @@ The lifecycle from a player pressing a button to an ability executing flows as f
    The player presses a button, and the event reaches either the [`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent] or the [`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent] via the [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent].
 
 2. **Tag Transmission (Bridge)**  
-   Instead of passing "which button was pressed," the Bridge component sends *only* the **`GameplayTag`** defined in the InputConfig (e.g., `Ability.Pawn.Jump`) to the Router.
+   Instead of passing "which button was pressed," the Bridge component sends *only* the **`GameplayTag`** defined in the `InputConfig` (e.g., `InputTag.Ability.Pawn.Jump`) to the Router.
 
 3. **Dynamic Routing (Router)**  
    The [`UGCFAbilityInputRouterComponent`][GCFAbilityInputRouterComponent] parses the tag's prefix.
@@ -103,16 +109,15 @@ The lifecycle from a player pressing a button to an ability executing flows as f
    When adding new skills, programmers no longer need to write C++ code for input bindings. Game designers simply register tags in the DataAsset ([`UGCFInputConfig`][GCFInputConfig]), and the system automatically wires them to the appropriate ASC.
 
 
-[GCFInputConfig]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputConfig]:                   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputComponent]:                ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputBindingManagerComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
+[GCFPlayerInputBridgeComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFAbilityInputRouterComponent]:   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
 
-[GCFInputBindingManagerComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFInputComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFAbilitySet]:                    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySet.h
+[GCFAbilitySystemComponent]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
 
-[GCFPlayerInputBridgeComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFAbilityInputRouterComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFAbilityInputRouterComponent.h
-
-[GCFPlayerState]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
-[GCFAbilitySystemComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/AbilitySystem/GCFAbilitySystemComponent.h
-
-[GCFCharacterWithAbilities]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h
+[GCFPlayerState]:                   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Player/GCFPlayerState.h
+[GCFCharacterWithAbilities]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterWithAbilities.h

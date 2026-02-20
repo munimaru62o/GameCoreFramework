@@ -75,20 +75,6 @@ Unreal Engineの標準的な開発において発生しやすい、移動ロジ�
 
 ---
 
-## 🌐 ネットワーク同期と予測（Network Prediction）の最適化
-
-Unreal Engine 5の次世代ネットワーク同期基盤である Network Prediction Plugin (NPP) および Mover プラグインを実戦投入するにあたり、エンジン内部の仕様に起因する致命的な同期ズレや予測の暴走を、本システム独自のアーキテクチャ設計によって解決しています。
-
-### 1. ハイブリッド環境における Clock Sync の維持（Adapterパターンの採用）
-旧来の `CharacterMovementComponent` (CMC) と新しい `Mover` が混在するゲーム環境において、NPPのシミュレーション時計（Clock）はシステムごとに孤立してスリープする仕様があります。これにより、プレイヤーがCMCを操作している際、他者のMover（ドローンなど）のネットワークパケットが「未来のデータ」として破棄され、フリーズする問題（Extrapolation Starvation）が発生します。
-本システムでは、常にサーバーと通信を行う `PlayerController` 側に**「物理干渉を持たない軽量なダミーMover」**をAdapterとして持たせることで、プレイヤーがどのPawnに憑依していてもNPPの時計をグローバルに同期し続ける強固なインフラを構築しています。
-
-### 2. 予測の暴走（Extrapolation Runaway）を安全に防ぐ入力サニタイズ
-Moverの Simulated Proxy（他プレイヤーのキャラクター）は、通信のパケットロスが発生した際、最後に届いた入力データを使い回して未来の位置を予測（Extrapolation）します。しかし、飛行状態など摩擦の少ない状況下では、この「古い入力」によってキャラクターが無限に加速・前進し続け、パケット到達時に強烈な引き戻し（Rubber-banding）を引き起こします。
-本システムでは、NPPのコアバッファを汚染することなく、毎フレーム生成される**「予測計算用の使い捨て入力スナップショット」の方向ベクトルのみを直前で強制クリア**するハックを実装しています。これにより、NPPの巻き戻し（Rollback）の安全性を完全に担保したまま、ラグ環境下における致命的なOvershootingを防止しています。
-
----
-
 ## 🎯 この設計によって得られるメリット
 
 - **究極のプラグアンドプレイ (Plug & Play)**  
@@ -104,23 +90,21 @@ Moverの Simulated Proxy（他プレイヤーのキャラクター）は、通�
    次世代の移動システムである Mover プラグインはTickベースの入力予測（Prediction）を要求しますが、本フレームワークはイベント駆動を採用しています。このパラダイムの違いを吸収するため、入力結果を一旦ベクトルとして合成・保持し、Mover側のProducer（[`UGCFCachedInputProducer`][GCFCachedInputProducer]）がInterface経由で安全に読み取る「入力キャッシュ機構」を構築しました。これにより、イベント駆動の軽快さを保ちながら、Moverの強力なロールバック機構を完全サポートしています。
 
 
-[GCFMovementControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFCameraControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
-
-[GCFCharacter]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
-[GCFWheeledVehiclePawn]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
+[GCFCharacter]:                  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
+[GCFWheeledVehiclePawn]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
 [GCFCharacterControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
-[GCFVehicleControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
-[GCFLocomotionHandler]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFVehicleControlComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
 
-[GCFMoverComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
-[GCFCharacterMovementComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
+[GCFMovementControlComponent]:   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFMoverComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
+[GCFCharacterMovementComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
+[GCFMovementConfig]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
+[GCFMovementConfigReceiver]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
+[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
+[GCFCachedInputProducer]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
 
-[GCFMovementConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
-[GCFMovementConfigReceiver]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
-[GCFLocomotionHandler]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-[GCFCachedInputProducer]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
+[GCFCameraMode]:                 ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
+[GCFCameraControlComponent]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
 
-[GCFCameraMode]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
-
-[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h

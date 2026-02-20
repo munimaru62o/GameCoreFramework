@@ -88,19 +88,20 @@ When adding new vehicles or characters, no C++ code changes are required. Simply
 When possession ends, the Manager calls `ClearBindingsOnContextChange()` to cleanly scrub the old body's inputs. This prevents input "ghosting" (bugs where inputs continue to process for an uncontrollable actor).
 
 
-[GCFPawnData]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Data/GCFPawnData.h
+[GCFPawnData]:                      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Data/GCFPawnData.h
 
-[GCFContextBinder]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Binder/GCFContextBinder.h
-[GCFPawnReadyStateComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPawnReadyStateComponent.h
-[GCFPlayerReadyStateComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPlayerReadyStateComponent.h
+[GCFContextBinder]:                 ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Binder/GCFContextBinder.h
+[GCFPawnReadyStateComponent]:       ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPawnReadyStateComponent.h
+[GCFPlayerReadyStateComponent]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/System/Lifecycle/GCFPlayerReadyStateComponent.h
 
-[GCFInputContextComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputContextComponent.h
-[GCFInputComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
-[GCFInputConfig]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
+[GCFInputContextComponent]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputContextComponent.h
+[GCFInputComponent]:                ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputConfig]:                   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfig.h
 [GCFInputBindingManagerComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputBindingManagerComponent.h
-[GCFPlayerInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
-[GCFPawnInputBridgeComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
-[GCFInputConfigProvider]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfigProvider.h
+[GCFPlayerInputBridgeComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPlayerInputBridgeComponent.h
+[GCFPawnInputBridgeComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
+[GCFInputConfigProvider]:           ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfigProvider.h
 
-[GCFMovementControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFCameraControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
+[GCFMovementControlComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+
+[GCFCameraControlComponent]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h

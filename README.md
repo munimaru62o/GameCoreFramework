@@ -1,6 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
+![Version](https://img.shields.io/badge/Version-0.8.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *Read this in other languages: [English](README.md), [日本語 (Japanese)](README_ja.md)*

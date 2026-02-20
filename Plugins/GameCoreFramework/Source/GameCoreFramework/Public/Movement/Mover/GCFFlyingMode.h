@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2026 62o. All rights reserved.
+﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -30,7 +30,7 @@ public:
 	  * Core function called every frame by the Mover component to generate physical movement.
 	  * Overridden here to sanitize input buffers for simulated proxies before physics execution.
 	  */
-    virtual void GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, OUT FProposedMove& OutProposedMove) const override;
+    virtual void GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const override;
 };
 
 #undef UE_API

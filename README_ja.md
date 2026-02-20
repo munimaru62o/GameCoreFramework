@@ -1,6 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
+![Version](https://img.shields.io/badge/Version-0.8.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *他の言語で読む: [English](README.md), [日本語 (Japanese)](README_ja.md)*
@@ -37,7 +38,7 @@ GCFの設計思想や各システムの詳細については、以下のドキ�
 - **[アーキテクチャ概要](Document/ja/Architecture/overview.md)**
   - マルチプレイ開発で頻発する「初期化のレースコンディション」や「責務の肥大化」をシステムレベルで防ぐための根幹思想（魂と肉体の分離など）と、実務の失敗から得た教訓をまとめています。
 
-- **[GAS統合とAbilityルーティング (Dual ASC & Router パターン))](Document/ja/Architecture/ability_system.md)** 
+- **[GAS統合とAbilityルーティング (Dual ASC & Router パターン)](Document/ja/Architecture/ability_system.md)** 
   - PlayerStateとPawnの両方にASCを持たせる高度な「Dual ASC構成」を採用。入力とアビリティの密結合を排除し、タグのプレフィックスで発動先を動的に切り替えるルーティング機構を解説しています。
 
 - **[インプットシステム (InputBridge & Manager パターン)](Document/ja/Architecture/input_system.md)** 
@@ -101,7 +102,7 @@ GameCoreFramework/ (クローンしたリポジトリのルート)
 
 ### ご自身のプロジェクトへ導入（移植）する場合
 
-このフレームワークをご自身のゲームプロジェクトに導入したい場合は、上記の `Step 2` で用意したLyraの依存プラグイン群と一緒に、本リポジトリ内の `Plugins/GameCoreFramework` フォルダを、**ご自身のプロジェクトの `Plugins` フォルダへそのままコピー**してください。
+このフレームワークをご自身のゲームプロジェクトに導入したい場合は、上記の `Step 2` で用意したLyraの依存プラグイン群と一緒に、本リポジトリ内の `Plugins/GameCoreFramework` フォルダを、 **ご自身のプロジェクトの `Plugins` フォルダへそのままコピー** してください。
 
 ## 🎬 デモ & サンプル
 
