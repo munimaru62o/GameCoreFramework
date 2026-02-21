@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "UObject/Class.h"
 #include "Common/GCFDebugTypes.h"
 #include "System/Lifecycle/GCFStateTypes.h"
 #include "GCFDebugFunctionLibrary.generated.h"
@@ -31,7 +32,6 @@ public:
 		if (!EnumPtr) {
 			return TEXT("InvalidEnum");
 		}
-		// "EEnumName::Value" ではなく "Value" だけを返す
 		return EnumPtr->GetNameStringByValue((int64)EnumValue);
 	}
 
@@ -53,8 +53,9 @@ public:
 			int64 Val = EnumPtr->GetValueByIndex(i);
 
 			if (Val == 0) continue;
+#if WITH_EDITOR
 			if (EnumPtr->HasMetaData(TEXT("Hidden"), i)) continue;
-
+#endif
 			FString EnumName = EnumPtr->GetNameStringByIndex(i);
 			if (EnumName.Contains(TEXT("_MAX"))) continue;
 
