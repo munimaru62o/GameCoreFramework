@@ -94,3 +94,6 @@ Plugins/GameplayMessageRouter/*
 Plugins/GameSubtitles/*
 Plugins/ModularGameplayActors/*
 Plugins/UIExtension/*
+
+# Local Tools
+LocalBuildScripts/*
