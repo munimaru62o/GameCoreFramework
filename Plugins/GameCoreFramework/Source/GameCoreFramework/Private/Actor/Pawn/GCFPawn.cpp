@@ -55,23 +55,44 @@ const UGCFPawnData* AGCFPawn::GetPawnData() const
 
 void AGCFPawn::PossessedBy(AController* NewController)
 {
+	const FGenericTeamId OldTeamID = MyTeamID;
+
 	Super::PossessedBy(NewController);
 
 	// Notify extension component on Server side possession.
 	if (PawnExtensionComponent) {
 		PawnExtensionComponent->OnControllerAssigned();
 	}
+
+	// Grab the current team ID and listen for future changes
+	if (IGCFTeamAgentInterface* ControllerAsTeamProvider = Cast<IGCFTeamAgentInterface>(NewController)) {
+		MyTeamID = ControllerAsTeamProvider->GetGenericTeamId();
+		ControllerAsTeamProvider->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnControllerChangedTeam);
+	}
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }
 
 
 void AGCFPawn::UnPossessed()
 {
+	AController* const OldController = GetController();
+
+	// Stop listening for changes from the old controller
+	const FGenericTeamId OldTeamID = MyTeamID;
+	if (IGCFTeamAgentInterface* ControllerAsTeamProvider = Cast<IGCFTeamAgentInterface>(OldController)) {
+		ControllerAsTeamProvider->GetTeamChangedDelegateChecked().RemoveAll(this);
+	}
+
 	Super::UnPossessed();
 
 	// Notify extension component to clean up or reset state.
 	if (PawnExtensionComponent) {
 		PawnExtensionComponent->HandleControllerChanged();
 	}
+
+	// Determine what the new team ID should be afterwards
+	MyTeamID = DetermineNewTeamAfterPossessionEnds(OldTeamID);
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }
 
 
@@ -149,6 +170,49 @@ void AGCFPawn::UpdateCachedTargetMovement()
 FVector AGCFPawn::GetDesiredMovementVector_Implementation() const
 {
 	return CachedTargetMovement;
+}
+
+
+void AGCFPawn::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	if (GetController() == nullptr) {
+		if (HasAuthority()) {
+			const FGenericTeamId OldTeamID = MyTeamID;
+			MyTeamID = NewTeamID;
+			ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
+		} else {
+			UE_LOG(LogGCFCharacter, Error, TEXT("You can't set the team ID on a character (%s) except on the authority"), *GetPathNameSafe(this));
+		}
+	} else {
+		UE_LOG(LogGCFCharacter, Error, TEXT("You can't set the team ID on a possessed character (%s); it's driven by the associated controller"), *GetPathNameSafe(this));
+	}
+}
+
+
+FGenericTeamId AGCFPawn::GetGenericTeamId() const
+{
+	return MyTeamID;
+}
+
+
+FOnGCFTeamIndexChangedDelegate* AGCFPawn::GetOnTeamIndexChangedDelegate()
+{
+	return &OnTeamChangedDelegate;
+}
+
+
+void AGCFPawn::OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)
+{
+	const FGenericTeamId MyOldTeamID = MyTeamID;
+	MyTeamID = IntegerToGenericTeamId(NewTeam);
+	ConditionalBroadcastTeamChanged(this, MyOldTeamID, MyTeamID);
+}
+
+
+FGenericTeamId AGCFPawn::DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const
+{
+	// This could be changed to return, e.g., OldTeamID if you want to keep it assigned afterwards, or return an ID for some neutral faction, or etc...
+	return FGenericTeamId::NoTeam;
 }
 
 

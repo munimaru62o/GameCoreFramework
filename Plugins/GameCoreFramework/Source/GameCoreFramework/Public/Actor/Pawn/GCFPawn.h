@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
+#include "Actor/GCFTeamAgentInterface.h"
 #include "Movement/GCFLocomotionHandler.h"
 #include "Movement/GCFMovementInputProvider.h"
 
@@ -30,7 +31,7 @@ class UGCFPawnInputBridgeComponent;
  * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via caching.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider
+class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider, public IGCFTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -59,6 +60,12 @@ protected:
 	FVector GetDesiredMovementVector_Implementation() const override;
 	//~End of IGCFMovementInputProvider Interface
 
+	//~IGCFTeamAgentInterface interface
+	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	UE_API virtual FGenericTeamId GetGenericTeamId() const override;
+	UE_API virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~End of IGCFTeamAgentInterface interface
+
 	// Begins the death sequence for the character (disables collision, disables movement, etc...)
 	UFUNCTION()
 	UE_API virtual void OnDeathStarted(AActor* OwningActor);
@@ -70,6 +77,12 @@ protected:
 private:
 	/** Calculates the final movement vector based on current inputs and rotation, storing it for the Mover Producer. */
 	void UpdateCachedTargetMovement();
+
+	UFUNCTION()
+	UE_API void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+
+	// Called to determine what happens to the team ID when possession ends
+	virtual FGenericTeamId DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
@@ -90,6 +103,12 @@ protected:
 	/** Determines whether this pawn routes input to a Mover component instead of traditional PawnMovement. */
 	UPROPERTY(EditDefaultsOnly, Category = "GCF|Movement")
 	bool bUseMoverComponent = false;
+
+	UPROPERTY()
+	FGenericTeamId MyTeamID;
+
+	UPROPERTY()
+	FOnGCFTeamIndexChangedDelegate OnTeamChangedDelegate;
 
 private:
 	/** The pre-calculated movement vector, requested every tick by the Mover Input Producer. */
