@@ -14,11 +14,12 @@
 #define UE_API GAMECOREFRAMEWORK_API
 
 class UGCFPawnData;
-class USphereComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
 class UGCFCameraComponent;
 class UGCFPawnInputBridgeComponent;
+class UShapeComponent;
+class UMeshComponent;
 
 /**
  * @brief Base Pawn class for non-humanoid entities (e.g., Spectators, Drones, Vehicles).
@@ -38,12 +39,27 @@ class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFM
 public:
 	UE_API AGCFPawn(const FObjectInitializer& ObjectInitializer);
 
-	UE_API virtual void PostInitializeComponents() override;
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class USphereComponent* GetSphereComponent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UStaticMeshComponent* GetStaticMesh() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UShapeComponent* GetCollisionComponent() const { return CollisionComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UMeshComponent* GetMeshComponent() const { return MeshComponent; };
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	const UGCFPawnData* GetPawnData() const;
 
+	UE_API virtual void PostInitializeComponents() override;
+
 protected:
+	static const FName CollisionComponentName;
+	static const FName MeshComponentName;
+
 	//~AActor / APawn Interface
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
@@ -86,13 +102,16 @@ private:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> CollisionComponent;
+	TObjectPtr<UShapeComponent> CollisionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFPawnExtensionComponent> PawnExtensionComponent;
+	TObjectPtr<UMeshComponent> MeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UGCFPawnExtensionComponent> PawnExtensionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFPawnReadyStateComponent> PawnReadyStateComponent;

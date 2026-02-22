@@ -5,7 +5,6 @@
 
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
-#include "GameplayCueInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "Movement/GCFLocomotionHandler.h"
 #include "GameplayEffect.h"
@@ -34,7 +33,7 @@ struct FGameplayTagContainer;
  *	New behavior should be added via pawn components when possible.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGameplayCueInterface, public IGCFTeamAgentInterface
+class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGCFTeamAgentInterface
 {
 	GENERATED_BODY()
 

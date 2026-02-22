@@ -6,6 +6,7 @@
 #include "Actor/Pawn/GCFPawn.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagAssetInterface.h"
+#include "GameplayCueInterface.h"
 #include "GCFPawnWithAbilities.generated.h"
 
 
@@ -27,7 +28,7 @@ class UGCFHealthComponent;
  * - Simple AI Minions
  */
 UCLASS()
-class AGCFPawnWithAbilities : public AGCFPawn, public IAbilitySystemInterface, public IGameplayTagAssetInterface
+class AGCFPawnWithAbilities : public AGCFPawn, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 

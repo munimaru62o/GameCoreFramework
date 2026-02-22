@@ -3,12 +3,16 @@
 
 #include "Actor/Pawn/GCFPawn.h"
 #include "Actor/Data/GCFPawnData.h"
-#include "System/Lifecycle/GCFPawnExtensionComponent.h"
 #include "Camera/GCFCameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "System/Lifecycle/GCFPawnReadyStateComponent.h"
+#include "System/Lifecycle/GCFPawnExtensionComponent.h"
 #include "Input/GCFPawnInputBridgeComponent.h"
 #include "MoverComponent.h"
+
+const FName AGCFPawn::CollisionComponentName(TEXT("CollisionComponent"));
+const FName AGCFPawn::MeshComponentName(TEXT("MeshComponent"));
 
 
 AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
@@ -22,25 +26,38 @@ AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
 
 	// Create the collision sphere and set it as Root.
 	// This enables basic collision detection for floating movement.
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-	CollisionComponent->InitSphereRadius(32.0f);
-	CollisionComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	CollisionComponent->SetMobility(EComponentMobility::Movable);
-	RootComponent = CollisionComponent;
+	CollisionComponent = CreateOptionalDefaultSubobject<USphereComponent>(CollisionComponentName);
+	if (USphereComponent* SphereComp = GetSphereComponent()) {
+		SphereComp->InitSphereRadius(32.0f);
+		SphereComp->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		SphereComp->SetMobility(EComponentMobility::Movable);
+		RootComponent = SphereComp;
+	}
 
-	PawnExtensionComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("GCFPawnExtensionComponent"));
-	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("GCFPawnReadyStateComponent"));
-	PawnInputBridgeComponent = CreateDefaultSubobject<UGCFPawnInputBridgeComponent>(TEXT("PawnInputBridgeComponent"));
+	MeshComponent = CreateOptionalDefaultSubobject<UStaticMeshComponent>(MeshComponentName);
+	if (UStaticMeshComponent* StaticMeshComp = GetStaticMesh()) {
+		StaticMeshComp->SetupAttachment(RootComponent);
+	}
 
 	CameraComponent = CreateDefaultSubobject<UGCFCameraComponent>(TEXT("GCFCameraComponent"));
 	CameraComponent->SetupAttachment(CollisionComponent);
 	CameraComponent->bUsePawnControlRotation = false; // Camera rotation is handled by the CameraComponent/Modes.
+
+	PawnExtensionComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("GCFPawnExtensionComponent"));
+	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("GCFPawnReadyStateComponent"));
+	PawnInputBridgeComponent = CreateDefaultSubobject<UGCFPawnInputBridgeComponent>(TEXT("PawnInputBridgeComponent"));
 }
 
 
-void AGCFPawn::PostInitializeComponents()
+USphereComponent* AGCFPawn::GetSphereComponent() const
 {
-	Super::PostInitializeComponents();
+	return Cast<USphereComponent>(CollisionComponent);
+}
+
+
+UStaticMeshComponent* AGCFPawn::GetStaticMesh() const
+{
+	return Cast<UStaticMeshComponent>(MeshComponent);
 }
 
 
@@ -50,6 +67,12 @@ const UGCFPawnData* AGCFPawn::GetPawnData() const
 		return PawnExtensionComponent->GetPawnData<UGCFPawnData>();
 	}
 	return nullptr;
+}
+
+
+void AGCFPawn::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 }
 
 
