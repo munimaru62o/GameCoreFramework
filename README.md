@@ -1,7 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
-![Version](https://img.shields.io/badge/Version-0.8.0_Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *Read this in other languages: [English](README.md), [日本語 (Japanese)](README_ja.md)*
@@ -182,3 +182,17 @@ If you find the design philosophy of this framework useful, please feel free to 
 This project is licensed under the MIT License.
 See the [LICENSE](LICENSE) file for details.  
 *Inspired by Lyra Starter Game by Epic Games.*
+
+---
+
+## 🖋️ Developer's Vision: A Philosophy of Architecture
+
+In building frameworks that support complex systems, programming is not merely about "implementing features." I believe it is a highly sophisticated process of design—how we organize and express complex phenomena.
+
+Rather than applying ad-hoc fixes to the daunting challenges inherent in multiplayer and large-scale development, I value taking the time to thoroughly conceptualize how to decouple systems and maintain loose coupling. The very process of refining these ideas, iterating through trial and error, and carefully translating them into code is, to me, the true joy of software development.
+
+**GameCoreFramework**, published here as open-source, is not intended to be just another utility tool. It is a personal expression—a piece of craftsmanship—born from a deep pursuit of what constitutes a "beautiful and robust architecture" in the face of gritty challenges like Dual ASC routing and the complete synchronization of asynchronous lifecycles.
+
+Even in today’s development scene where efficiency and speed are paramount, I firmly believe that the value of taking the time to sharpen one's design and writing code with a true understanding of its essence will never fade. 
+
+I hope the design philosophies and architectural ideas embedded in this framework will serve as a source of inspiration for engineers around the world who share a love for beautiful, highly maintainable systems.
