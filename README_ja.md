@@ -1,7 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
-![Version](https://img.shields.io/badge/Version-0.8.0_Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 *他の言語で読む: [English](README.md), [日本語 (Japanese)](README_ja.md)*
@@ -184,3 +184,15 @@ Listen Serverに接続したClient環境にて、マルチプレイで頻発す�
 Inspired by Lyra Starter Game by Epic Games.
 
 ---
+
+## 🖋️ 開発者の思い：アーキテクチャ設計への哲学
+
+複雑な要素を支えるフレームワークの構築において、プログラミングとは単なる「機能の実装」ではなく、複雑な事象をどう整理し、どう表現するかという「高度な設計（デザイン）のプロセス」だと私は考えています。
+
+マルチプレイや大規模開発につきまとう難解な課題に対し、場当たり的なコードで対処するのではなく、「システムをどう切り離し、どう疎結合に保つか」を頭の中で時間をかけて練り上げること。そして、それを手元で研ぎ澄ましながら何度も試行錯誤を重ね、コードに落とし込んでいく過程そのものが、私にとってのソフトウェア開発の最大の醍醐味です。
+
+今回OSSとして公開した「GameCoreFramework」は、単なる便利ツールの提供を目指したものではありません。「Dual ASCのルーティング」や「非同期ライフサイクルの完全な同期」といった泥臭い課題に対し、私なりに「美しく、かつ堅牢なアーキテクチャとは何か」を深く追求し、形にしたひとつの表現（作品）です。
+
+効率化やスピードが重視される現代の開発シーンにおいても、「時間をかけて自らの頭で設計を研ぎ澄まし、本質を理解したコードを書くこと」の価値は決して色褪せないと信じています。
+
+このフレームワークに込めた設計思想やアーキテクチャのアイデアが、同じように「美しく保守性の高いシステム」を愛する世界中のエンジニアにとって、少しでもインスピレーションの源となれば幸いです。
