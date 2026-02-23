@@ -5,9 +5,10 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
-#include "Actor/GCFTeamAgentInterface.h"
 #include "Movement/GCFLocomotionHandler.h"
 #include "Movement/GCFMovementInputProvider.h"
+#include "Actor/GCFTeamAgentInterface.h"
+#include "GameplayTagAssetInterface.h"
 
 #include "GCFPawn.generated.h"
 
@@ -23,21 +24,25 @@ class UMeshComponent;
 
 /**
  * @brief Base Pawn class for non-humanoid entities (e.g., Spectators, Drones, Vehicles).
- * * Unlike AGCFCharacter, this class does not include a CapsuleComponent or CharacterMovementComponent by default.
+ * 
+ * Unlike AGCFCharacter, this class does not include a CapsuleComponent or CharacterMovementComponent by default.
  * It uses a simple SphereComponent as the root for collision and supports floating movement.
- * * [Features]
+ * 
+ * [Features]
  * - Integrated with Modular Gameplay (PawnExtensionComponent).
  * - Handles controller/player state replication lifecycle.
  * - Supports GCF Camera system.
  * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via caching.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider, public IGCFTeamAgentInterface
+class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
 public:
 	UE_API AGCFPawn(const FObjectInitializer& ObjectInitializer);
+
+	UE_API virtual void PostInitializeComponents() override;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	class USphereComponent* GetSphereComponent() const;
@@ -54,26 +59,38 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	const UGCFPawnData* GetPawnData() const;
 
-	UE_API virtual void PostInitializeComponents() override;
+	// Helper functions to directly modify local tags.
+	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
+	UE_API void AddGameplayTag(const FGameplayTag& Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
+	UE_API void RemoveGameplayTag(const FGameplayTag& Tag);
+
+	//~IGameplayTagAssetInterface interface
+	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	//~End of IGameplayTagAssetInterface interface
 
 protected:
-	static const FName CollisionComponentName;
-	static const FName MeshComponentName;
+	UE_API static const FName CollisionComponentName;
+	UE_API static const FName MeshComponentName;
 
 	//~AActor / APawn Interface
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void UnPossessed() override;
-	virtual void OnRep_Controller() override;
-	virtual void OnRep_PlayerState() override;
+	UE_API virtual void PossessedBy(AController* NewController) override;
+	UE_API virtual void UnPossessed() override;
+	UE_API virtual void OnRep_Controller() override;
+	UE_API virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
 
 	//~IGCFLocomotionHandler Interface
-	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
-	virtual void HandleMoveUpInput_Implementation(float Value) override;
+	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
+	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
 	//~End of IGCFLocomotionHandler Interface
 
 	//~IGCFMovementInputProvider Interface
-	FVector GetDesiredMovementVector_Implementation() const override;
+	UE_API FVector GetDesiredMovementVector_Implementation() const override;
 	//~End of IGCFMovementInputProvider Interface
 
 	//~IGCFTeamAgentInterface interface
@@ -95,7 +112,7 @@ private:
 	void UpdateCachedTargetMovement();
 
 	UFUNCTION()
-	UE_API void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+	void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
 
 	// Called to determine what happens to the team ID when possession ends
 	virtual FGenericTeamId DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const;
@@ -128,6 +145,13 @@ protected:
 
 	UPROPERTY()
 	FOnGCFTeamIndexChangedDelegate OnTeamChangedDelegate;
+
+	/** 
+	 * A lightweight container to manage state tags locally without requiring a full Ability System Component.
+	 * Can be overridden in child classes (e.g. AGCFPawnWithAbilities) to defer to an ASC.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Tags")
+	FGameplayTagContainer PawnTags;
 
 private:
 	/** The pre-calculated movement vector, requested every tick by the Mover Input Producer. */

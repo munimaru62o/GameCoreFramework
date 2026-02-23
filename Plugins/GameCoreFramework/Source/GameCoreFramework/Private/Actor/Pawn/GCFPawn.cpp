@@ -49,6 +49,12 @@ AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
 }
 
 
+void AGCFPawn::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+}
+
+
 USphereComponent* AGCFPawn::GetSphereComponent() const
 {
 	return Cast<USphereComponent>(CollisionComponent);
@@ -67,12 +73,6 @@ const UGCFPawnData* AGCFPawn::GetPawnData() const
 		return PawnExtensionComponent->GetPawnData<UGCFPawnData>();
 	}
 	return nullptr;
-}
-
-
-void AGCFPawn::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
 }
 
 
@@ -237,6 +237,39 @@ FGenericTeamId AGCFPawn::DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldT
 	// This could be changed to return, e.g., OldTeamID if you want to keep it assigned afterwards, or return an ID for some neutral faction, or etc...
 	return FGenericTeamId::NoTeam;
 }
+
+
+// --- IGameplayTagAssetInterface Implementation ---
+void AGCFPawn::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer.AppendTags(PawnTags);
+}
+
+bool AGCFPawn::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	return PawnTags.HasTag(TagToCheck);
+}
+
+bool AGCFPawn::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return PawnTags.HasAll(TagContainer);
+}
+
+bool AGCFPawn::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return PawnTags.HasAny(TagContainer);
+}
+
+void AGCFPawn::AddGameplayTag(const FGameplayTag& Tag)
+{
+	PawnTags.AddTag(Tag);
+}
+
+void AGCFPawn::RemoveGameplayTag(const FGameplayTag& Tag)
+{
+	PawnTags.RemoveTag(Tag);
+}
+// --------------------------------------------------
 
 
 void AGCFPawn::OnDeathStarted(AActor*)

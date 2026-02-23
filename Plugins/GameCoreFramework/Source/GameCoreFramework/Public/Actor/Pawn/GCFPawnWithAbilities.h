@@ -28,7 +28,7 @@ class UGCFHealthComponent;
  * - Simple AI Minions
  */
 UCLASS()
-class AGCFPawnWithAbilities : public AGCFPawn, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IGameplayCueInterface
+class AGCFPawnWithAbilities : public AGCFPawn, public IAbilitySystemInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 
