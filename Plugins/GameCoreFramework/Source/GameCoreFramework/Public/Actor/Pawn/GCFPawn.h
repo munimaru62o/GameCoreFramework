@@ -21,6 +21,7 @@ class UGCFCameraComponent;
 class UGCFPawnInputBridgeComponent;
 class UShapeComponent;
 class UMeshComponent;
+class UMoverComponent;
 
 /**
  * @brief Base Pawn class for non-humanoid entities (e.g., Spectators, Drones, Vehicles).
@@ -55,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	class UMeshComponent* GetMeshComponent() const { return MeshComponent; };
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Movement")
+	virtual class UMoverComponent* GetMoverComponent() const { return MoverComponent; }
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	const UGCFPawnData* GetPawnData() const;
@@ -123,6 +127,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMeshComponent> MeshComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMoverComponent> MoverComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFCameraComponent> CameraComponent;

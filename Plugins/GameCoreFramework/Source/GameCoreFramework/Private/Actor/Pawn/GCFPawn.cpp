@@ -52,6 +52,12 @@ AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
 void AGCFPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	MoverComponent = FindComponentByClass<UMoverComponent>();
+	if (MoverComponent) {
+		bUseMoverComponent = true;
+		SetReplicateMovement(false);
+	}
 }
 
 
