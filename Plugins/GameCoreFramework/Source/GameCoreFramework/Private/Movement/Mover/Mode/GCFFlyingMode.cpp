@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Movement/Mover/GCFFlyingMode.h"
+#include "Movement/Mover/Mode/GCFFlyingMode.h"
 #include "MoverComponent.h"
 #include "MoverDataModelTypes.h"
 

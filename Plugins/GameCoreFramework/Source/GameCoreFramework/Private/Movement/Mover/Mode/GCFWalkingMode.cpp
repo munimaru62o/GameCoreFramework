@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Movement/Mover/GCFFallingMode.h"
+#include "Movement/Mover/Mode/GCFWalkingMode.h"
 #include "MoverComponent.h"
 #include "MoverDataModelTypes.h"
 
 
-void UGCFFallingMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
+void UGCFWalkingMode::GenerateMove_Implementation(const FMoverTickStartData& StartState, const FMoverTimeStep& TimeStep, FProposedMove& OutProposedMove) const
 {
     if (GetMoverComponent() && GetMoverComponent()->GetOwnerRole() == ROLE_SimulatedProxy) {
 		if (FCharacterDefaultInputs* InputData = StartState.InputCmd.InputCollection.FindMutableDataByType<FCharacterDefaultInputs>()) {
@@ -25,7 +25,7 @@ void UGCFFallingMode::GenerateMove_Implementation(const FMoverTickStartData& Sta
 			// It purely forces this specific simulation tick (Super::GenerateMove) to calculate physics 
 			// with zero input (relying only on inertia and deceleration), cleanly preventing overshooting.
 
-			InputData->SetMoveInput(EMoveInputType::DirectionalIntent, FVector::ZeroVector);
+			//InputData->SetMoveInput(EMoveInputType::DirectionalIntent, FVector::ZeroVector);
 		}
     }
 
