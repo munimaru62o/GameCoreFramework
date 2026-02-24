@@ -179,9 +179,12 @@ If you find the design philosophy of this framework useful, please feel free to 
 
 ## ⚖ License
 
-This project is licensed under the MIT License.
-See the [LICENSE](LICENSE) file for details.  
-*Inspired by Lyra Starter Game by Epic Games.*
+The original code in this project is licensed under the **MIT License**.
+See the [LICENSE](LICENSE) file for details. 
+
+**⚠️ Epic Games Content Notice**
+This project contains code portions and assets inspired by or originating from the *Lyra Starter Game*. These specific Epic Games materials are subject to the Unreal Engine End User License Agreement (EULA).
+For detailed information on which files are covered by which license, please refer to [NOTICE.md](NOTICE.md).
 
 ---
 
