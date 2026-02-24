@@ -53,13 +53,7 @@ void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		MovementDirection = CalculateDirection(Velocity, OwningPawn->GetActorRotation());
 
 		bShouldMove = GroundSpeed > 3.0f;
-
-		FMoverInputCmdContext LastInput = MoverComponent->GetLastInputCmd();
-		if (const FCharacterDefaultInputs* CharacterInputs = LastInput.InputCollection.FindDataByType<FCharacterDefaultInputs>()) {
-			bHasAcceleration = !CharacterInputs->GetMoveInput().IsNearlyZero(0.01f);
-		} else {
-			bHasAcceleration = false;
-		}
+		bHasAcceleration = HasAcceleration();
 
 		// Movement Mode
 		CurrentMovementMode = MoverComponent->GetMovementModeName();
@@ -74,4 +68,27 @@ void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	} else {
 		bIsCrouched = false;
 	}
+}
+
+
+bool UGCFHumanoidAnimInstance::HasAcceleration() const
+{
+	if (!MoverComponent || !OwningPawn) {
+		return false;
+	}
+
+	// For simulated proxies (other players), read the intent from the server-replicated SyncState.
+	if (OwningPawn->GetLocalRole() == ROLE_SimulatedProxy) {
+		if (const FMoverDefaultSyncState* SyncState = MoverComponent->GetSyncState().SyncStateCollection.FindDataByType<FMoverDefaultSyncState>()) {
+			return !SyncState->MoveDirectionIntent.IsNearlyZero(0.01f);
+		}
+	}
+	// For local/authority (this player), read the intent directly from the most recent InputCmd.
+	else {
+		FMoverInputCmdContext LastInput = MoverComponent->GetLastInputCmd();
+		if (const FCharacterDefaultInputs* CharacterInputs = LastInput.InputCollection.FindDataByType<FCharacterDefaultInputs>()) {
+			return !CharacterInputs->GetMoveInput().IsNearlyZero(0.01f);
+		}
+	}
+	return false;
 }

@@ -29,4 +29,5 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 
 	// Inject the final directional intent into Mover's input buffer.
 	InputData.SetMoveInput(EMoveInputType::DirectionalIntent, DesiredMove);
+	InputData.OrientationIntent = OwnerPawn->GetControlRotation().Vector();
 }

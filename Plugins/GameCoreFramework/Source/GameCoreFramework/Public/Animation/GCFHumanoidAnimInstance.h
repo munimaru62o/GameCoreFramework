@@ -33,6 +33,13 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
+	/** 
+	 * Checks whether the character currently has acceleration intent.
+	 * Handles both locally controlled (InputCmd) and simulated proxy (SyncState) scenarios cleanly.
+	 */
+	bool HasAcceleration() const;
+
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GCF|References")
 	TObjectPtr<APawn> OwningPawn;
 

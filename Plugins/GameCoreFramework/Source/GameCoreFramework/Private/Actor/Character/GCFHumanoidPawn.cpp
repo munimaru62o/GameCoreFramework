@@ -46,7 +46,7 @@ AGCFHumanoidPawn::AGCFHumanoidPawn(const FObjectInitializer& ObjectInitializer)
 	CharacterControlComponent = CreateDefaultSubobject<UGCFCharacterControlComponent>(TEXT("CharacterControlComponent"));
 
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
 	BaseEyeHeight = 80.0f;
