@@ -68,13 +68,6 @@ void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// The Epic standard StanceModifier automatically applies the "Mover.IsCrouching" tag.
 		bIsCrouched = MoverComponent->HasGameplayTag(Mover_IsCrouching, true);
 	}
-
-	// Since Mover doesn't natively have "Crouch" bool, we rely on the tag synced by the Pawn/Mover bridge.
-	if (const IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OwningPawn)) {
-		bIsCrouched = TagInterface->HasMatchingGameplayTag(GCFGameplayTags::Status_Crouching);
-	} else {
-		bIsCrouched = false;
-	}
 }
 
 
