@@ -3,6 +3,7 @@
 
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
 #include "Movement/GCFMovementConfig.h"
+#include "Movement/Mover/Input/GCFHumanoidInputs.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 
 
@@ -21,4 +22,14 @@ void UGCFCharacterMoverComponent::ApplyMovementConfig_Implementation(const UGCFM
 		LegacyMovementSettings->Acceleration = Config->Acceleration;
 		LegacyMovementSettings->Deceleration = Config->Deceleration;
 	}
+}
+
+
+void UGCFCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd)
+{
+	if (const FGCFHumanoidInputs* HumanoidInputs = InputCmd.InputCollection.FindDataByType<FGCFHumanoidInputs>()) {
+		bWantsToCrouch = HumanoidInputs->bWantsToCrouch;
+	}
+
+	Super::OnMoverPreSimulationTick(TimeStep, InputCmd);
 }

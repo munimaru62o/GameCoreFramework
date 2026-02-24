@@ -6,6 +6,7 @@
 #include "MoverComponent.h"
 #include "MoverTypes.h"
 #include "GameplayTagAssetInterface.h"
+#include "GameplayTagContainer.h"
 #include "GCFShared.h"
 
 
@@ -58,8 +59,14 @@ void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// Movement Mode
 		CurrentMovementMode = MoverComponent->GetMovementModeName();
 
-		// Determine Falling state
-		bIsFalling = (CurrentMovementMode == TEXT("Falling"));
+		// Determine Falling state using Native Gameplay Tags instead of hardcoded strings or class casting.
+		// This guarantees that any custom movement mode (e.g., Jetpack, Grapple) that applies the 
+		// "Falling" or "InAir" tag will automatically trigger the correct airborne animation.
+		bIsFalling = MoverComponent->HasGameplayTag(Mover_IsFalling, true);
+
+		// Retrieve crouch state directly via Native Gameplay Tags to avoid hard casting.
+		// The Epic standard StanceModifier automatically applies the "Mover.IsCrouching" tag.
+		bIsCrouched = MoverComponent->HasGameplayTag(Mover_IsCrouching, true);
 	}
 
 	// Since Mover doesn't natively have "Crouch" bool, we rely on the tag synced by the Pawn/Mover bridge.

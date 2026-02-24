@@ -99,7 +99,17 @@ void UGCFCharacterControlComponent::Input_Jump(const FInputActionValue& InputAct
 
 void UGCFCharacterControlComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
-	if (AGCFCharacter* Character = GetPawn<AGCFCharacter>()) {
-		Character->ToggleCrouch();
+	// First, attempt to cast to the new Mover-based Humanoid Pawn (The primary target).
+	// We prioritize this check for performance as it is the standard moving forward.
+	if (AGCFHumanoidPawn* HumanoidPawn = GetPawn<AGCFHumanoidPawn>()) {
+		HumanoidPawn->ToggleCrouch();
+	}
+	// Fallback for the legacy Character implementation.
+	// NOTE: AGCFCharacter is slated for deprecation. This block is kept strictly for 
+	// backwards compatibility during the transition period and will be removed later.
+	// We intentionally avoid over-engineering with an interface (e.g., IJumpable) 
+	// here to make it trivial to delete this legacy code when the time comes.
+	else if (AGCFCharacter* LegacyCharacter = GetPawn<AGCFCharacter>()) {
+		LegacyCharacter->ToggleCrouch();
 	}
 }

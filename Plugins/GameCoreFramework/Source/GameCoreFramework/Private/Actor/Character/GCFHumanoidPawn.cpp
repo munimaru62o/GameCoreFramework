@@ -99,12 +99,7 @@ void AGCFHumanoidPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AGCFHumanoidPawn::ToggleCrouch()
 {
-	// Crouching state is driven entirely by Gameplay Tags rather than hardcoded booleans.
-	if (HasMatchingGameplayTag(GCFGameplayTags::Status_Crouching)) {
-		RemoveGameplayTag(GCFGameplayTags::Status_Crouching);
-	} else {
-		AddGameplayTag(GCFGameplayTags::Status_Crouching);
-	}
+	bWantsToCrouch = !bWantsToCrouch;
 }
 
 
@@ -122,7 +117,7 @@ bool AGCFHumanoidPawn::CanJump() const
 
 bool AGCFHumanoidPawn::GetWantsToCrouch() const
 {
-	return HasMatchingGameplayTag(GCFGameplayTags::Status_Crouching);
+	return bWantsToCrouch;
 }
 
 

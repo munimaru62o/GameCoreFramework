@@ -3,6 +3,7 @@
 
 #include "Movement/Mover/Producer/GCFHumanoidInputProducer.h"
 #include "Actor/Character/GCFHumanoidPawn.h"
+#include "Movement/Mover/Input/GCFHumanoidInputs.h"
 
 
 void UGCFHumanoidInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)
@@ -25,10 +26,8 @@ void UGCFHumanoidInputProducer::ProduceInput_Implementation(int32 SimTime, FMove
 			}
 
 			// --- Crouch Handling ---
-			/* TODO: Implement crouch state injection when FGCFCharacterInputs struct is ready.
-			FGCFCharacterInputs& GCFInputs = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FGCFCharacterInputs>();
-			GCFInputs.bIsCrouchPressed = HumanoidPawn->GetWantsToCrouch();
-			*/
+			FGCFHumanoidInputs& HumanoidInputs = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FGCFHumanoidInputs>();
+			HumanoidInputs.bWantsToCrouch = HumanoidPawn->GetWantsToCrouch();
 		}
 	}
 }

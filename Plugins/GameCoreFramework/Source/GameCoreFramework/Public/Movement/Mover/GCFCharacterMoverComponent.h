@@ -30,6 +30,13 @@ public:
 	 * Overrides the interface method to update Mover's internal shared settings.
 	 */
     virtual void ApplyMovementConfig_Implementation(const UGCFMovementConfig* Config) override;
+
+protected:
+	/**
+	 * Called before the movement simulation tick.
+	 * Overridden to extract custom input intents (e.g., crouching) and feed them into the base class logic.
+	 */
+	virtual void OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd) override;
 };
 
 #undef UE_API

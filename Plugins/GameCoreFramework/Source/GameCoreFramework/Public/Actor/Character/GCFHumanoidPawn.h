@@ -62,6 +62,11 @@ protected:
 
 	/** Cached jump intent flag. Handled and cleared by the Input Producer. */
 	bool bWantsToJump = false;
+
+	// Indicates whether the player currently intends to crouch.
+	// Note: This is purely an input intent, NOT the actual physical state.
+	// To check the actual state, query the MoverComponent for the "Mover.IsCrouching" tag.
+	bool bWantsToCrouch = false;
 };
 
 #undef UE_API
