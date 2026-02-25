@@ -14,7 +14,7 @@ UGCFCameraMode_ThirdPerson::UGCFCameraMode_ThirdPerson()
 void UGCFCameraMode_ThirdPerson::UpdateView(float DeltaTime)
 {
 	// 1. Get Base Anchor (Target's location)
-	const FVector PivotLocation = GetPivotLocation();
+	const FVector PivotLocation = GetSmoothedPivotLocation(DeltaTime);
 
 	// 2. Get Input Rotation (Control Rotation)
 	// This allows the player to rotate the camera around the character.

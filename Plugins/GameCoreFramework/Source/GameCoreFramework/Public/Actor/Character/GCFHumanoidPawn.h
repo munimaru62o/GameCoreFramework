@@ -9,6 +9,7 @@
 #define UE_API GAMECOREFRAMEWORK_API
 
 class UGCFCharacterControlComponent;
+enum class EStanceMode : uint8;
 
 /**
  * @brief The base humanoid pawn class used by this project.
@@ -40,6 +41,10 @@ public:
 	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~End of AActor interface
 
+	//~APawn interface
+	UE_API virtual FVector GetPawnViewLocation() const override;
+	//~End of APawn interface
+
 	/** Toggles the crouching state by adding/removing the corresponding Gameplay Tag. */
 	UE_API void ToggleCrouch();
 
@@ -55,6 +60,10 @@ public:
 
 	/** Called by the Input Producer to clear the jump intent after it has been injected into the Mover commands. */
 	UE_API void ConsumeJumpInput() { bWantsToJump = false; }
+
+protected:
+	UFUNCTION()
+	void HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))

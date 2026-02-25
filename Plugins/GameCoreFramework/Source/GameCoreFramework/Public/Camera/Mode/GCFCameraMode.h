@@ -128,6 +128,12 @@ protected:
 	/** Calculates the pivot point (target location) for the camera. Handles crouching offsets. */
 	UE_API virtual FVector GetPivotLocation() const;
 
+	/** 
+	 * Returns the pivot location after applying per-axis smoothing interpolation.
+	 * This prevents camera snapping during sudden state changes (e.g., crouching or walking up stairs).
+	 */
+	UE_API virtual FVector GetSmoothedPivotLocation(float DeltaTime);
+
 	/** Calculates the pivot rotation (usually ControlRotation). */
 	UE_API virtual FRotator GetPivotRotation() const;
 
@@ -193,10 +199,38 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Offset", Meta = (EditCondition = "bUseRuntimeFloatCurves"))
 	FRuntimeFloatCurve TargetOffsetZ;
 
+	/** Current interpolated location of the camera pivot. */
+	UPROPERTY(Transient)
+	FVector CurrentPivotLocation = FVector::ZeroVector;
+
+	/** Enable interpolation for the X axis (Forward/Backward). */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpX = false;
+
+	/** Interpolation speed for the X axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpX"))
+	float PivotInterpSpeedX = 10.0f;
+
+	/** Enable interpolation for the Y axis (Left/Right). */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpY = false;
+
+	/** Interpolation speed for the Y axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpY"))
+	float PivotInterpSpeedY = 10.0f;
+
+	/** Enable interpolation for the Z axis (Up/Down). Recommended to be true to smooth out stairs and crouching. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpZ = true;
+
+	/** Interpolation speed for the Z axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpZ"))
+	float PivotInterpSpeedZ = 10.0f;
+
 protected:
 	/** If true, skips all interpolation and puts camera in ideal location.  Automatically set to false next frame. */
 	UPROPERTY(transient)
-	uint32 bResetInterpolation:1;
+	uint32 bIsFirstUpdate :1;
 };
 
 #undef UE_API

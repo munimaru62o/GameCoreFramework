@@ -8,6 +8,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Actor/Character/GCFCharacterControlComponent.h"
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
+#include "MoverTypes.h"
+#include "DefaultMovementSet/Settings/StanceSettings.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GCFHumanoidPawn)
 
@@ -52,9 +54,6 @@ AGCFHumanoidPawn::AGCFHumanoidPawn(const FObjectInitializer& ObjectInitializer)
 	BaseEyeHeight = 80.0f;
 	SetNetCullDistanceSquared(900000000.0f);
 
-	// TODO: Implement crouched eye height adjustments.
-	//CrouchedEyeHeight = 50.0f;
-
 	// Note: MoverComponent and InputProducerComponent are intentionally omitted from this constructor.
 	// Following the Composition over Inheritance principle, these should be added via Blueprints
 	// (e.g., BP_StandardHumanoidMover) to allow designers full control over shared settings and movement modes.
@@ -88,12 +87,41 @@ void AGCFHumanoidPawn::PreInitializeComponents()
 void AGCFHumanoidPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// MoverComponentのスタンス変更イベントにバインドする
+	/*if (UCharacterMoverComponent* CharMover = GetCharacterMoverComponent()) {
+		CharMover->OnStanceChanged.AddDynamic(this, &ThisClass::HandleStanceChanged);
+	}*/
 }
 
 
 void AGCFHumanoidPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+}
+
+
+FVector AGCFHumanoidPawn::GetPawnViewLocation() const
+{
+	// Get the base eye height defined in the class.
+	float TargetEyeHeight = BaseEyeHeight;
+
+	// If the Mover is currently in a "Crouching" state, lower the eye height.
+	if (MoverComponent) {
+		if (USceneComponent* VisualComp = MoverComponent->GetPrimaryVisualComponent()) {
+			if (MoverComponent->HasGameplayTag(Mover_IsCrouching, true)) {
+				if (const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>()) {
+					const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+					const float CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
+					TargetEyeHeight -= CrouchOffset;
+				}
+			}
+			return VisualComp->GetComponentLocation() + (FVector::UpVector * TargetEyeHeight);
+		}
+	}
+
+	// Return the actor's world location offset by the calculated eye height.
+	return GetActorLocation() + (FVector::UpVector * TargetEyeHeight);
 }
 
 
@@ -124,4 +152,25 @@ bool AGCFHumanoidPawn::GetWantsToCrouch() const
 bool AGCFHumanoidPawn::GetWantsToJump() const
 {
 	return bWantsToJump;
+}
+
+
+void AGCFHumanoidPawn::HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance)
+{
+	UMeshComponent* MeshComp = GetMeshComponent();
+	if (!MeshComp || !MoverComponent) return;
+
+	const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>();
+	if (!StanceSettings) return;
+
+	const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+	const float CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
+
+	if (NewStance == EStanceMode::Crouch) {
+		AddActorWorldOffset(FVector(0.0f, 0.0f, -CrouchOffset));
+		MeshComp->AddLocalOffset(FVector(0.0f, 0.0f, CrouchOffset));
+	} else if (OldStance == EStanceMode::Crouch && NewStance == EStanceMode::Invalid) {
+		AddActorWorldOffset(FVector(0.0f, 0.0f, CrouchOffset));
+		MeshComp->AddLocalOffset(FVector(0.0f, 0.0f, -CrouchOffset));
+	}
 }

@@ -121,6 +121,28 @@ void AGCFCharacter::NotifyControllerChanged()
 }
 
 
+FVector AGCFCharacter::GetPawnViewLocation() const
+{
+	// Get the base eye height defined in the class.
+	float TargetEyeHeight = BaseEyeHeight;
+
+	// If using the traditional CharacterMovementComponent, check its crouch state.
+	if (const UCharacterMovementComponent* MoveComp = GetCharacterMovement()) {
+		if (MoveComp->IsCrouching()) {
+			// CMC has a built-in property for crouched eye height, but if you want it to be 
+			// physically accurate to the capsule difference, you can calculate it like this:
+			const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+			const float CrouchOffset = DefaultHalfHeight - MoveComp->GetCrouchedHalfHeight();
+
+			TargetEyeHeight -= CrouchOffset;
+		}
+	}
+
+	// Return the actor's world location offset by the calculated eye height.
+	return GetActorLocation() + (FVector::UpVector * TargetEyeHeight);
+}
+
+
 void AGCFCharacter::HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation)
 {
 	if (InputValue.X != 0.0f) {
