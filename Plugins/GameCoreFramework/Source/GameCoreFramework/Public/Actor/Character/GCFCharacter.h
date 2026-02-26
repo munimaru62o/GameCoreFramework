@@ -6,7 +6,7 @@
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
-#include "Movement/GCFLocomotionHandler.h"
+#include "Movement/GCFLocomotionInputHandler.h"
 #include "Actor/Avatar/GCFAvatarActionHandler.h"
 #include "GameplayEffect.h"
 #include "GCFCharacter.generated.h"
@@ -34,7 +34,7 @@ struct FGameplayTagContainer;
  *	New behavior should be added via pawn components when possible.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGCFTeamAgentInterface, public IGCFAvatarActionHandler
+class AGCFCharacter : public AModularCharacter, public IGCFLocomotionInputHandler, public IGCFTeamAgentInterface, public IGCFAvatarActionHandler
 {
 	GENERATED_BODY()
 
@@ -54,10 +54,10 @@ public:
 	UE_API virtual FVector GetPawnViewLocation() const override;
 	//~End of APawn interface
 
-	//~IGCFLocomotionHandler Interface
+	//~IGCFLocomotionInputHandler Interface
 	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
 	virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionHandler Interface
+	//~End of IGCFLocomotionInputHandler Interface
 
 	//~IGCFAvatarActionHandler Interface (Push / Write from Controller)
 	virtual void HandleJumpInput_Implementation(bool bIsPressed) override;

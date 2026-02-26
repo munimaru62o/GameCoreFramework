@@ -7,7 +7,7 @@
 #include "Actor/Data/GCFPawnData.h"
 #include "Actor/Data/GCFPawnDataProvider.h"
 #include "Camera/GCFCameraFunctionLibrary.h"
-#include "Movement/GCFLocomotionHandler.h"
+#include "Movement/GCFLocomotionInputHandler.h"
 #include "Movement/GCFMovementFunctionLibrary.h"
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputConfig.h"
@@ -96,8 +96,8 @@ void UGCFMovementControlComponent::Input_Move(const FInputActionValue& Value)
 		const FVector2D MovementVector = Value.Get<FVector2D>();
 
 		if (APawn* Pawn = GetPawn<APawn>()) {
-			if (TScriptInterface<IGCFLocomotionHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionHandler(Pawn)) {
-				IGCFLocomotionHandler::Execute_HandleMoveInput(Handler.GetObject(), MovementVector, MovementRotation);
+			if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
+				IGCFLocomotionInputHandler::Execute_HandleMoveInput(Handler.GetObject(), MovementVector, MovementRotation);
 			}
 		}
 	}
@@ -112,8 +112,8 @@ void UGCFMovementControlComponent::Input_Move_Completed(const FInputActionValue&
 {
 	if (AController* Controller = GetController<AController>()) {
 		if (APawn* Pawn = GetPawn<APawn>()) {
-			if (TScriptInterface<IGCFLocomotionHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionHandler(Pawn)) {
-				IGCFLocomotionHandler::Execute_HandleMoveInput(Handler.GetObject(), FVector2D::ZeroVector, Controller->GetControlRotation());
+			if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
+				IGCFLocomotionInputHandler::Execute_HandleMoveInput(Handler.GetObject(), FVector2D::ZeroVector, Controller->GetControlRotation());
 			}
 		}
 	}
@@ -125,8 +125,8 @@ void UGCFMovementControlComponent::Input_MoveUp(const FInputActionValue& Value)
 	const float UpValue = Value.Get<float>();
 
 	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (TScriptInterface<IGCFLocomotionHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionHandler(Pawn)) {
-			IGCFLocomotionHandler::Execute_HandleMoveUpInput(Handler.GetObject(), UpValue);
+		if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
+			IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(Handler.GetObject(), UpValue);
 		}
 	}
 }
@@ -139,8 +139,8 @@ void UGCFMovementControlComponent::Input_MoveUp(const FInputActionValue& Value)
 void UGCFMovementControlComponent::Input_MoveUp_Completed(const FInputActionValue& Value)
 {
 	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (TScriptInterface<IGCFLocomotionHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionHandler(Pawn)) {
-			IGCFLocomotionHandler::Execute_HandleMoveUpInput(Handler.GetObject(), 0.0f);
+		if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
+			IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(Handler.GetObject(), 0.0f);
 		}
 	}
 }

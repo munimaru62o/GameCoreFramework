@@ -5,12 +5,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "GCFLocomotionHandler.generated.h"
+#include "GCFLocomotionInputHandler.generated.h"
 
 #define UE_API GAMECOREFRAMEWORK_API
 
 UINTERFACE(MinimalAPI, Blueprintable)
-class UGCFLocomotionHandler : public UInterface
+class UGCFLocomotionInputHandler : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -20,7 +20,7 @@ class UGCFLocomotionHandler : public UInterface
  * The ControlComponent passes raw input via this interface, delegating the actual
  * movement logic and calculations to the specific Pawn implementation.
  */
-class UE_API IGCFLocomotionHandler
+class UE_API IGCFLocomotionInputHandler
 {
 	GENERATED_BODY()
 

@@ -6,19 +6,19 @@
 #include "CoreMinimal.h"
 #include "GCFShared.h"
 #include "UObject/Interface.h"
-#include "GCFMovementInputProvider.generated.h"
+#include "GCFLocomotionInputProvider.generated.h"
 
 class UGCFInputConfig;
 
 
 UINTERFACE(MinimalAPI)
-class UGCFMovementInputProvider : public UInterface
+class UGCFLocomotionInputProvider : public UInterface
 {
 	GENERATED_BODY()
 };
 
 
-class GAMECOREFRAMEWORK_API IGCFMovementInputProvider
+class GAMECOREFRAMEWORK_API IGCFLocomotionInputProvider
 {
 	GENERATED_BODY()
 

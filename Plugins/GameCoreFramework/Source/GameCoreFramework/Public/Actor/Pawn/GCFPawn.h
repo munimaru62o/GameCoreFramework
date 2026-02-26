@@ -5,8 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
-#include "Movement/GCFLocomotionHandler.h"
-#include "Movement/GCFMovementInputProvider.h"
+#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/GCFLocomotionInputProvider.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "GameplayTagAssetInterface.h"
 
@@ -36,7 +36,7 @@ class UMoverComponent;
  * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via caching.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
+class AGCFPawn : public AModularPawn, public IGCFLocomotionInputHandler, public IGCFLocomotionInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -88,14 +88,14 @@ protected:
 	UE_API virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
 
-	//~IGCFLocomotionHandler Interface
+	//~IGCFLocomotionInputHandler Interface
 	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
 	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionHandler Interface
+	//~End of IGCFLocomotionInputHandler Interface
 
-	//~IGCFMovementInputProvider Interface
+	//~IGCFLocomotionInputProvider Interface
 	UE_API FVector GetDesiredMovementVector_Implementation() const override;
-	//~End of IGCFMovementInputProvider Interface
+	//~End of IGCFLocomotionInputProvider Interface
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;

@@ -7,7 +7,7 @@
 #include "GCFMovementFunctionLibrary.generated.h"
 
 class IGCFMovementConfigReceiver;
-class IGCFLocomotionHandler;
+class IGCFLocomotionInputHandler;
 
 #define UE_API GAMECOREFRAMEWORK_API
 
@@ -27,10 +27,10 @@ public:
 	static TScriptInterface<IGCFMovementConfigReceiver> ResolveMovementConfigReceiver(const UObject* Context);
 
 	/**
-	 * Resolves the LocomotionHandler Interface.
+	 * Resolves the LocomotionInputHandler Interface.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GCF|Movement", meta = (DefaultToSelf = "Context"))
-	static TScriptInterface<IGCFLocomotionHandler> ResolveLocomotionHandler(const UObject* Context);
+	static TScriptInterface<IGCFLocomotionInputHandler> ResolveLocomotionInputHandler(const UObject* Context);
 };
 
 #undef UE_API

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "Movement/Mover/Producer/GCFCachedInputProducer.h"
-#include "Movement/GCFMovementInputProvider.h"
+#include "Movement/GCFLocomotionInputProvider.h"
 
 
 void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)
@@ -22,8 +22,8 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 
 		// Extract the cached movement vector (calculated from Enhanced Input / Gameplay Tags)
 		// securely via the provider interface, decoupling the producer from the specific Pawn class.
-		if (OwnerPawn->Implements<UGCFMovementInputProvider>()) {
-			DesiredMove = IGCFMovementInputProvider::Execute_GetDesiredMovementVector(OwnerPawn);
+		if (OwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
+			DesiredMove = IGCFLocomotionInputProvider::Execute_GetDesiredMovementVector(OwnerPawn);
 		}
 	}
 
