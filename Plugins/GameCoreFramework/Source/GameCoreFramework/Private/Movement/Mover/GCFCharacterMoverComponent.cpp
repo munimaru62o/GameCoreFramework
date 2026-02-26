@@ -28,7 +28,13 @@ void UGCFCharacterMoverComponent::ApplyMovementConfig_Implementation(const UGCFM
 void UGCFCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd)
 {
 	if (const FGCFAvatarInputs* AvatarInputs = InputCmd.InputCollection.FindDataByType<FGCFAvatarInputs>()) {
-		bWantsToCrouch = AvatarInputs->bWantsToCrouch;
+
+		const bool bIsAirborne = HasGameplayTag(Mover_IsFalling, true);
+		if (bIsAirborne) {
+			bWantsToCrouch = false;
+		} else {
+			bWantsToCrouch = AvatarInputs->bWantsToCrouch;
+		}
 	}
 
 	Super::OnMoverPreSimulationTick(TimeStep, InputCmd);
