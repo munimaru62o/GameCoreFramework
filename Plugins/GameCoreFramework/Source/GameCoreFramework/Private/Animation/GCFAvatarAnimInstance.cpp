@@ -8,6 +8,7 @@
 #include "GameplayTagAssetInterface.h"
 #include "GameplayTagContainer.h"
 #include "GCFShared.h"
+#include "KismetAnimationLibrary.h"
 
 
 UGCFAvatarAnimInstance::UGCFAvatarAnimInstance(const FObjectInitializer& ObjectInitializer)
@@ -51,7 +52,7 @@ void UGCFAvatarAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Velocity = MoverComponent->GetVelocity();
 		VerticalVelocity = Velocity.Z;
 		GroundSpeed = Velocity.Size2D();
-		MovementDirection = CalculateDirection(Velocity, OwningPawn->GetActorRotation());
+		MovementDirection = UKismetAnimationLibrary::CalculateDirection(Velocity, OwningPawn->GetActorRotation());
 
 		bShouldMove = GroundSpeed > 3.0f;
 		bHasAcceleration = HasAcceleration();

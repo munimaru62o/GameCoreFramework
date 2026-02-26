@@ -70,6 +70,7 @@ public class GameCoreFramework : ModuleRules
                 "GameplayTasks",
                 "UIExtension",
                 "ApplicationCore",
+                "AnimGraphRuntime",
 				// ... add private dependencies that you statically link with here ...	
             }
             );
