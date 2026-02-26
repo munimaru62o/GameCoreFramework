@@ -40,10 +40,12 @@ AGCFAvatarPawnWithAbilities::AGCFAvatarPawnWithAbilities(const FObjectInitialize
 	}
 }
 
+
 UAbilitySystemComponent* AGCFAvatarPawnWithAbilities::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+
 
 void AGCFAvatarPawnWithAbilities::OnAbilitySystemInitialized()
 {
@@ -55,36 +57,68 @@ void AGCFAvatarPawnWithAbilities::OnAbilitySystemInitialized()
 	HealthComponent->InitializeWithAbilitySystem(ASC);
 }
 
+
 void AGCFAvatarPawnWithAbilities::OnAbilitySystemUninitialized()
 {
 	HealthComponent->UninitializeFromAbilitySystem();
 }
 
+
 void AGCFAvatarPawnWithAbilities::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
+	// Clear the output container first to ensure a clean state.
+	TagContainer.Reset();
+
+	// 1. Extract tags from the parent class using a temporary container.
+	// This safely bypasses any internal Reset() calls in the base implementation
+	// that could wipe out our target container.
+	FGameplayTagContainer ParentTags;
+	Super::GetOwnedGameplayTags(ParentTags);
+	TagContainer.AppendTags(ParentTags);
+
+	// 2. Extract and append tags from the Ability System Component safely.
 	if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponent()) {
-		ASC->GetOwnedGameplayTags(TagContainer);
+		FGameplayTagContainer ASCTags;
+		ASC->GetOwnedGameplayTags(ASCTags);
+		TagContainer.AppendTags(ASCTags);
 	}
 }
 
+
 bool AGCFAvatarPawnWithAbilities::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
 {
+	// Check the parent class first.
+	if (Super::HasMatchingGameplayTag(TagToCheck)) {
+		return true;
+	}
+
+	// Fallback to checking the Ability System Component.
 	if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponent()) {
 		return ASC->HasMatchingGameplayTag(TagToCheck);
 	}
 	return false;
 }
 
+
 bool AGCFAvatarPawnWithAbilities::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
 {
-	if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponent()) {
-		return ASC->HasAllMatchingGameplayTags(TagContainer);
-	}
-	return false;
+	// [IMPORTANT] To prevent the "split tags" issue where the required tags are distributed 
+	// between the parent class and the ASC, we must aggregate all owned tags before evaluation.
+	FGameplayTagContainer AllTags;
+	GetOwnedGameplayTags(AllTags);
+
+	return AllTags.HasAll(TagContainer);
 }
+
 
 bool AGCFAvatarPawnWithAbilities::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
 {
+	// Check if the parent class has any of the matching tags.
+	if (Super::HasAnyMatchingGameplayTags(TagContainer)) {
+		return true;
+	}
+
+	// Fallback to checking the Ability System Component.
 	if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponent()) {
 		return ASC->HasAnyMatchingGameplayTags(TagContainer);
 	}
