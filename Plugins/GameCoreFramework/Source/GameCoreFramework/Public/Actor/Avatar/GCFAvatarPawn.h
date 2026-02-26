@@ -66,10 +66,6 @@ public:
 	//~End of IGCFAvatarActionProvider interface
 
 protected:
-	UFUNCTION()
-	void HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance);
-
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFAvatarControlComponent> AvatarControlComponent;
 

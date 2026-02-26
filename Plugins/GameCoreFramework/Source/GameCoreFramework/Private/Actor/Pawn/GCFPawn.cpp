@@ -10,6 +10,7 @@
 #include "System/Lifecycle/GCFPawnExtensionComponent.h"
 #include "Input/GCFPawnInputBridgeComponent.h"
 #include "MoverComponent.h"
+#include "GCFShared.h"
 
 const FName AGCFPawn::CollisionComponentName(TEXT("CollisionComponent"));
 const FName AGCFPawn::MeshComponentName(TEXT("MeshComponent"));
@@ -53,10 +54,18 @@ void AGCFPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	MoverComponent = FindComponentByClass<UMoverComponent>();
-	if (MoverComponent) {
-		bUseMoverComponent = true;
-		SetReplicateMovement(false);
+	// Only initialize Mover logic if explicitly opted-in via bUseMoverComponent.
+	// This allows for A/B testing between Mover and legacy CMC on the same base class.
+	if (bUseMoverComponent) {
+		MoverComponent = FindComponentByClass<UMoverComponent>();
+
+		if (MoverComponent) {
+			// Failsafe: Disable standard movement replication as Mover handles its own Network Prediction.
+			SetReplicateMovement(false);
+		} else {
+			// Warn the developer if they opted into Mover but forgot to attach the component in Blueprint.
+			UE_LOG(LogGCFCharacter, Warning, TEXT("[GCFPawn] bUseMoverComponent is true on %s, but no UMoverComponent was found!"), *GetName());
+		}
 	}
 }
 

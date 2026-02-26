@@ -51,6 +51,11 @@ AGCFAvatarPawn::AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer)
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	// Disable standard actor movement replication at the CDO level.
+	// This prevents Blueprint validation errors, as Mover handles its own Network Prediction synchronization.
+	SetReplicateMovement(false);
+	bUseMoverComponent = true;
+
 	BaseEyeHeight = 80.0f;
 	SetNetCullDistanceSquared(900000000.0f);
 
@@ -87,11 +92,6 @@ void AGCFAvatarPawn::PreInitializeComponents()
 void AGCFAvatarPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// MoverComponentのスタンス変更イベントにバインドする
-	/*if (UCharacterMoverComponent* CharMover = GetCharacterMoverComponent()) {
-		CharMover->OnStanceChanged.AddDynamic(this, &ThisClass::HandleStanceChanged);
-	}*/
 }
 
 
@@ -175,25 +175,4 @@ void AGCFAvatarPawn::ConsumeJumpJustPressed_Implementation()
 bool AGCFAvatarPawn::GetWantsToCrouch_Implementation() const
 {
 	return bWantsToCrouch;
-}
-
-
-void AGCFAvatarPawn::HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance)
-{
-	UMeshComponent* MeshComp = GetMeshComponent();
-	if (!MeshComp || !MoverComponent) return;
-
-	const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>();
-	if (!StanceSettings) return;
-
-	const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-	const float CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
-
-	if (NewStance == EStanceMode::Crouch) {
-		AddActorWorldOffset(FVector(0.0f, 0.0f, -CrouchOffset));
-		MeshComp->AddLocalOffset(FVector(0.0f, 0.0f, CrouchOffset));
-	} else if (OldStance == EStanceMode::Crouch && NewStance == EStanceMode::Invalid) {
-		AddActorWorldOffset(FVector(0.0f, 0.0f, CrouchOffset));
-		MeshComp->AddLocalOffset(FVector(0.0f, 0.0f, -CrouchOffset));
-	}
 }

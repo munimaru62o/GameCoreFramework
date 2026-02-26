@@ -17,9 +17,8 @@ AGCFAvatarPawnWithAbilities::AGCFAvatarPawnWithAbilities(const FObjectInitialize
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UGCFAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
-	// NOTE: For AI or non-player avatars, 'Minimal' is most efficient.
-	// If this Avatar is strictly player-controlled (and not using a PlayerState ASC),
-	// you may want to change this to 'Mixed' or configure it dynamically based on the controller.
+	// Set to 'Mixed' replication mode as this Avatar is intended to be possessed by Players.
+	// This allows for client-side prediction of abilities and gameplay effects.
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	HealthComponent = CreateDefaultSubobject<UGCFHealthComponent>(TEXT("HealthComponent"));
@@ -34,7 +33,7 @@ AGCFAvatarPawnWithAbilities::AGCFAvatarPawnWithAbilities(const FObjectInitialize
 
 	// [Important] Hook into the PawnExtensionComponent lifecycle events.
 	// We need to initialize the HealthComponent when the ASC is ready.
-	// Assume PawnExtensionComponent is created in the base AGCFPawn or via Blueprint.
+	// The PawnExtensionComponent is a required component guaranteed to be created in the base AGCFPawn.
 	if (PawnExtensionComponent) {
 		PawnExtensionComponent->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
 		PawnExtensionComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
