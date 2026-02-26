@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Actor/Character/GCFHumanoidPawn.h"
+#include "Actor/Avatar/GCFAvatarPawn.h"
 
 #include "GCFShared.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Actor/Character/GCFCharacterControlComponent.h"
+#include "Actor/Avatar/GCFAvatarControlComponent.h"
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
 #include "MoverTypes.h"
 #include "DefaultMovementSet/Settings/StanceSettings.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(GCFHumanoidPawn)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(GCFAvatarPawn)
 
 class AActor;
 class FLifetimeProperty;
@@ -19,7 +19,7 @@ class IRepChangedPropertyTracker;
 class UInputComponent;
 
 
-AGCFHumanoidPawn::AGCFHumanoidPawn(const FObjectInitializer& ObjectInitializer)
+AGCFAvatarPawn::AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer
 			// Prevent the base class from creating generic Sphere and StaticMesh components.
 			// We use specialized Capsule and SkeletalMesh components for humanoids instead.
@@ -45,7 +45,7 @@ AGCFHumanoidPawn::AGCFHumanoidPawn(const FObjectInitializer& ObjectInitializer)
 	SkeletalMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));  // Rotate mesh to be X forward since it is exported as Y forward.
 	SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 
-	CharacterControlComponent = CreateDefaultSubobject<UGCFCharacterControlComponent>(TEXT("CharacterControlComponent"));
+	AvatarControlComponent = CreateDefaultSubobject<UGCFAvatarControlComponent>(TEXT("AvatarControlComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -56,35 +56,35 @@ AGCFHumanoidPawn::AGCFHumanoidPawn(const FObjectInitializer& ObjectInitializer)
 
 	// Note: MoverComponent and InputProducerComponent are intentionally omitted from this constructor.
 	// Following the Composition over Inheritance principle, these should be added via Blueprints
-	// (e.g., BP_StandardHumanoidMover) to allow designers full control over shared settings and movement modes.
+	// (e.g., BP_StandardAvatarMover) to allow designers full control over shared settings and movement modes.
 }
 
 
-UCapsuleComponent* AGCFHumanoidPawn::GetCapsuleComponent() const
+UCapsuleComponent* AGCFAvatarPawn::GetCapsuleComponent() const
 {
 	return Cast<UCapsuleComponent>(CollisionComponent);
 }
 
 
-USkeletalMeshComponent* AGCFHumanoidPawn::GetSkeletalMeshComponent() const
+USkeletalMeshComponent* AGCFAvatarPawn::GetSkeletalMeshComponent() const
 {
 	return Cast<USkeletalMeshComponent>(MeshComponent);
 }
 
 
-UGCFCharacterMoverComponent* AGCFHumanoidPawn::GetCharacterMoverComponent() const
+UGCFCharacterMoverComponent* AGCFAvatarPawn::GetCharacterMoverComponent() const
 {
 	return Cast<UGCFCharacterMoverComponent>(MoverComponent);
 }
 
 
-void AGCFHumanoidPawn::PreInitializeComponents()
+void AGCFAvatarPawn::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
 }
 
 
-void AGCFHumanoidPawn::BeginPlay()
+void AGCFAvatarPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -95,13 +95,13 @@ void AGCFHumanoidPawn::BeginPlay()
 }
 
 
-void AGCFHumanoidPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AGCFAvatarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 }
 
 
-FVector AGCFHumanoidPawn::GetPawnViewLocation() const
+FVector AGCFAvatarPawn::GetPawnViewLocation() const
 {
 	// Get the base eye height defined in the class.
 	float TargetEyeHeight = BaseEyeHeight;
@@ -125,37 +125,60 @@ FVector AGCFHumanoidPawn::GetPawnViewLocation() const
 }
 
 
-void AGCFHumanoidPawn::ToggleCrouch()
+// --- IGCFAvatarActionHandler Implementation (Push/Write) ---
+void AGCFAvatarPawn::HandleJumpInput_Implementation(bool bIsPressed)
 {
-	bWantsToCrouch = !bWantsToCrouch;
+	// Detect the exact frame the button was pressed (JustPressed)
+	if (bIsPressed && !bIsJumpPressed) {
+		bIsJumpJustPressed = true;
+	}
+
+	// Update the continuous hold state
+	bIsJumpPressed = bIsPressed;
+}
+
+void AGCFAvatarPawn::HandleCrouchInput_Implementation(bool bIsPressed)
+{
+	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
+	if (bIsPressed && !bIsCrouchButtonPressed) {
+		bWantsToCrouch = !bWantsToCrouch;
+	}
+
+	// Cache the physical button state for the next frame's comparison.
+	bIsCrouchButtonPressed = bIsPressed;
+
+	/*
+	 * NOTE: If you want to implement "Hold-to-Crouch" instead of "Toggle",
+	 * simply replace the above logic with the following:
+	 *
+	 * bWantsToCrouch = bIsPressed;
+	 */
 }
 
 
-void AGCFHumanoidPawn::Jump()
+// --- IGCFAvatarActionProvider Implementation (Pull/Read) ---
+bool AGCFAvatarPawn::GetIsJumpPressed_Implementation() const
 {
-	bWantsToJump = true;
+	return bIsJumpPressed;
 }
 
-
-bool AGCFHumanoidPawn::CanJump() const
+bool AGCFAvatarPawn::GetIsJumpJustPressed_Implementation() const
 {
-	return !bWantsToJump;
+	return bIsJumpJustPressed;
 }
 
+void AGCFAvatarPawn::ConsumeJumpJustPressed_Implementation()
+{
+	bIsJumpJustPressed = false;
+}
 
-bool AGCFHumanoidPawn::GetWantsToCrouch() const
+bool AGCFAvatarPawn::GetWantsToCrouch_Implementation() const
 {
 	return bWantsToCrouch;
 }
 
 
-bool AGCFHumanoidPawn::GetWantsToJump() const
-{
-	return bWantsToJump;
-}
-
-
-void AGCFHumanoidPawn::HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance)
+void AGCFAvatarPawn::HandleStanceChanged(EStanceMode OldStance, EStanceMode NewStance)
 {
 	UMeshComponent* MeshComp = GetMeshComponent();
 	if (!MeshComp || !MoverComponent) return;

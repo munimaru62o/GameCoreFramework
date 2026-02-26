@@ -12,6 +12,8 @@ class APlayerState;
 class AController;
 class APawn;
 class IGCFPawnDataProvider;
+class IGCFAvatarActionHandler;
+class IGCFAvatarActionProvider;
 
 
 /**
@@ -48,10 +50,21 @@ public:
 
 	/**
 	 * Resolves the Pawn Data Provider interface.
-	 * Useful for retrieving PawnData without knowing the exact Pawn class.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
 	static TScriptInterface<IGCFPawnDataProvider> ResolvePawnDataProvider(const UObject* Context);
+
+	/**
+	 * Resolves the Avatar Action Handler interface.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
+	static TScriptInterface<IGCFAvatarActionHandler> ResolveAvatarActonHandler(const UObject* Context);
+
+	/**
+	 * Resolves the Avatar Action Provider interface.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
+	static TScriptInterface<IGCFAvatarActionProvider> ResolveAvatarActionProvider(const UObject* Context);
 };
 
 #undef UE_API

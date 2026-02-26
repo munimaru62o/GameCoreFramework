@@ -8,6 +8,8 @@
 #include "GameFramework/PlayerState.h"
 
 #include "Actor/Data/GCFPawnDataProvider.h"
+#include "Actor/Avatar/GCFAvatarActionHandler.h"
+#include "Actor/Avatar/GCFAvatarActionProvider.h"
 
 
 APlayerState* UGCFActorFunctionLibrary::ResolvePlayerState(UObject* Context)
@@ -97,4 +99,16 @@ const APawn* UGCFActorFunctionLibrary::ResolvePawn(const UObject* Context)
 TScriptInterface<IGCFPawnDataProvider> UGCFActorFunctionLibrary::ResolvePawnDataProvider(const UObject* Context)
 {
 	return GCF::Context::ResolveInterface<IGCFPawnDataProvider, UGCFPawnDataProvider>(Context);
+}
+
+
+TScriptInterface<IGCFAvatarActionHandler> UGCFActorFunctionLibrary::ResolveAvatarActonHandler(const UObject* Context)
+{
+	return GCF::Context::ResolveInterface<IGCFAvatarActionHandler, UGCFAvatarActionHandler>(Context);
+}
+
+
+TScriptInterface<IGCFAvatarActionProvider> UGCFActorFunctionLibrary::ResolveAvatarActionProvider(const UObject* Context)
+{
+	return GCF::Context::ResolveInterface<IGCFAvatarActionProvider, UGCFAvatarActionProvider>(Context);
 }

@@ -4,16 +4,16 @@
 #pragma once
 
 #include "MoverTypes.h"
-#include "GCFHumanoidInputs.generated.h"
+#include "GCFAvatarInputs.generated.h"
 
 /**
- * @brief Structure containing extended movement and ability inputs specific to Humanoid characters.
+ * @brief Structure containing extended movement and ability inputs specific to Avatar characters.
  * 
  * This struct encapsulates additional input intents (like crouching, sprinting) that go beyond
  * the standard directional movement, tailored specifically for bipedal characters.
  */
 USTRUCT(BlueprintType)
-struct GAMECOREFRAMEWORK_API FGCFHumanoidInputs : public FMoverDataStructBase
+struct GAMECOREFRAMEWORK_API FGCFAvatarInputs : public FMoverDataStructBase
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -27,7 +27,7 @@ struct GAMECOREFRAMEWORK_API FGCFHumanoidInputs : public FMoverDataStructBase
 
 	virtual bool ShouldReconcile(const FMoverDataStructBase& AuthorityState) const override
 	{
-		const FGCFHumanoidInputs& TypedAuthority = static_cast<const FGCFHumanoidInputs&>(AuthorityState);
+		const FGCFAvatarInputs& TypedAuthority = static_cast<const FGCFAvatarInputs&>(AuthorityState);
 		return (TypedAuthority.bWantsToCrouch != bWantsToCrouch);
 	}
 
@@ -35,19 +35,19 @@ struct GAMECOREFRAMEWORK_API FGCFHumanoidInputs : public FMoverDataStructBase
 	{
 		// Since boolean values cannot be interpolated (Lerped), we adopt the value from the 
 		// source state if LerpFactor is less than 0.5; otherwise, we use the target state.
-		const FGCFHumanoidInputs& SourceInputs = static_cast<const FGCFHumanoidInputs&>((LerpFactor < 0.5f) ? From : To);
+		const FGCFAvatarInputs& SourceInputs = static_cast<const FGCFAvatarInputs&>((LerpFactor < 0.5f) ? From : To);
 		bWantsToCrouch = SourceInputs.bWantsToCrouch;
 	}
 
 	virtual void Merge(const FMoverDataStructBase& From) override
 	{
-		const FGCFHumanoidInputs& TypedFrom = static_cast<const FGCFHumanoidInputs&>(From);
+		const FGCFAvatarInputs& TypedFrom = static_cast<const FGCFAvatarInputs&>(From);
 		bWantsToCrouch |= TypedFrom.bWantsToCrouch;
 	}
 
 	virtual FMoverDataStructBase* Clone() const override
 	{
-		return new FGCFHumanoidInputs(*this);
+		return new FGCFAvatarInputs(*this);
 	}
 
 	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override

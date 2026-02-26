@@ -6,25 +6,25 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "GameplayEffectTypes.h"
-#include "GCFHumanoidAnimInstance.generated.h"
+#include "GCFAvatarAnimInstance.generated.h"
 
 class APawn;
 class UMoverComponent;
 class UAbilitySystemComponent;
 
 /**
- * @brief Base AnimInstance for Humanoid Pawns using Mover plugin.
+ * @brief Base AnimInstance for Avatar Pawns using Mover plugin.
  * 
  * Replaces the traditional Character-based AnimInstance.
  * It fetches movement data directly from MoverComponent and GameplayTags.
  */
 UCLASS(Config = Game)
-class GAMECOREFRAMEWORK_API UGCFHumanoidAnimInstance : public UAnimInstance
+class GAMECOREFRAMEWORK_API UGCFAvatarAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 public:
-	UGCFHumanoidAnimInstance(const FObjectInitializer& ObjectInitializer);
+	UGCFAvatarAnimInstance(const FObjectInitializer& ObjectInitializer);
 
 	// Like BeginPlay for AnimInstances. Good for caching pointers.
 	virtual void NativeInitializeAnimation() override;

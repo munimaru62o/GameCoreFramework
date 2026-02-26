@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "Movement/GCFLocomotionHandler.h"
+#include "Actor/Avatar/GCFAvatarActionHandler.h"
 #include "GameplayEffect.h"
 #include "GCFCharacter.generated.h"
 
@@ -20,7 +21,7 @@ class UGCFHealthComponent;
 class UGCFCameraComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
-class UGCFCharacterControlComponent;
+class UGCFAvatarControlComponent;
 struct FGameplayTag;
 struct FGameplayTagContainer;
 
@@ -33,15 +34,13 @@ struct FGameplayTagContainer;
  *	New behavior should be added via pawn components when possible.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGCFTeamAgentInterface
+class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGCFTeamAgentInterface, public IGCFAvatarActionHandler
 {
 	GENERATED_BODY()
 
 public:
 
 	UE_API AGCFCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
-	UE_API void ToggleCrouch();
 
 	//~AActor interface
 	UE_API virtual void PreInitializeComponents() override;
@@ -59,6 +58,11 @@ public:
 	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
 	virtual void HandleMoveUpInput_Implementation(float Value) override;
 	//~End of IGCFLocomotionHandler Interface
+
+	//~IGCFAvatarActionHandler Interface (Push / Write from Controller)
+	virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
+	virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
+	//~End of IGCFAvatarActionHandler Interface
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
@@ -103,13 +107,16 @@ protected:
 	TObjectPtr<UGCFPawnReadyStateComponent> PawnReadyStateComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFCharacterControlComponent> CharacterControlComponent;
+	TObjectPtr<UGCFAvatarControlComponent> AvatarControlComponent;
 
 	UPROPERTY()
 	FGenericTeamId MyTeamID;
 
 	UPROPERTY()
 	FOnGCFTeamIndexChangedDelegate OnTeamChangedDelegate;
+
+	/** Tracks the physical state of the crouch button to prevent continuous toggling while held. */
+	bool bIsCrouchButtonPressed = false;
 
 protected:
 	// Called to determine what happens to the team ID when possession ends

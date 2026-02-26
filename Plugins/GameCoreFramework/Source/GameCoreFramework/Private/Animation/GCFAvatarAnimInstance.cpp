@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Animation/GCFHumanoidAnimInstance.h"
+#include "Animation/GCFAvatarAnimInstance.h"
 #include "GameFramework/Pawn.h"
 #include "MoverComponent.h"
 #include "MoverTypes.h"
@@ -10,7 +10,7 @@
 #include "GCFShared.h"
 
 
-UGCFHumanoidAnimInstance::UGCFHumanoidAnimInstance(const FObjectInitializer& ObjectInitializer)
+UGCFAvatarAnimInstance::UGCFAvatarAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	GroundSpeed = 0.0f;
@@ -21,7 +21,7 @@ UGCFHumanoidAnimInstance::UGCFHumanoidAnimInstance(const FObjectInitializer& Obj
 	CurrentMovementMode = NAME_None;
 }
 
-void UGCFHumanoidAnimInstance::NativeInitializeAnimation()
+void UGCFAvatarAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
@@ -32,7 +32,7 @@ void UGCFHumanoidAnimInstance::NativeInitializeAnimation()
 	}
 }
 
-void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UGCFAvatarAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
@@ -71,7 +71,7 @@ void UGCFHumanoidAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 }
 
 
-bool UGCFHumanoidAnimInstance::HasAcceleration() const
+bool UGCFAvatarAnimInstance::HasAcceleration() const
 {
 	if (!MoverComponent || !OwningPawn) {
 		return false;

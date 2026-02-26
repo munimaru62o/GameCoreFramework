@@ -18,7 +18,7 @@ class UGCFHealthComponent;
 /**
  * @brief Base Pawn class that self-manages its Ability System Component (ASC).
  *
- * Designed for Non-Humanoid actors that require GAS features but do not need
+ * Designed for Non-Avatar actors that require GAS features but do not need
  * the complexity of ACharacter (Capsule/Walking Movement).
  *
  * [Use Cases]

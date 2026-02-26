@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "Movement/Mover/Input/GCFHumanoidInputs.h"
+#include "Movement/Mover/Input/GCFAvatarInputs.h"
 #include "GCFMoverInputsFunctionLibrary.generated.h"
 
 struct FMoverDataCollection;
@@ -13,7 +13,7 @@ struct FMoverDataCollection;
 /**
  * @brief Blueprint function library for extracting custom Mover input structures.
  * * Provides utility functions to safely extract specialized input data
- * (e.g., FGCFHumanoidInputs) from a generic FMoverDataCollection.
+ * (e.g., FGCFAvatarInputs) from a generic FMoverDataCollection.
  */
 UCLASS()
 class GAMECOREFRAMEWORK_API UGCFMoverInputsFunctionLibrary : public UBlueprintFunctionLibrary
@@ -22,10 +22,10 @@ class GAMECOREFRAMEWORK_API UGCFMoverInputsFunctionLibrary : public UBlueprintFu
 
 public:
 	/**
-	 * Extracts the GCFHumanoidInputs from a given Mover Data Collection.
+	 * Extracts the GCFAvatarInputs from a given Mover Data Collection.
 	 * * @param FromCollection The collection to search within (e.g., InputCmd.InputCollection)
 	 * @return The found inputs, or a default empty struct if not found.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GCF|Mover|Input")
-	static FGCFHumanoidInputs GetGCFHumanoidInputs(const FMoverDataCollection& FromCollection);
+	static FGCFAvatarInputs GetGCFAvatarInputs(const FMoverDataCollection& FromCollection);
 };

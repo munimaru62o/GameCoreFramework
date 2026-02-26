@@ -10,7 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Gameframework/CharacterMovementComponent.h"
 #include "Movement/GCFCharacterMovementComponent.h"
-#include "Actor/Character/GCFCharacterControlComponent.h"
+#include "Actor/Avatar/GCFAvatarControlComponent.h"
 #include "System/Lifecycle/GCFPawnReadyStateComponent.h"
 #include "Camera/GCFCameraComponent.h"
 #include "TimerManager.h"
@@ -66,7 +66,7 @@ AGCFCharacter::AGCFCharacter(const FObjectInitializer& ObjectInitializer)
 	PawnExtComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
 
 	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("PawnReadyStateComponent"));
-	CharacterControlComponent = CreateDefaultSubobject<UGCFCharacterControlComponent>(TEXT("CharacterControlComponent"));
+	AvatarControlComponent = CreateDefaultSubobject<UGCFAvatarControlComponent>(TEXT("AvatarControlComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -264,15 +264,43 @@ void AGCFCharacter::UninitAndDestroy()
 }
 
 
-void AGCFCharacter::ToggleCrouch()
+// --- IGCFAvatarActionHandler Implementation ---
+void AGCFCharacter::HandleJumpInput_Implementation(bool bIsPressed)
 {
-	const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
-
-	if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
-		UnCrouch();
-	} else if (GCFMoveComp->IsMovingOnGround()) {
-		Crouch();
+	if (bIsPressed) {
+		Jump(); // ACharacter native method sets bPressedJump = true
+	} else {
+		StopJumping(); // ACharacter native method sets bPressedJump = false
 	}
+}
+
+
+void AGCFCharacter::HandleCrouchInput_Implementation(bool bIsPressed)
+{
+	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
+	if (bIsPressed && !bIsCrouchButtonPressed) {
+		const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
+
+		if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
+			UnCrouch();
+		} else if (GCFMoveComp->IsMovingOnGround()) {
+			Crouch();
+		}
+	}
+
+	// Cache the physical button state for the next frame's comparison.
+	bIsCrouchButtonPressed = bIsPressed;
+
+	/*
+	 * NOTE: If you want to implement "Hold-to-Crouch" instead of "Toggle"
+	 * for this legacy character, simply replace the above logic with the following:
+	 *
+	 * if (bIsPressed) {
+	 * Crouch();
+	 * } else {
+	 * UnCrouch();
+	 * }
+	 */
 }
 
 
