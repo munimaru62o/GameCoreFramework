@@ -5,15 +5,15 @@
 
 #include "CoreMinimal.h"
 #include "Movement/Mover/Producer/GCFCachedInputProducer.h"
-#include "GCFAvatarInputProducer.generated.h"
+#include "GCFHumanoidInputProducer.generated.h"
 
 /**
- * @brief Input producer specifically for Avatar Pawns.
- * Inherits basic movement vector logic from GCFCachedInputProducer,
- * and adds Avatar-specific actions like Jump and Crouch.
+ * @brief Input producer specifically for Humanoid Pawns.
+ * Inherits basic movement logic and Jump actions from GCFCachedInputProducer,
+ * and adds Humanoid-specific actions such as Crouch.
  */
 UCLASS(Blueprintable, ClassGroup = (GCF), meta = (BlueprintSpawnableComponent))
-class GAMECOREFRAMEWORK_API UGCFAvatarInputProducer : public UGCFCachedInputProducer
+class GAMECOREFRAMEWORK_API UGCFHumanoidInputProducer : public UGCFCachedInputProducer
 {
 	GENERATED_BODY()
 

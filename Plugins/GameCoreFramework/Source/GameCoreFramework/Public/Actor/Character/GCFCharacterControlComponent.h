@@ -8,7 +8,7 @@
 #include "System/Lifecycle/GCFStateTypes.h"
 #include "Components/PawnComponent.h"
 #include "System/Binder/GCFContextBinder.h"
-#include "GCFAvatarControlComponent.generated.h"
+#include "GCFCharacterControlComponent.generated.h"
 
 #define UE_API GAMECOREFRAMEWORK_API
 
@@ -17,21 +17,22 @@ class UGCFInputComponent;
 struct FInputActionValue;
 
 /**
- * @brief Component that handles avatar-specific discrete action inputs (e.g., Jump).
+ * @brief Component that handles Character-specific discrete action inputs (e.g., Jump, Crouch).
  *
  * [Responsibilities]
  * 1. Waits for the Pawn to be fully initialized (Possessed + GameplayReady).
  * 2. Binds Input Actions securely via the GCF Input System.
- * 3. Forwards boolean commands to the owning Pawn via the IGCFAvatarActionHandler interface,
- * completely decoupling the controller from any specific Pawn class implementation.
+ * 3. Forwards boolean commands directly to the owning AGCFCharacter.
+ * By strictly casting to the concrete class, it ensures type safety and
+ * eliminates interface overhead.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFAvatarControlComponent : public UPawnComponent
+class UGCFCharacterControlComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFAvatarControlComponent(const FObjectInitializer& ObjectInitializer);
+	UE_API UGCFCharacterControlComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +47,7 @@ private:
 
 	// --- Input Handlers ---
 	void Input_Jump(const FInputActionValue& InputActionValue);
+	void Input_Crouch(const FInputActionValue& InputActionValue);
 
 private:
 	/** Binder to observe Pawn readiness. */

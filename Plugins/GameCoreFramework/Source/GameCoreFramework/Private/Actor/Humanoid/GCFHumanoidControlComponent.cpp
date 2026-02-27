@@ -1,17 +1,17 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Actor/Avatar/GCFAvatarControlComponent.h"
+#include "Actor/Humanoid/GCFHumanoidControlComponent.h"
 
 #include "GCFShared.h"
 #include "System/Binder/GCFPawnReadyStateBinder.h"
 #include "Components/GameFrameworkComponentManager.h"
-#include "Actor/Avatar/GCFAvatarPawn.h"
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputComponent.h"
+#include "Actor/Humanoid/GCFHumanoid.h"
 
 
-UGCFAvatarControlComponent::UGCFAvatarControlComponent(const FObjectInitializer& ObjectInitializer)
+UGCFHumanoidControlComponent::UGCFHumanoidControlComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -21,7 +21,7 @@ UGCFAvatarControlComponent::UGCFAvatarControlComponent(const FObjectInitializer&
 }
 
 
-void UGCFAvatarControlComponent::BeginPlay()
+void UGCFHumanoidControlComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -33,14 +33,14 @@ void UGCFAvatarControlComponent::BeginPlay()
 }
 
 
-void UGCFAvatarControlComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UGCFHumanoidControlComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Binder.Reset();
 	Super::EndPlay(EndPlayReason);
 }
 
 
-void UGCFAvatarControlComponent::HandlePawnReadyStateChanged(const FGCFPawnReadyStateSnapshot& Snapshot)
+void UGCFHumanoidControlComponent::HandlePawnReadyStateChanged(const FGCFPawnReadyStateSnapshot& Snapshot)
 {
 	// We require both "Possessed" (Input Routing established) and "GamePlay" (Logic Initialized).
 	static const EGCFPawnReadyState Required = EGCFPawnReadyState::Possessed | EGCFPawnReadyState::GamePlay;
@@ -55,7 +55,7 @@ void UGCFAvatarControlComponent::HandlePawnReadyStateChanged(const FGCFPawnReady
 }
 
 
-TArray<FGCFBindingReceipt> UGCFAvatarControlComponent::HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider)
+TArray<FGCFBindingReceipt> UGCFHumanoidControlComponent::HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider)
 {
 	TArray<FGCFBindingReceipt> Receipts{};
 	if (!Provider) {
@@ -67,17 +67,17 @@ TArray<FGCFBindingReceipt> UGCFAvatarControlComponent::HandleInputBinding(UGCFIn
 			continue;
 		}
 		FGCFInputBinder InputBinder(InputComponent, Config, Receipts);
-		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Jump, ETriggerEvent::Triggered, this, &ThisClass::Input_Jump);
-		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Jump, ETriggerEvent::Completed, this, &ThisClass::Input_Jump);
+		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch);
+		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Crouch, ETriggerEvent::Completed, this, &ThisClass::Input_Crouch);
 	}
 	return Receipts;
 }
 
 
-void UGCFAvatarControlComponent::Input_Jump(const FInputActionValue& InputActionValue)
+void UGCFHumanoidControlComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
-	if (AGCFAvatarPawn* AvatarPawn = GetPawn<AGCFAvatarPawn>()) {
+	if (AGCFHumanoid* Humanoid = GetPawn<AGCFHumanoid>()) {
 		const bool bIsPressed = InputActionValue.Get<bool>();
-		AvatarPawn->HandleJumpInput(bIsPressed);
+		Humanoid->HandleCrouchInput(bIsPressed);
 	}
 }

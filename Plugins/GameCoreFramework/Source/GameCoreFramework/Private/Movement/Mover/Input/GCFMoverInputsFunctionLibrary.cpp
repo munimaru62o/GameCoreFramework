@@ -6,11 +6,11 @@
 #include "MoverTypes.h"
 
 
-FGCFAvatarInputs UGCFMoverInputsFunctionLibrary::GetGCFAvatarInputs(const FMoverDataCollection& FromCollection)
+FGCFHumanoidInputs UGCFMoverInputsFunctionLibrary::GetGCFHumanoidInputs(const FMoverDataCollection& FromCollection)
 {
-	if (const FGCFAvatarInputs* FoundInputs = FromCollection.FindDataByType<FGCFAvatarInputs>()) {
+	if (const FGCFHumanoidInputs* FoundInputs = FromCollection.FindDataByType<FGCFHumanoidInputs>()) {
 		return *FoundInputs;
 	}
 
-	return FGCFAvatarInputs();
+	return FGCFHumanoidInputs();
 }

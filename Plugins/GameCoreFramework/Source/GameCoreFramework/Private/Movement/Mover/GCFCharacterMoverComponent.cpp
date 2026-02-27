@@ -3,7 +3,7 @@
 
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
 #include "Movement/GCFMovementConfig.h"
-#include "Movement/Mover/Input/GCFAvatarInputs.h"
+#include "Movement/Mover/Input/GCFHumanoidInputs.h"
 #include "DefaultMovementSet/Settings/CommonLegacyMovementSettings.h"
 
 
@@ -27,13 +27,13 @@ void UGCFCharacterMoverComponent::ApplyMovementConfig_Implementation(const UGCFM
 
 void UGCFCharacterMoverComponent::OnMoverPreSimulationTick(const FMoverTimeStep& TimeStep, const FMoverInputCmdContext& InputCmd)
 {
-	if (const FGCFAvatarInputs* AvatarInputs = InputCmd.InputCollection.FindDataByType<FGCFAvatarInputs>()) {
+	if (const FGCFHumanoidInputs* HumanoidInputs = InputCmd.InputCollection.FindDataByType<FGCFHumanoidInputs>()) {
 
 		const bool bIsAirborne = HasGameplayTag(Mover_IsFalling, true);
 		if (bIsAirborne) {
 			bWantsToCrouch = false;
 		} else {
-			bWantsToCrouch = AvatarInputs->bWantsToCrouch;
+			bWantsToCrouch = HumanoidInputs->bWantsToCrouch;
 		}
 	}
 

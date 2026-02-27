@@ -7,7 +7,6 @@
 #include "AbilitySystemInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "Movement/GCFLocomotionInputHandler.h"
-#include "Actor/Avatar/GCFAvatarActionHandler.h"
 #include "GameplayEffect.h"
 #include "GCFCharacter.generated.h"
 
@@ -21,10 +20,10 @@ class UGCFHealthComponent;
 class UGCFCameraComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
-class UGCFAvatarControlComponent;
+class UGCFCharacterControlComponent;
+class UGCFHumanoidControlComponent;
 struct FGameplayTag;
 struct FGameplayTagContainer;
-
 
 /**
  * AGCFCharacter
@@ -34,7 +33,7 @@ struct FGameplayTagContainer;
  *	New behavior should be added via pawn components when possible.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AGCFCharacter : public AModularCharacter, public IGCFLocomotionInputHandler, public IGCFTeamAgentInterface, public IGCFAvatarActionHandler
+class AGCFCharacter : public AModularCharacter, public IGCFLocomotionInputHandler, public IGCFTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -59,10 +58,9 @@ public:
 	virtual void HandleMoveUpInput_Implementation(float Value) override;
 	//~End of IGCFLocomotionInputHandler Interface
 
-	//~IGCFAvatarActionHandler Interface (Push / Write from Controller)
-	virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
-	virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
-	//~End of IGCFAvatarActionHandler Interface
+	// --- Input Handlers (Push / Write from Control Component) ---
+	UE_API void HandleJumpInput(bool bIsPressed);
+	UE_API void HandleCrouchInput(bool bIsPressed);
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
@@ -107,7 +105,7 @@ protected:
 	TObjectPtr<UGCFPawnReadyStateComponent> PawnReadyStateComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFAvatarControlComponent> AvatarControlComponent;
+	TObjectPtr<UGCFCharacterControlComponent> CharacterControlComponent;
 
 	UPROPERTY()
 	FGenericTeamId MyTeamID;

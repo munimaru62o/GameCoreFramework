@@ -4,12 +4,10 @@
 #include "Actor/Avatar/GCFAvatarPawn.h"
 
 #include "GCFShared.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Actor/Avatar/GCFAvatarControlComponent.h"
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
-#include "MoverTypes.h"
-#include "DefaultMovementSet/Settings/StanceSettings.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GCFAvatarPawn)
 
@@ -18,32 +16,35 @@ class FLifetimeProperty;
 class IRepChangedPropertyTracker;
 class UInputComponent;
 
+const FName AGCFAvatarPawn::AvatarCollisionComponentName(TEXT("AvatarCollisionComponent"));
+const FName AGCFAvatarPawn::AvatarMeshComponentName(TEXT("AvatarMeshComponent"));
+
 
 AGCFAvatarPawn::AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer
 			// Prevent the base class from creating generic Sphere and StaticMesh components.
 			// We use specialized Capsule and SkeletalMesh components for humanoids instead.
-			.DoNotCreateDefaultSubobject(Super::MeshComponentName)
-			.DoNotCreateDefaultSubobject(Super::CollisionComponentName))
+			.DoNotCreateDefaultSubobject(AGCFPawn::CollisionComponentName)
+			.DoNotCreateDefaultSubobject(AGCFPawn::MeshComponentName))
 {
 	// Avoid ticking characters if possible.
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
-	CollisionComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
-	check(CapsuleComp);
-	CapsuleComp->InitCapsuleSize(40.0f, 90.0f);
-	CapsuleComp->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	CapsuleComp->SetMobility(EComponentMobility::Movable);
-	RootComponent = CapsuleComp;
+	CollisionComponent = CreateOptionalDefaultSubobject<USphereComponent>(AvatarCollisionComponentName);
+	if (USphereComponent* SphereComp = Cast<USphereComponent>(CollisionComponent)) {
+		SphereComp->InitSphereRadius(40.0f);
+		SphereComp->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		SphereComp->SetMobility(EComponentMobility::Movable);
+		RootComponent = SphereComp;
+	}
 
-	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-	USkeletalMeshComponent* SkeletalMesh = GetSkeletalMeshComponent();
-	check(SkeletalMesh);
-	SkeletalMesh->SetupAttachment(RootComponent);
-	SkeletalMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));  // Rotate mesh to be X forward since it is exported as Y forward.
-	SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	MeshComponent = CreateOptionalDefaultSubobject<USkeletalMeshComponent>(AvatarMeshComponentName);
+	if (USkeletalMeshComponent* SkeletalMesh = GetSkeletalMeshComponent()) {
+		SkeletalMesh->SetupAttachment(RootComponent);
+		SkeletalMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));  // Rotate mesh to be X forward since it is exported as Y forward.
+		SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+	}
 
 	AvatarControlComponent = CreateDefaultSubobject<UGCFAvatarControlComponent>(TEXT("AvatarControlComponent"));
 
@@ -62,12 +63,6 @@ AGCFAvatarPawn::AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer)
 	// Note: MoverComponent and InputProducerComponent are intentionally omitted from this constructor.
 	// Following the Composition over Inheritance principle, these should be added via Blueprints
 	// (e.g., BP_StandardAvatarMover) to allow designers full control over shared settings and movement modes.
-}
-
-
-UCapsuleComponent* AGCFAvatarPawn::GetCapsuleComponent() const
-{
-	return Cast<UCapsuleComponent>(CollisionComponent);
 }
 
 
@@ -101,32 +96,8 @@ void AGCFAvatarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
-FVector AGCFAvatarPawn::GetPawnViewLocation() const
-{
-	// Get the base eye height defined in the class.
-	float TargetEyeHeight = BaseEyeHeight;
-
-	// If the Mover is currently in a "Crouching" state, lower the eye height.
-	if (MoverComponent) {
-		if (USceneComponent* VisualComp = MoverComponent->GetPrimaryVisualComponent()) {
-			if (MoverComponent->HasGameplayTag(Mover_IsCrouching, true)) {
-				if (const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>()) {
-					const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-					const float CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
-					TargetEyeHeight -= CrouchOffset;
-				}
-			}
-			return VisualComp->GetComponentLocation() + (FVector::UpVector * TargetEyeHeight);
-		}
-	}
-
-	// Return the actor's world location offset by the calculated eye height.
-	return GetActorLocation() + (FVector::UpVector * TargetEyeHeight);
-}
-
-
-// --- IGCFAvatarActionHandler Implementation (Push/Write) ---
-void AGCFAvatarPawn::HandleJumpInput_Implementation(bool bIsPressed)
+// --- Input Handlers (Push/Write) ---
+void AGCFAvatarPawn::HandleJumpInput(bool bIsPressed)
 {
 	// Detect the exact frame the button was pressed (JustPressed)
 	if (bIsPressed && !bIsJumpPressed) {
@@ -137,42 +108,18 @@ void AGCFAvatarPawn::HandleJumpInput_Implementation(bool bIsPressed)
 	bIsJumpPressed = bIsPressed;
 }
 
-void AGCFAvatarPawn::HandleCrouchInput_Implementation(bool bIsPressed)
-{
-	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
-	if (bIsPressed && !bIsCrouchButtonPressed) {
-		bWantsToCrouch = !bWantsToCrouch;
-	}
-
-	// Cache the physical button state for the next frame's comparison.
-	bIsCrouchButtonPressed = bIsPressed;
-
-	/*
-	 * NOTE: If you want to implement "Hold-to-Crouch" instead of "Toggle",
-	 * simply replace the above logic with the following:
-	 *
-	 * bWantsToCrouch = bIsPressed;
-	 */
-}
-
-
-// --- IGCFAvatarActionProvider Implementation (Pull/Read) ---
-bool AGCFAvatarPawn::GetIsJumpPressed_Implementation() const
+// --- Input Providers (Pull/Read) ---
+bool AGCFAvatarPawn::GetIsJumpPressed() const
 {
 	return bIsJumpPressed;
 }
 
-bool AGCFAvatarPawn::GetIsJumpJustPressed_Implementation() const
+bool AGCFAvatarPawn::GetIsJumpJustPressed() const
 {
 	return bIsJumpJustPressed;
 }
 
-void AGCFAvatarPawn::ConsumeJumpJustPressed_Implementation()
+void AGCFAvatarPawn::ConsumeJumpJustPressed()
 {
 	bIsJumpJustPressed = false;
-}
-
-bool AGCFAvatarPawn::GetWantsToCrouch_Implementation() const
-{
-	return bWantsToCrouch;
 }

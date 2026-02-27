@@ -70,6 +70,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
 	UE_API void RemoveGameplayTag(const FGameplayTag& Tag);
 
+	//~APawn interface
+	UE_API virtual FVector GetPawnViewLocation() const override;
+	//~End of APawn interface
+
 	//~IGameplayTagAssetInterface interface
 	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;

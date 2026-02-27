@@ -14,6 +14,8 @@ class APawn;
 class IGCFPawnDataProvider;
 class IGCFAvatarActionHandler;
 class IGCFAvatarActionProvider;
+class IGCFHumanoidActionHandler;
+class IGCFHumanoidActionProvider;
 
 
 /**
@@ -53,18 +55,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
 	static TScriptInterface<IGCFPawnDataProvider> ResolvePawnDataProvider(const UObject* Context);
-
-	/**
-	 * Resolves the Avatar Action Handler interface.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
-	static TScriptInterface<IGCFAvatarActionHandler> ResolveAvatarActonHandler(const UObject* Context);
-
-	/**
-	 * Resolves the Avatar Action Provider interface.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
-	static TScriptInterface<IGCFAvatarActionProvider> ResolveAvatarActionProvider(const UObject* Context);
 };
 
 #undef UE_API

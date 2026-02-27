@@ -12,8 +12,8 @@
 #include "MoverComponent.h"
 #include "GCFShared.h"
 
-const FName AGCFPawn::CollisionComponentName(TEXT("CollisionComponent"));
-const FName AGCFPawn::MeshComponentName(TEXT("MeshComponent"));
+const FName AGCFPawn::CollisionComponentName(TEXT("PawnCollisionComponent"));
+const FName AGCFPawn::MeshComponentName(TEXT("PawnMeshComponent"));
 
 
 AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
@@ -251,6 +251,13 @@ FGenericTeamId AGCFPawn::DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldT
 {
 	// This could be changed to return, e.g., OldTeamID if you want to keep it assigned afterwards, or return an ID for some neutral faction, or etc...
 	return FGenericTeamId::NoTeam;
+}
+
+
+FVector AGCFPawn::GetPawnViewLocation() const
+{
+	// Return the actor's world location offset by the calculated eye height.
+	return GetActorLocation() + (FVector::UpVector * BaseEyeHeight);
 }
 
 
