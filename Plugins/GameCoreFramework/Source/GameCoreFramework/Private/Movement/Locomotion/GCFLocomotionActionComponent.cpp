@@ -9,7 +9,6 @@
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputComponent.h"
 #include "Movement/Locomotion/GCFLocomotionInputHandler.h"
-#include "Movement/GCFMovementFunctionLibrary.h"
 
 
 UGCFLocomotionActionComponent::UGCFLocomotionActionComponent(const FObjectInitializer& ObjectInitializer)
@@ -83,17 +82,18 @@ TArray<FGCFBindingReceipt> UGCFLocomotionActionComponent::HandleInputBinding(UGC
 void UGCFLocomotionActionComponent::Input_Jump(const FInputActionValue& InputActionValue)
 {
 	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
-			IGCFLocomotionInputHandler::Execute_HandleJumpInput(Handler.GetObject(), InputActionValue.Get<bool>());
+		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
+			IGCFLocomotionInputHandler::Execute_HandleJumpInput(Pawn, InputActionValue.Get<bool>());
 		}
 	}
 }
 
+
 void UGCFLocomotionActionComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
 	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
-			IGCFLocomotionInputHandler::Execute_HandleCrouchInput(Handler.GetObject(), InputActionValue.Get<bool>());
+		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
+			IGCFLocomotionInputHandler::Execute_HandleCrouchInput(Pawn, InputActionValue.Get<bool>());
 		}
 	}
 }
