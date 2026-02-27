@@ -4,7 +4,7 @@
 #include "Movement/GCFMovementFunctionLibrary.h"
 #include "GCFShared.h"
 #include "Movement/GCFMovementConfigReceiver.h"
-#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 
 
 TScriptInterface<IGCFMovementConfigReceiver> UGCFMovementFunctionLibrary::ResolveMovementConfigReceiver(const UObject* Context)

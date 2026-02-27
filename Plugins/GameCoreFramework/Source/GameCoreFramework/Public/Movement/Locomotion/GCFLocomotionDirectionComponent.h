@@ -8,7 +8,7 @@
 #include "GCFShared.h"
 #include "System/Binder/GCFContextBinder.h"
 #include "Movement/GCFMovementTypes.h"
-#include "GCFMovementControlComponent.generated.h"
+#include "GCFLocomotionDirectionComponent.generated.h"
 
 #define UE_API GAMECOREFRAMEWORK_API
 
@@ -27,12 +27,12 @@ struct FInputActionValue;
  * 3. Adapts movement direction based on the current Camera Policy (e.g., Camera-relative vs World-relative).
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFMovementControlComponent : public UControllerComponent
+class UGCFLocomotionDirectionComponent : public UControllerComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFMovementControlComponent(const FObjectInitializer& ObjectInitializer);
+	UE_API UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;

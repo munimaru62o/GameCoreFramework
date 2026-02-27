@@ -33,7 +33,7 @@
 #include "System/Lifecycle/GCFPossessionContextComponent.h"
 #include "AbilitySystem/GCFAbilitySystemFunctionLibrary.h"
 #include "Camera/GCFCameraControlComponent.h"
-#include "Movement/GCFMovementControlComponent.h"
+#include "Movement/Locomotion/GCFLocomotionDirectionComponent.h"
 #include "Messages/GCFGameplayMessages.h"
 
 #include "MoverComponent.h"

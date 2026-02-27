@@ -5,8 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
-#include "Movement/GCFLocomotionInputHandler.h"
-#include "Movement/GCFLocomotionInputProvider.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputProvider.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "GameplayTagAssetInterface.h"
 

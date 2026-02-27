@@ -31,7 +31,7 @@ class UGCFPlayerInputBridgeComponent;
 class UGCFInputContextComponent;
 class UGCFPossessionContextComponent;
 class UGCFCameraControlComponent;
-class UGCFMovementControlComponent;
+class UGCFLocomotionDirectionComponent;
 class UGCFAbilityInputRouterComponent;
 
 class UMoverNetworkPredictionLiaisonComponent;

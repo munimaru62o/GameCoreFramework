@@ -3,7 +3,7 @@
 
 #include "Movement/Mover/Producer/GCFHumanoidInputProducer.h"
 #include "Movement/Mover/Input/GCFHumanoidInputs.h"
-#include "Movement/GCFLocomotionInputProvider.h"
+#include "Movement/Locomotion/GCFLocomotionInputProvider.h"
 
 
 void UGCFHumanoidInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)

@@ -6,7 +6,7 @@
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
-#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 #include "GameplayEffect.h"
 #include "GCFCharacter.generated.h"
 

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "Movement/Mover/Producer/GCFCachedInputProducer.h"
-#include "Movement/GCFLocomotionInputProvider.h"
+#include "Movement/Locomotion/GCFLocomotionInputProvider.h"
 
 
 void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)

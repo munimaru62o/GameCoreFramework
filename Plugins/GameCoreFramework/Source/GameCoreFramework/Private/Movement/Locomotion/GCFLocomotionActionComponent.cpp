@@ -8,7 +8,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputComponent.h"
-#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 #include "Movement/GCFMovementFunctionLibrary.h"
 
 
