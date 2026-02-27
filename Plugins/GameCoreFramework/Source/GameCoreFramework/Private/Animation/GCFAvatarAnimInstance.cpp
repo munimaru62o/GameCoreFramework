@@ -46,29 +46,44 @@ void UGCFAvatarAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		MoverComponent = OwningPawn->FindComponentByClass<UMoverComponent>();
 	}
 
-	// --- Update Logic based on Mover ---
+	// ------------------------------------------------------------------------
+	// [GAME THREAD]
+	// Safely gather raw data from Actors and Components here.
+	// Do NOT perform heavy math operations in this function.
+	// ------------------------------------------------------------------------
 	if (MoverComponent) {
-		// Velocity
 		Velocity = MoverComponent->GetVelocity();
-		VerticalVelocity = Velocity.Z;
-		GroundSpeed = Velocity.Size2D();
-		MovementDirection = UKismetAnimationLibrary::CalculateDirection(Velocity, OwningPawn->GetActorRotation());
+		CachedActorRotation = OwningPawn->GetActorRotation();
 
-		bShouldMove = GroundSpeed > 3.0f;
 		bHasAcceleration = HasAcceleration();
-
-		// Movement Mode
 		CurrentMovementMode = MoverComponent->GetMovementModeName();
 
 		// Determine Falling state using Native Gameplay Tags instead of hardcoded strings or class casting.
-		// This guarantees that any custom movement mode (e.g., Jetpack, Grapple) that applies the 
-		// "Falling" or "InAir" tag will automatically trigger the correct airborne animation.
 		bIsFalling = MoverComponent->HasGameplayTag(Mover_IsFalling, true);
 
 		// Retrieve crouch state directly via Native Gameplay Tags to avoid hard casting.
-		// The Epic standard StanceModifier automatically applies the "Mover.IsCrouching" tag.
 		bIsCrouched = MoverComponent->HasGameplayTag(Mover_IsCrouching, true);
 	}
+}
+
+
+void UGCFAvatarAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
+{
+	Super::NativeThreadSafeUpdateAnimation(DeltaSeconds);
+
+	// ------------------------------------------------------------------------
+	// [WORKER THREAD]
+	// Perform mathematical calculations using ONLY the cached variables.
+	// Do NOT call functions on Actors or Components (like GetActorRotation) here.
+	// ------------------------------------------------------------------------
+
+	VerticalVelocity = Velocity.Z;
+	GroundSpeed = Velocity.Size2D();
+
+	// Safely calculate direction using the cached rotation
+	MovementDirection = UKismetAnimationLibrary::CalculateDirection(Velocity, CachedActorRotation);
+
+	bShouldMove = GroundSpeed > 3.0f;
 }
 
 

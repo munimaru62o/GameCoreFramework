@@ -13,10 +13,11 @@ class UMoverComponent;
 class UAbilitySystemComponent;
 
 /**
- * @brief Base AnimInstance for Avatar Pawns using Mover plugin.
- * 
+ * @brief Base AnimInstance for Avatar Pawns using the Mover plugin.
+ *
  * Replaces the traditional Character-based AnimInstance.
- * It fetches movement data directly from MoverComponent and GameplayTags.
+ * Optimized for UE5's Fast Path by separating data gathering (Game Thread)
+ * from heavy mathematical calculations (Worker Thread).
  */
 UCLASS(Config = Game)
 class GAMECOREFRAMEWORK_API UGCFAvatarAnimInstance : public UAnimInstance
@@ -26,11 +27,14 @@ class GAMECOREFRAMEWORK_API UGCFAvatarAnimInstance : public UAnimInstance
 public:
 	UGCFAvatarAnimInstance(const FObjectInitializer& ObjectInitializer);
 
-	// Like BeginPlay for AnimInstances. Good for caching pointers.
+	// Called once at the beginning. Good for caching component pointers.
 	virtual void NativeInitializeAnimation() override;
 
-	// Like Tick for AnimInstances. Used to update variables every frame.
+	// Executed on the GAME THREAD. Used ONLY to safely gather data from Actors/Components.
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	// Executed on a WORKER THREAD. Used for math and logic using the cached data.
+	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
 	/** 
@@ -46,26 +50,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GCF|References")
 	TObjectPtr<UMoverComponent> MoverComponent;
 
-	// --- Animation State Variables (Read by AnimGraph) ---
+	// --- Cached Raw Data (Gathered on Game Thread) ---
+	/** Cached rotation of the pawn to be safely used in the worker thread. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
+	FRotator CachedActorRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
 	FVector Velocity;
-
-	/** Speed of the pawn (Horizontal only, ignoring Z) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
-	float GroundSpeed;
-
-	/** Vertical velocity (Z) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
-	float VerticalVelocity;
-
-	/** Direction of movement relative to pawn's rotation (-180.0 to 180.0). Ideal for BlendSpaces. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
-	float MovementDirection;
-
-	/** True if the pawn is moving (usually GroundSpeed > Threshold) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
-	bool bShouldMove;
 
 	/** True if the pawn has any input acceleration (i.e., player is pressing keys) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
@@ -82,4 +73,21 @@ protected:
 	/** Current Movement Mode name from Mover (e.g., 'Walking', 'Falling', 'Flying') */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
 	FName CurrentMovementMode;
+
+	// --- Calculated Data (Computed on Worker Thread) ---
+	/** Speed of the pawn (Horizontal only, ignoring Z) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
+	float GroundSpeed;
+
+	/** Vertical velocity (Z) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
+	float VerticalVelocity;
+
+	/** Direction of movement relative to pawn's rotation (-180.0 to 180.0). Ideal for BlendSpaces. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
+	float MovementDirection;
+
+	/** True if the pawn is moving (usually GroundSpeed > Threshold) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Locomotion")
+	bool bShouldMove;
 };
