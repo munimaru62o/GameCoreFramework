@@ -8,7 +8,7 @@
 #include "System/Lifecycle/GCFStateTypes.h"
 #include "Components/PawnComponent.h"
 #include "System/Binder/GCFContextBinder.h"
-#include "GCFCharacterControlComponent.generated.h"
+#include "GCFLocomotionActionComponent.generated.h"
 
 #define UE_API GAMECOREFRAMEWORK_API
 
@@ -17,22 +17,22 @@ class UGCFInputComponent;
 struct FInputActionValue;
 
 /**
- * @brief Component that handles Character-specific discrete action inputs (e.g., Jump, Crouch).
+ * @brief Component that handles Pawn-independent discrete locomotion actions (e.g., Jump, Crouch).
  *
  * [Responsibilities]
  * 1. Waits for the Pawn to be fully initialized (Possessed + GameplayReady).
  * 2. Binds Input Actions securely via the GCF Input System.
- * 3. Forwards boolean commands directly to the owning AGCFCharacter.
- * By strictly casting to the concrete class, it ensures type safety and
- * eliminates interface overhead.
+ * 3. Forwards boolean commands to the owning Pawn via the IGCFLocomotionInputHandler interface.
+ * By utilizing interface-driven communication, this component is completely decoupled
+ * from specific Pawn classes (e.g., AGCFCharacter, AGCFAvatarPawn) and can be reused globally.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFCharacterControlComponent : public UPawnComponent
+UCLASS(MinimalAPI, ClassGroup = (GCF), HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+class UGCFLocomotionActionComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFCharacterControlComponent(const FObjectInitializer& ObjectInitializer);
+	UE_API UGCFLocomotionActionComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,7 +45,7 @@ private:
 	/** Registers input actions (Jump, Crouch) to the InputComponent. */
 	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
 
-	// --- Input Handlers ---
+	// --- Input Handlers (Pushing intent to Pawn via Interface) ---
 	void Input_Jump(const FInputActionValue& InputActionValue);
 	void Input_Crouch(const FInputActionValue& InputActionValue);
 

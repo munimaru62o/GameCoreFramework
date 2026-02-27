@@ -20,8 +20,6 @@ class UGCFHealthComponent;
 class UGCFCameraComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
-class UGCFCharacterControlComponent;
-class UGCFHumanoidControlComponent;
 struct FGameplayTag;
 struct FGameplayTagContainer;
 
@@ -54,13 +52,11 @@ public:
 	//~End of APawn interface
 
 	//~IGCFLocomotionInputHandler Interface
-	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
-	virtual void HandleMoveUpInput_Implementation(float Value) override;
+	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
+	UE_API virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
+	UE_API virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
 	//~End of IGCFLocomotionInputHandler Interface
 
-	// --- Input Handlers (Push / Write from Control Component) ---
-	UE_API void HandleJumpInput(bool bIsPressed);
-	UE_API void HandleCrouchInput(bool bIsPressed);
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
@@ -103,9 +99,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFPawnReadyStateComponent> PawnReadyStateComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFCharacterControlComponent> CharacterControlComponent;
 
 	UPROPERTY()
 	FGenericTeamId MyTeamID;

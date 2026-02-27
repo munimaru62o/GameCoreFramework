@@ -8,8 +8,6 @@
 
 #define UE_API GAMECOREFRAMEWORK_API
 
-class UGCFHumanoidControlComponent;
-
 /**
  * @brief The base humanoid class used by this project, deriving from AvatarPawn.
  * 
@@ -36,16 +34,15 @@ public:
 	UE_API virtual FVector GetPawnViewLocation() const override;
 	//~End of APawn interface
 
-	// --- Input Handlers (Push / Write from Control Component) ---
-	UE_API void HandleCrouchInput(bool bIsPressed);
+	//~IGCFLocomotionInputHandler Interface
+	UE_API virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
+	//~End of IGCFLocomotionInputHandler Interface
 
-	// --- Input Providers (Pull / Read from Input Producer) ---
-	UE_API bool GetWantsToCrouch() const;
+	//~IGCFLocomotionInputProvider Interface
+	UE_API virtual bool GetWantsToCrouch_Implementation() const override;
+	//~End of IGCFLocomotionInputProvider Interface
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Humanoid", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFHumanoidControlComponent> HumanoidControlComponent;
-
 	// --- Cached Input Intents for Humanoid ---
 	/** 
 	 * Indicates whether the player currently intends to crouch.

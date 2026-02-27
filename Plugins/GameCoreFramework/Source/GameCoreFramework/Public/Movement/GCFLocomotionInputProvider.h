@@ -8,8 +8,6 @@
 #include "UObject/Interface.h"
 #include "GCFLocomotionInputProvider.generated.h"
 
-class UGCFInputConfig;
-
 
 UINTERFACE(MinimalAPI)
 class UGCFLocomotionInputProvider : public UInterface
@@ -17,16 +15,35 @@ class UGCFLocomotionInputProvider : public UInterface
 	GENERATED_BODY()
 };
 
-
+/**
+ * @brief Interface allowing Input Producers to securely pull cached movement intents
+ * from any Pawn, without tightly coupling to specific concrete classes (e.g., AGCFAvatarPawn).
+ */
 class GAMECOREFRAMEWORK_API IGCFLocomotionInputProvider
 {
 	GENERATED_BODY()
 
 public:
-    /** 
-     * Returns the world-space direction/magnitude the player intends to move.
-     * This is usually cached from the Controller's input.
-     */
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
-    FVector GetDesiredMovementVector() const;
+	/** 
+	 * Returns the world-space direction/magnitude the player intends to move.
+	 * This is usually cached from the Controller's input.
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
+	FVector GetDesiredMovementVector() const;
+
+	/** Returns true if the jump button is currently being held down. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
+	bool GetIsJumpPressed() const;
+
+	/** Returns true ONLY on the exact frame the jump button was initially pressed. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
+	bool GetIsJumpJustPressed() const;
+
+	/** Called by the Input Producer to clear the JustPressed flag after consuming it. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
+	void ConsumeJumpJustPressed();
+
+	/** Returns true if the pawn intends to crouch. */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
+	bool GetWantsToCrouch() const;
 };

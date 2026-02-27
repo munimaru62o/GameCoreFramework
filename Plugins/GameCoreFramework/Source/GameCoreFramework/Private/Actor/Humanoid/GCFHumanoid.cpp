@@ -7,7 +7,6 @@
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
 #include "MoverTypes.h"
 #include "DefaultMovementSet/Settings/StanceSettings.h"
-#include "Actor/Humanoid/GCFHumanoidControlComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GCFHumanoid)
 
@@ -29,8 +28,6 @@ AGCFHumanoid::AGCFHumanoid(const FObjectInitializer& ObjectInitializer)
 		SkeletalMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 		SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	}
-
-	HumanoidControlComponent = CreateDefaultSubobject<UGCFHumanoidControlComponent>(TEXT("HumanoidControlComponent"));
 }
 
 
@@ -67,7 +64,7 @@ FVector AGCFHumanoid::GetPawnViewLocation() const
 }
 
 // --- IGCFHumanoidActionHandler Implementation (Push/Write) ---
-void AGCFHumanoid::HandleCrouchInput(bool bIsPressed)
+void AGCFHumanoid::HandleCrouchInput_Implementation(bool bIsPressed)
 {
 	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
 	if (bIsPressed && !bIsCrouchButtonPressed) {
@@ -86,7 +83,7 @@ void AGCFHumanoid::HandleCrouchInput(bool bIsPressed)
 }
 
 // --- IGCFHumanoidActionProvider Implementation (Pull/Read) ---
-bool AGCFHumanoid::GetWantsToCrouch() const
+bool AGCFHumanoid::GetWantsToCrouch_Implementation() const
 {
 	return bWantsToCrouch;
 }

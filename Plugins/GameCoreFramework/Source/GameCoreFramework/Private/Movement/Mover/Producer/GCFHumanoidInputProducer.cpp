@@ -3,20 +3,21 @@
 
 #include "Movement/Mover/Producer/GCFHumanoidInputProducer.h"
 #include "Movement/Mover/Input/GCFHumanoidInputs.h"
-#include "Actor/GCFActorFunctionLibrary.h"
-#include "Actor/Humanoid/GCFHumanoid.h"
+#include "Movement/GCFLocomotionInputProvider.h"
 
 
 void UGCFHumanoidInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)
 {
-	// Call the base class to handle standard directional movement (Vector generation).
+	// Call the base class to handle standard directional movement and jumps via interface.
 	Super::ProduceInput_Implementation(SimTime, InputCmdResult);
 
-	if (AGCFHumanoid* Humanoid = Cast<AGCFHumanoid>(GetOwner())) {
-		if (Humanoid->IsLocallyControlled()) {
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled()) {
+
+		if (OwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
 			// --- Crouch Handling ---
 			FGCFHumanoidInputs& HumanoidInputs = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FGCFHumanoidInputs>();
-			HumanoidInputs.bWantsToCrouch  = Humanoid->GetWantsToCrouch();
+			HumanoidInputs.bWantsToCrouch = IGCFLocomotionInputProvider::Execute_GetWantsToCrouch(OwnerPawn);
 		}
 	}
 }

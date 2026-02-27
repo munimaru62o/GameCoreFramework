@@ -16,9 +16,9 @@ class UGCFLocomotionInputHandler : public UInterface
 };
 
 /**
- * @brief Interface to abstract Pawn movement operations (Walking, Driving, Flying, etc.).
+ * @brief Interface to abstract Pawn movement operations (Walking, Driving, Flying, Jumping, Crouching).
  * The ControlComponent passes raw input via this interface, delegating the actual
- * movement logic and calculations to the specific Pawn implementation.
+ * movement logic, state caching, and calculations to the specific Pawn implementation.
  */
 class UE_API IGCFLocomotionInputHandler
 {
@@ -29,19 +29,30 @@ public:
 	 * @brief Handles movement input commands.
 	 * @param InputValue The input vector. (X: Forward/Throttle, Y: Right/Steer)
 	 * @param MovementRotation The reference rotation calculated from the active Rotation Policy.
-	 * (e.g., Camera Yaw for TPS, or World Zero for Fixed/TopDown view).
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
 	void HandleMoveInput(const FVector2D& InputValue, const FRotator& MovementRotation);
 
 	/**
-	 * @brief Handles vertical movement input.
-	 * Primarily used for altitude control in flying vehicles (Helicopters, Drones),
-	 * distinct from standard character jumping.
+	 * @brief Handles vertical movement input (e.g., altitude control for flying vehicles).
 	 * @param Value The magnitude of the upward/downward input.
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
 	void HandleMoveUpInput(float Value);
+
+	/**
+	 * @brief Handles jump input commands.
+	 * @param bIsPressed True if the jump action is currently triggered/held, false otherwise.
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
+	void HandleJumpInput(bool bIsPressed);
+
+	/**
+	 * @brief Handles crouch input commands.
+	 * @param bIsPressed True if the crouch action is currently triggered, false otherwise.
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
+	void HandleCrouchInput(bool bIsPressed);
 };
 
 #undef UE_API
