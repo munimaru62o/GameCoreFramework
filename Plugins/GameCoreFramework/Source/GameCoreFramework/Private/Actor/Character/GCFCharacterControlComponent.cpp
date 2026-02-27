@@ -9,6 +9,7 @@
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputComponent.h"
 #include "Actor/Character/GCFCharacter.h"
+#include "Actor/GCFActorFunctionLibrary.h"
 
 
 UGCFCharacterControlComponent::UGCFCharacterControlComponent(const FObjectInitializer& ObjectInitializer)
@@ -68,7 +69,10 @@ TArray<FGCFBindingReceipt> UGCFCharacterControlComponent::HandleInputBinding(UGC
 		}
 		FGCFInputBinder InputBinder(InputComponent, Config, Receipts);
 		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Jump, ETriggerEvent::Triggered, this, &ThisClass::Input_Jump);
+		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Jump, ETriggerEvent::Completed, this, &ThisClass::Input_Jump);
+
 		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Crouch, ETriggerEvent::Triggered, this, &ThisClass::Input_Crouch);
+		InputBinder.Bind(GCFGameplayTags::InputTag_Character_Crouch, ETriggerEvent::Completed, this, &ThisClass::Input_Crouch);
 	}
 	return Receipts;
 }
@@ -77,16 +81,13 @@ TArray<FGCFBindingReceipt> UGCFCharacterControlComponent::HandleInputBinding(UGC
 void UGCFCharacterControlComponent::Input_Jump(const FInputActionValue& InputActionValue)
 {
 	if (AGCFCharacter* Character = GetPawn<AGCFCharacter>()) {
-		if (Character->CanJump()) {
-			Character->Jump();
-		}
+		Character->HandleJumpInput(InputActionValue.Get<bool>());
 	}
 }
-
 
 void UGCFCharacterControlComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
 	if (AGCFCharacter* Character = GetPawn<AGCFCharacter>()) {
-		Character->ToggleCrouch();
+		Character->HandleCrouchInput(InputActionValue.Get<bool>());
 	}
 }

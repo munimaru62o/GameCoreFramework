@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Movement/Mover/GCFCachedInputProducer.h"
-#include "Movement/GCFMovementInputProvider.h"
+#include "Movement/Mover/Producer/GCFCachedInputProducer.h"
+#include "Movement/GCFLocomotionInputProvider.h"
+#include "Actor/Avatar/GCFAvatarPawn.h"
 
 
 void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult)
@@ -22,11 +23,22 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 
 		// Extract the cached movement vector (calculated from Enhanced Input / Gameplay Tags)
 		// securely via the provider interface, decoupling the producer from the specific Pawn class.
-		if (OwnerPawn->Implements<UGCFMovementInputProvider>()) {
-			DesiredMove = IGCFMovementInputProvider::Execute_GetDesiredMovementVector(OwnerPawn);
+		if (OwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
+			DesiredMove = IGCFLocomotionInputProvider::Execute_GetDesiredMovementVector(OwnerPawn);
+		}
+
+		if (AGCFAvatarPawn* AvatarPawn = Cast<AGCFAvatarPawn>(OwnerPawn)) {
+			// --- Jump Handling ---
+			InputData.bIsJumpPressed = AvatarPawn->GetIsJumpPressed();
+			InputData.bIsJumpJustPressed = AvatarPawn->GetIsJumpJustPressed();
+
+			if (InputData.bIsJumpJustPressed) {
+				AvatarPawn->ConsumeJumpJustPressed();
+			}
 		}
 	}
 
 	// Inject the final directional intent into Mover's input buffer.
 	InputData.SetMoveInput(EMoveInputType::DirectionalIntent, DesiredMove);
+	InputData.OrientationIntent = OwnerPawn->GetControlRotation().Vector();
 }

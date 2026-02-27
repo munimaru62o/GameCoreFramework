@@ -17,14 +17,14 @@ class UGCFInputComponent;
 struct FInputActionValue;
 
 /**
- * @brief Component handles character-specific input actions (Jump, Crouch).
+ * @brief Component that handles Character-specific discrete action inputs (e.g., Jump, Crouch).
  *
  * [Responsibilities]
  * 1. Waits for the Pawn to be fully initialized (Possessed + GameplayReady).
- * 2. Binds Input Actions via the GCF Input System.
- * 3. Forwards commands to the owning AGCFCharacter.
- *
- * Unlike MovementControlComponent (which handles vectors), this handles discrete actions.
+ * 2. Binds Input Actions securely via the GCF Input System.
+ * 3. Forwards boolean commands directly to the owning AGCFCharacter.
+ * By strictly casting to the concrete class, it ensures type safety and
+ * eliminates interface overhead.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
 class UGCFCharacterControlComponent : public UPawnComponent

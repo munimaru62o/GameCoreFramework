@@ -12,6 +12,10 @@ class APlayerState;
 class AController;
 class APawn;
 class IGCFPawnDataProvider;
+class IGCFAvatarActionHandler;
+class IGCFAvatarActionProvider;
+class IGCFHumanoidActionHandler;
+class IGCFHumanoidActionProvider;
 
 
 /**
@@ -48,7 +52,6 @@ public:
 
 	/**
 	 * Resolves the Pawn Data Provider interface.
-	 * Useful for retrieving PawnData without knowing the exact Pawn class.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
 	static TScriptInterface<IGCFPawnDataProvider> ResolvePawnDataProvider(const UObject* Context);

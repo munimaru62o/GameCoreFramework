@@ -5,32 +5,38 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
-#include "Movement/GCFLocomotionHandler.h"
-#include "Movement/GCFMovementInputProvider.h"
+#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/GCFLocomotionInputProvider.h"
+#include "Actor/GCFTeamAgentInterface.h"
+#include "GameplayTagAssetInterface.h"
 
 #include "GCFPawn.generated.h"
 
 #define UE_API GAMECOREFRAMEWORK_API
 
 class UGCFPawnData;
-class USphereComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
 class UGCFCameraComponent;
 class UGCFPawnInputBridgeComponent;
+class UShapeComponent;
+class UMeshComponent;
+class UMoverComponent;
 
 /**
  * @brief Base Pawn class for non-humanoid entities (e.g., Spectators, Drones, Vehicles).
- * * Unlike AGCFCharacter, this class does not include a CapsuleComponent or CharacterMovementComponent by default.
+ * 
+ * Unlike AGCFCharacter, this class does not include a CapsuleComponent or CharacterMovementComponent by default.
  * It uses a simple SphereComponent as the root for collision and supports floating movement.
- * * [Features]
+ * 
+ * [Features]
  * - Integrated with Modular Gameplay (PawnExtensionComponent).
  * - Handles controller/player state replication lifecycle.
  * - Supports GCF Camera system.
  * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via caching.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFPawn : public AModularPawn, public IGCFLocomotionHandler, public IGCFMovementInputProvider
+class AGCFPawn : public AModularPawn, public IGCFLocomotionInputHandler, public IGCFLocomotionInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
@@ -40,24 +46,66 @@ public:
 	UE_API virtual void PostInitializeComponents() override;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class USphereComponent* GetSphereComponent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UStaticMeshComponent* GetStaticMesh() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UShapeComponent* GetCollisionComponent() const { return CollisionComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
+	class UMeshComponent* GetMeshComponent() const { return MeshComponent; };
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Movement")
+	virtual class UMoverComponent* GetMoverComponent() const { return MoverComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	const UGCFPawnData* GetPawnData() const;
 
+	// Helper functions to directly modify local tags.
+	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
+	UE_API void AddGameplayTag(const FGameplayTag& Tag);
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
+	UE_API void RemoveGameplayTag(const FGameplayTag& Tag);
+
+	//~APawn interface
+	UE_API virtual FVector GetPawnViewLocation() const override;
+	//~End of APawn interface
+
+	//~IGameplayTagAssetInterface interface
+	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	//~End of IGameplayTagAssetInterface interface
+
 protected:
+	UE_API static const FName CollisionComponentName;
+	UE_API static const FName MeshComponentName;
+
 	//~AActor / APawn Interface
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void UnPossessed() override;
-	virtual void OnRep_Controller() override;
-	virtual void OnRep_PlayerState() override;
+	UE_API virtual void PossessedBy(AController* NewController) override;
+	UE_API virtual void UnPossessed() override;
+	UE_API virtual void OnRep_Controller() override;
+	UE_API virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
 
-	//~IGCFLocomotionHandler Interface
-	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
-	virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionHandler Interface
+	//~IGCFLocomotionInputHandler Interface
+	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
+	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
+	//~End of IGCFLocomotionInputHandler Interface
 
-	//~IGCFMovementInputProvider Interface
-	FVector GetDesiredMovementVector_Implementation() const override;
-	//~End of IGCFMovementInputProvider Interface
+	//~IGCFLocomotionInputProvider Interface
+	UE_API FVector GetDesiredMovementVector_Implementation() const override;
+	//~End of IGCFLocomotionInputProvider Interface
+
+	//~IGCFTeamAgentInterface interface
+	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	UE_API virtual FGenericTeamId GetGenericTeamId() const override;
+	UE_API virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~End of IGCFTeamAgentInterface interface
 
 	// Begins the death sequence for the character (disables collision, disables movement, etc...)
 	UFUNCTION()
@@ -71,15 +119,27 @@ private:
 	/** Calculates the final movement vector based on current inputs and rotation, storing it for the Mover Producer. */
 	void UpdateCachedTargetMovement();
 
+	UFUNCTION()
+	void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+
+	// Called to determine what happens to the team ID when possession ends
+	virtual FGenericTeamId DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> CollisionComponent;
+	TObjectPtr<UShapeComponent> CollisionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFPawnExtensionComponent> PawnExtensionComponent;
+	TObjectPtr<UMeshComponent> MeshComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMoverComponent> MoverComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFCameraComponent> CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UGCFPawnExtensionComponent> PawnExtensionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Pawn", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGCFPawnReadyStateComponent> PawnReadyStateComponent;
@@ -90,6 +150,19 @@ protected:
 	/** Determines whether this pawn routes input to a Mover component instead of traditional PawnMovement. */
 	UPROPERTY(EditDefaultsOnly, Category = "GCF|Movement")
 	bool bUseMoverComponent = false;
+
+	UPROPERTY()
+	FGenericTeamId MyTeamID;
+
+	UPROPERTY()
+	FOnGCFTeamIndexChangedDelegate OnTeamChangedDelegate;
+
+	/** 
+	 * A lightweight container to manage state tags locally without requiring a full Ability System Component.
+	 * Can be overridden in child classes (e.g. AGCFPawnWithAbilities) to defer to an ASC.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Tags")
+	FGameplayTagContainer PawnTags;
 
 private:
 	/** The pre-calculated movement vector, requested every tick by the Mover Input Producer. */

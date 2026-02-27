@@ -39,7 +39,7 @@
 #include "MoverComponent.h"
 #include "Backends/MoverNetworkPredictionLiaison.h"
 #include "Components/SphereComponent.h"
-#include "Movement/Mover/GCFDummyMovementMode.h"
+#include "Movement/Mover/Mode/GCFDummyMovementMode.h"
 
 #include "System/GCFDeveloperSettings.h"
 #include "GameMapsSettings.h"

@@ -5,6 +5,7 @@
 
 #include "Actor/Character/GCFCharacter.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayCueInterface.h"
 #include "GameplayTagAssetInterface.h"
 #include "GCFCharacterWithAbilities.generated.h"
 
@@ -26,7 +27,7 @@ class UGCFPawnInputBridgeComponent;
  * - Vehicles or dynamic objects with health/abilities
  */
 UCLASS()
-class AGCFCharacterWithAbilities : public AGCFCharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
+class AGCFCharacterWithAbilities : public AGCFCharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 

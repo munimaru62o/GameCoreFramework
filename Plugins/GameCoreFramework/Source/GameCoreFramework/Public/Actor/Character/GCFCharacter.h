@@ -5,9 +5,8 @@
 
 #include "ModularCharacter.h"
 #include "AbilitySystemInterface.h"
-#include "GameplayCueInterface.h"
 #include "Actor/GCFTeamAgentInterface.h"
-#include "Movement/GCFLocomotionHandler.h"
+#include "Movement/GCFLocomotionInputHandler.h"
 #include "GameplayEffect.h"
 #include "GCFCharacter.generated.h"
 
@@ -22,9 +21,9 @@ class UGCFCameraComponent;
 class UGCFPawnExtensionComponent;
 class UGCFPawnReadyStateComponent;
 class UGCFCharacterControlComponent;
+class UGCFHumanoidControlComponent;
 struct FGameplayTag;
 struct FGameplayTagContainer;
-
 
 /**
  * AGCFCharacter
@@ -34,15 +33,13 @@ struct FGameplayTagContainer;
  *	New behavior should be added via pawn components when possible.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base character pawn class used by this project."))
-class AGCFCharacter : public AModularCharacter, public IGCFLocomotionHandler, public IGameplayCueInterface, public IGCFTeamAgentInterface
+class AGCFCharacter : public AModularCharacter, public IGCFLocomotionInputHandler, public IGCFTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 
 	UE_API AGCFCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
-	UE_API void ToggleCrouch();
 
 	//~AActor interface
 	UE_API virtual void PreInitializeComponents() override;
@@ -53,12 +50,17 @@ public:
 
 	//~APawn interface
 	UE_API virtual void NotifyControllerChanged() override;
+	UE_API virtual FVector GetPawnViewLocation() const override;
 	//~End of APawn interface
 
-	//~IGCFLocomotionHandler Interface
+	//~IGCFLocomotionInputHandler Interface
 	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
 	virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionHandler Interface
+	//~End of IGCFLocomotionInputHandler Interface
+
+	// --- Input Handlers (Push / Write from Control Component) ---
+	UE_API void HandleJumpInput(bool bIsPressed);
+	UE_API void HandleCrouchInput(bool bIsPressed);
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
@@ -110,6 +112,9 @@ protected:
 
 	UPROPERTY()
 	FOnGCFTeamIndexChangedDelegate OnTeamChangedDelegate;
+
+	/** Tracks the physical state of the crouch button to prevent continuous toggling while held. */
+	bool bIsCrouchButtonPressed = false;
 
 protected:
 	// Called to determine what happens to the team ID when possession ends

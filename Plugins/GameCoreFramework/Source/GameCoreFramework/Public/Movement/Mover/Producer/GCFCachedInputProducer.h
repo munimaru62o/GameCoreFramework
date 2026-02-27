@@ -14,7 +14,7 @@
  * @brief Mover input producer that bridges the GCF Input System with the Mover plugin.
  *
  * Instead of reading hardware input directly, this producer queries the owning Pawn
- * (via IGCFMovementInputProvider) for its cached movement intention. This allows the
+ * (via IGCFLocomotionInputProvider) for its cached movement intention. This allows the
  * project to maintain a data-driven input flow (InputAction -> InputTag -> Pawn Cache)
  * while fully supporting Mover's tick-based prediction and rollback systems.
  */

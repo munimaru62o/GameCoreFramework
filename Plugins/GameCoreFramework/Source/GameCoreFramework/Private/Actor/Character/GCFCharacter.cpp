@@ -121,6 +121,28 @@ void AGCFCharacter::NotifyControllerChanged()
 }
 
 
+FVector AGCFCharacter::GetPawnViewLocation() const
+{
+	// Get the base eye height defined in the class.
+	float TargetEyeHeight = BaseEyeHeight;
+
+	// If using the traditional CharacterMovementComponent, check its crouch state.
+	if (const UCharacterMovementComponent* MoveComp = GetCharacterMovement()) {
+		if (MoveComp->IsCrouching()) {
+			// CMC has a built-in property for crouched eye height, but if you want it to be 
+			// physically accurate to the capsule difference, you can calculate it like this:
+			const float DefaultHalfHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+			const float CrouchOffset = DefaultHalfHeight - MoveComp->GetCrouchedHalfHeight();
+
+			TargetEyeHeight -= CrouchOffset;
+		}
+	}
+
+	// Return the actor's world location offset by the calculated eye height.
+	return GetActorLocation() + (FVector::UpVector * TargetEyeHeight);
+}
+
+
 void AGCFCharacter::HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation)
 {
 	if (InputValue.X != 0.0f) {
@@ -242,15 +264,32 @@ void AGCFCharacter::UninitAndDestroy()
 }
 
 
-void AGCFCharacter::ToggleCrouch()
+// --- IGCFAvatarActionHandler Implementation ---
+void AGCFCharacter::HandleJumpInput(bool bIsPressed)
 {
-	const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
-
-	if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
-		UnCrouch();
-	} else if (GCFMoveComp->IsMovingOnGround()) {
-		Crouch();
+	if (bIsPressed) {
+		Jump(); // ACharacter native method sets bPressedJump = true
+	} else {
+		StopJumping(); // ACharacter native method sets bPressedJump = false
 	}
+}
+
+
+void AGCFCharacter::HandleCrouchInput(bool bIsPressed)
+{
+	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
+	if (bIsPressed && !bIsCrouchButtonPressed) {
+		const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
+
+		if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
+			UnCrouch();
+		} else if (GCFMoveComp->IsMovingOnGround()) {
+			Crouch();
+		}
+	}
+
+	// Cache the physical button state for the next frame's comparison.
+	bIsCrouchButtonPressed = bIsPressed;
 }
 
 
