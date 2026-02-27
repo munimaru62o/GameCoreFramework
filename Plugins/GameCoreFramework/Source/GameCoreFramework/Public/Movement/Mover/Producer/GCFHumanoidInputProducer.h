@@ -8,9 +8,9 @@
 #include "GCFHumanoidInputProducer.generated.h"
 
 /**
- * @brief Input producer specifically for Humanoid Pawns.
+ * @brief Input producer specifically for Pawns requiring Humanoid inputs (like Crouch).
  * Inherits basic movement logic and Jump actions from GCFCachedInputProducer,
- * and adds Humanoid-specific actions such as Crouch.
+ * and adds additional interface polling for stance changes (Crouch) to inject into FGCFHumanoidInputs.
  */
 UCLASS(Blueprintable, ClassGroup = (GCF), meta = (BlueprintSpawnableComponent))
 class GAMECOREFRAMEWORK_API UGCFHumanoidInputProducer : public UGCFCachedInputProducer

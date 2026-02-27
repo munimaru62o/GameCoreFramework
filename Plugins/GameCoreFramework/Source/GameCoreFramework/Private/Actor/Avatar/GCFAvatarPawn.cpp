@@ -6,7 +6,6 @@
 #include "GCFShared.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
-#include "Actor/Avatar/GCFAvatarControlComponent.h"
 #include "Movement/Mover/GCFCharacterMoverComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GCFAvatarPawn)
@@ -45,8 +44,6 @@ AGCFAvatarPawn::AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer)
 		SkeletalMesh->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));  // Rotate mesh to be X forward since it is exported as Y forward.
 		SkeletalMesh->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	}
-
-	AvatarControlComponent = CreateDefaultSubobject<UGCFAvatarControlComponent>(TEXT("AvatarControlComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -97,7 +94,7 @@ void AGCFAvatarPawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 
 // --- Input Handlers (Push/Write) ---
-void AGCFAvatarPawn::HandleJumpInput(bool bIsPressed)
+void AGCFAvatarPawn::HandleJumpInput_Implementation(bool bIsPressed)
 {
 	// Detect the exact frame the button was pressed (JustPressed)
 	if (bIsPressed && !bIsJumpPressed) {
@@ -109,17 +106,17 @@ void AGCFAvatarPawn::HandleJumpInput(bool bIsPressed)
 }
 
 // --- Input Providers (Pull/Read) ---
-bool AGCFAvatarPawn::GetIsJumpPressed() const
+bool AGCFAvatarPawn::GetIsJumpPressed_Implementation() const
 {
 	return bIsJumpPressed;
 }
 
-bool AGCFAvatarPawn::GetIsJumpJustPressed() const
+bool AGCFAvatarPawn::GetIsJumpJustPressed_Implementation() const
 {
 	return bIsJumpJustPressed;
 }
 
-void AGCFAvatarPawn::ConsumeJumpJustPressed()
+void AGCFAvatarPawn::ConsumeJumpJustPressed_Implementation()
 {
 	bIsJumpJustPressed = false;
 }

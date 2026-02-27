@@ -191,6 +191,12 @@ void AGCFPawn::HandleMoveUpInput_Implementation(float Value)
 }
 
 
+FVector AGCFPawn::GetDesiredMovementVector_Implementation() const
+{
+	return CachedTargetMovement;
+}
+
+
 void AGCFPawn::UpdateCachedTargetMovement()
 {
 	// Horizontal Movement Calculation (Applied with Camera/Controller rotation)
@@ -202,12 +208,6 @@ void AGCFPawn::UpdateCachedTargetMovement()
 
 	// Composite and store the final intent (The Producer will read this cached value)
 	CachedTargetMovement = ForwardDir + RightDir + UpDir;
-}
-
-
-FVector AGCFPawn::GetDesiredMovementVector_Implementation() const
-{
-	return CachedTargetMovement;
 }
 
 

@@ -46,8 +46,8 @@ UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_AutoRun, "InputTag.AutoRun", "Auto-run i
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Camera_Zoom, "InputTag.Camera.Zoom", "Camera Zoom input.");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Interact, "InputTag.Interact", "Interact input.");
 
-UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Character_Crouch, "InputTag.Character.Crouch", "Crouch input.");
-UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Character_Jump, "InputTag.Character.Jump", "Jump input.");
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Crouch, "InputTag.Crouch", "Crouch input.");
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Jump, "InputTag.Jump", "Jump input.");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Vehicle_HandBrake, "InputTag.Vehicle.HandBrake", "");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Vehicle_Light, "InputTag.Vehicle.Light", "");
 

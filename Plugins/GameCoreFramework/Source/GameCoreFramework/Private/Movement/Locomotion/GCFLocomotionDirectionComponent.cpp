@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include "Movement/GCFMovementControlComponent.h"
+#include "Movement/Locomotion/GCFLocomotionDirectionComponent.h"
 
 #include "GCFShared.h"
 #include "Actor/Data/GCFPawnData.h"
 #include "Actor/Data/GCFPawnDataProvider.h"
 #include "Camera/GCFCameraFunctionLibrary.h"
-#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 #include "Movement/GCFMovementFunctionLibrary.h"
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputConfig.h"
@@ -18,7 +18,7 @@
 #include "Misc/EnumClassFlags.h"
 
 
-UGCFMovementControlComponent::UGCFMovementControlComponent(const FObjectInitializer& ObjectInitializer)
+UGCFLocomotionDirectionComponent::UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -28,7 +28,7 @@ UGCFMovementControlComponent::UGCFMovementControlComponent(const FObjectInitiali
 }
 
 
-void UGCFMovementControlComponent::BeginPlay()
+void UGCFLocomotionDirectionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -51,20 +51,20 @@ void UGCFMovementControlComponent::BeginPlay()
 	}
 }
 
-void UGCFMovementControlComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UGCFLocomotionDirectionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Handle.Reset();
 	Super::EndPlay(EndPlayReason);
 }
 
 
-void UGCFMovementControlComponent::HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy)
+void UGCFLocomotionDirectionComponent::HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy)
 {
 	CachedPolicy = Policy;
 }
 
 
-TArray<FGCFBindingReceipt> UGCFMovementControlComponent::HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider)
+TArray<FGCFBindingReceipt> UGCFLocomotionDirectionComponent::HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider)
 {
 	TArray<FGCFBindingReceipt> Receipts{};
 	if (!Provider) {
@@ -87,7 +87,7 @@ TArray<FGCFBindingReceipt> UGCFMovementControlComponent::HandleInputBinding(UGCF
 }
 
 
-void UGCFMovementControlComponent::Input_Move(const FInputActionValue& Value)
+void UGCFLocomotionDirectionComponent::Input_Move(const FInputActionValue& Value)
 {
 	if (AController* Controller = GetController<AController>()) {
 
@@ -108,7 +108,7 @@ void UGCFMovementControlComponent::Input_Move(const FInputActionValue& Value)
  * Explicitly notifies the locomotion handler to halt horizontal movement by passing a zero vector.
  * This prevents the pawn from continuously moving if the input stream abruptly stops.
  */
-void UGCFMovementControlComponent::Input_Move_Completed(const FInputActionValue& Value)
+void UGCFLocomotionDirectionComponent::Input_Move_Completed(const FInputActionValue& Value)
 {
 	if (AController* Controller = GetController<AController>()) {
 		if (APawn* Pawn = GetPawn<APawn>()) {
@@ -120,7 +120,7 @@ void UGCFMovementControlComponent::Input_Move_Completed(const FInputActionValue&
 }
 
 
-void UGCFMovementControlComponent::Input_MoveUp(const FInputActionValue& Value)
+void UGCFLocomotionDirectionComponent::Input_MoveUp(const FInputActionValue& Value)
 {
 	const float UpValue = Value.Get<float>();
 
@@ -136,7 +136,7 @@ void UGCFMovementControlComponent::Input_MoveUp(const FInputActionValue& Value)
  * Triggered when the vertical movement input is released (ETriggerEvent::Completed).
  * Explicitly notifies the locomotion handler to halt vertical movement (e.g., flying, swimming) by passing 0.0f.
  */
-void UGCFMovementControlComponent::Input_MoveUp_Completed(const FInputActionValue& Value)
+void UGCFLocomotionDirectionComponent::Input_MoveUp_Completed(const FInputActionValue& Value)
 {
 	if (APawn* Pawn = GetPawn<APawn>()) {
 		if (TScriptInterface<IGCFLocomotionInputHandler> Handler = UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(Pawn)) {
@@ -146,7 +146,7 @@ void UGCFMovementControlComponent::Input_MoveUp_Completed(const FInputActionValu
 }
 
 
-FRotator UGCFMovementControlComponent::CalcMovementRotation(AController* Controller) const
+FRotator UGCFLocomotionDirectionComponent::CalcMovementRotation(AController* Controller) const
 {
 	if (!Controller) {
 		return FRotator::ZeroRotator;

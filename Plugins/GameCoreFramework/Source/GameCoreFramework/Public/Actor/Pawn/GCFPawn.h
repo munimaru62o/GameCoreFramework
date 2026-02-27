@@ -5,8 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "ModularPawn.h"
-#include "Movement/GCFLocomotionInputHandler.h"
-#include "Movement/GCFLocomotionInputProvider.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputProvider.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "GameplayTagAssetInterface.h"
 
@@ -81,6 +81,15 @@ public:
 	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	//~End of IGameplayTagAssetInterface interface
 
+	//~IGCFLocomotionInputHandler Interface
+	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
+	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
+	//~End of IGCFLocomotionInputHandler Interface
+
+	//~IGCFLocomotionInputProvider Interface
+	UE_API FVector GetDesiredMovementVector_Implementation() const override;
+	//~End of IGCFLocomotionInputProvider Interface
+
 protected:
 	UE_API static const FName CollisionComponentName;
 	UE_API static const FName MeshComponentName;
@@ -91,15 +100,6 @@ protected:
 	UE_API virtual void OnRep_Controller() override;
 	UE_API virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
-
-	//~IGCFLocomotionInputHandler Interface
-	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
-	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionInputHandler Interface
-
-	//~IGCFLocomotionInputProvider Interface
-	UE_API FVector GetDesiredMovementVector_Implementation() const override;
-	//~End of IGCFLocomotionInputProvider Interface
 
 	//~IGCFTeamAgentInterface interface
 	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;

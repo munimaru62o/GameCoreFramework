@@ -10,7 +10,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Gameframework/CharacterMovementComponent.h"
 #include "Movement/GCFCharacterMovementComponent.h"
-#include "Actor/Character/GCFCharacterControlComponent.h"
 #include "System/Lifecycle/GCFPawnReadyStateComponent.h"
 #include "Camera/GCFCameraComponent.h"
 #include "TimerManager.h"
@@ -66,7 +65,6 @@ AGCFCharacter::AGCFCharacter(const FObjectInitializer& ObjectInitializer)
 	PawnExtComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("PawnExtensionComponent"));
 
 	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("PawnReadyStateComponent"));
-	CharacterControlComponent = CreateDefaultSubobject<UGCFCharacterControlComponent>(TEXT("CharacterControlComponent"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -157,9 +155,31 @@ void AGCFCharacter::HandleMoveInput_Implementation(const FVector2D& InputValue, 
 }
 
 
-void AGCFCharacter::HandleMoveUpInput_Implementation(float Value)
+void AGCFCharacter::HandleJumpInput_Implementation(bool bIsPressed)
 {
-	//AddMovementInput(FVector::UpVector, Value);
+	if (bIsPressed) {
+		Jump(); // ACharacter native method sets bPressedJump = true
+	} else {
+		StopJumping(); // ACharacter native method sets bPressedJump = false
+	}
+}
+
+
+void AGCFCharacter::HandleCrouchInput_Implementation(bool bIsPressed)
+{
+	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
+	if (bIsPressed && !bIsCrouchButtonPressed) {
+		const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
+
+		if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
+			UnCrouch();
+		} else if (GCFMoveComp->IsMovingOnGround()) {
+			Crouch();
+		}
+	}
+
+	// Cache the physical button state for the next frame's comparison.
+	bIsCrouchButtonPressed = bIsPressed;
 }
 
 
@@ -261,35 +281,6 @@ void AGCFCharacter::UninitAndDestroy()
 	}
 
 	SetActorHiddenInGame(true);
-}
-
-
-// --- IGCFAvatarActionHandler Implementation ---
-void AGCFCharacter::HandleJumpInput(bool bIsPressed)
-{
-	if (bIsPressed) {
-		Jump(); // ACharacter native method sets bPressedJump = true
-	} else {
-		StopJumping(); // ACharacter native method sets bPressedJump = false
-	}
-}
-
-
-void AGCFCharacter::HandleCrouchInput(bool bIsPressed)
-{
-	// Execute the toggle logic only on the exact frame the button is pressed (Just Pressed).
-	if (bIsPressed && !bIsCrouchButtonPressed) {
-		const UCharacterMovementComponent* GCFMoveComp = CastChecked<UCharacterMovementComponent>(GetCharacterMovement());
-
-		if (IsCrouched() || GCFMoveComp->bWantsToCrouch) {
-			UnCrouch();
-		} else if (GCFMoveComp->IsMovingOnGround()) {
-			Crouch();
-		}
-	}
-
-	// Cache the physical button state for the next frame's comparison.
-	bIsCrouchButtonPressed = bIsPressed;
 }
 
 

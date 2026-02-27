@@ -42,22 +42,21 @@ public:
 	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~End of AActor interface
 
-	// --- Input Handlers (Push / Write from Control Component) ---
-	UE_API void HandleJumpInput(bool bIsPressed);
+	//~IGCFLocomotionInputHandler Interface
+	UE_API virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
+	//~End of IGCFLocomotionInputHandler Interface
 
-	// --- Input Providers (Pull / Read from Input Producer) ---
-	UE_API bool GetIsJumpPressed() const;
-	UE_API bool GetIsJumpJustPressed() const;
-	UE_API void ConsumeJumpJustPressed();
+	//~IGCFLocomotionInputProvider Interface
+	UE_API virtual bool GetIsJumpPressed_Implementation() const override;
+	UE_API virtual bool GetIsJumpJustPressed_Implementation() const override;
+	UE_API virtual void ConsumeJumpJustPressed_Implementation() override;
+	//~End of IGCFLocomotionInputProvider Interface
 
 protected:
 	static const FName AvatarCollisionComponentName;
 	static const FName AvatarMeshComponentName;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GCF|Character", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UGCFAvatarControlComponent> AvatarControlComponent;
-
 	// --- Cached Input Intents ---
 	/** True while the jump button is being held down. */
 	bool bIsJumpPressed = false;

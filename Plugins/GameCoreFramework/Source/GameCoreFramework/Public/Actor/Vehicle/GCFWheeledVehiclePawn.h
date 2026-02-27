@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Actor/Vehicle/GCFModularVehicle.h"
-#include "Movement/GCFLocomotionInputHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 
 #include "GCFWheeledVehiclePawn.generated.h"
 

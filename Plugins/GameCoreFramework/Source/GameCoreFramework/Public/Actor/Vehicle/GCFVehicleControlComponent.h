@@ -24,7 +24,7 @@ struct FInputActionValue;
  * 2. Binds Input Actions via the GCF Input System.
  * 3. Forwards commands to the owning AGCFWheeledVehiclePawn.
  *
- * Unlike MovementControlComponent (which handles continuous vectors like steering or throttle),
+ * Unlike LocomotionDirectionComponent (which handles continuous vectors like steering or throttle),
  * this handles discrete vehicle actions.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
