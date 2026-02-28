@@ -85,7 +85,8 @@ public:
 	//~End of IGCFLocomotionInputHandler Interface
 
 	//~IGCFLocomotionInputProvider Interface
-	FVector GetDesiredMovementVector_Implementation() const override;
+	FVector GetMovementIntent_Implementation() const override;
+	FVector GetOrientationIntent_Implementation() const override;
 	//~End of IGCFLocomotionInputProvider Interface
 
 protected:

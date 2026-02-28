@@ -8,8 +8,6 @@
 #include "MoverSimulationTypes.h"
 #include "GCFCachedInputProducer.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief Mover input producer that bridges the GCF Input System with the Mover plugin.
  *
@@ -20,7 +18,7 @@
  * * By utilizing the interface, it completely decouples from concrete Pawn classes.
  */
 UCLASS(Blueprintable, ClassGroup = (GCF), meta = (BlueprintSpawnableComponent))
-class UGCFCachedInputProducer : public UActorComponent, public IMoverInputProducerInterface
+class GAMECOREFRAMEWORK_API UGCFCachedInputProducer : public UActorComponent, public IMoverInputProducerInterface
 {
 	GENERATED_BODY()
 
@@ -31,5 +29,3 @@ public:
 	 */
 	virtual void ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult) override;
 };
-
-#undef UE_API
