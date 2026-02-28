@@ -39,29 +39,23 @@ UCapsuleComponent* AGCFHumanoid::GetCapsuleComponent() const
 
 FVector AGCFHumanoid::GetPawnViewLocation() const
 {
-	// Get the base eye height defined in the class.
-	float TargetEyeHeight = BaseEyeHeight;
+	// Initialize the offset. The base eye height is handled by the parent class.
+	float CrouchOffset = 0.0f;
 
-	// If the Mover is currently in a "Crouching" state, lower the eye height.
-	// This logic specifically relies on Capsule HalfHeight, making it a perfect fit for Humanoid.
-	if (MoverComponent) {
-		if (USceneComponent* VisualComp = MoverComponent->GetPrimaryVisualComponent()) {
-			if (MoverComponent->HasGameplayTag(Mover_IsCrouching, true)) {
-				if (const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>()) {
-					if (UCapsuleComponent* CapsuleComp = GetCapsuleComponent()) {
-						const float DefaultHalfHeight = CapsuleComp->GetUnscaledCapsuleHalfHeight();
-						const float CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
-						TargetEyeHeight -= CrouchOffset;
-					}
-				}
+	// Calculate the downward offset if the character is actively crouching.
+	// This logic relies on the Capsule's HalfHeight, making it specific to Humanoid pawns.
+	if (MoverComponent && MoverComponent->HasGameplayTag(Mover_IsCrouching, true)) {
+		if (const UStanceSettings* StanceSettings = MoverComponent->FindSharedSettings<UStanceSettings>()) {
+			if (UCapsuleComponent* CapsuleComp = GetCapsuleComponent()) {
+				const float DefaultHalfHeight = CapsuleComp->GetUnscaledCapsuleHalfHeight();
+				CrouchOffset = DefaultHalfHeight - StanceSettings->CrouchHalfHeight;
 			}
-			return VisualComp->GetComponentLocation() + (FVector::UpVector * TargetEyeHeight);
 		}
 	}
-
-	// Return the actor's world location offset by the calculated eye height.
-	return GetActorLocation() + (FVector::UpVector * TargetEyeHeight);
+	// Apply the calculated crouch offset to the base view location provided by the parent class.
+	return Super::GetPawnViewLocation() - (FVector::UpVector * CrouchOffset);
 }
+
 
 // --- IGCFHumanoidActionHandler Implementation (Push/Write) ---
 void AGCFHumanoid::HandleCrouchInput_Implementation(bool bIsPressed)
