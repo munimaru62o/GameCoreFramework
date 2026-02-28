@@ -15,6 +15,7 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 	// Retrieve or create the standard character input buffer for this simulation frame.
 	FCharacterDefaultInputs& InputData = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FCharacterDefaultInputs>();
 	FVector DesiredMove = FVector::ZeroVector;
+	FVector DesiredOrientation = OwnerPawn->GetActorForwardVector();
 
 	// We only poll input from locally controlled pawns. 
 	// Simulated proxies will have their inputs populated via Network Prediction replication.
@@ -24,7 +25,10 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 		// securely via the provider interface, decoupling the producer from the specific Pawn class.
 		if (OwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
 			// --- Movement Handling ---
-			DesiredMove = IGCFLocomotionInputProvider::Execute_GetDesiredMovementVector(OwnerPawn);
+			DesiredMove = IGCFLocomotionInputProvider::Execute_GetMovementIntent(OwnerPawn);
+
+			// --- Orientation Handling ---
+			DesiredOrientation = IGCFLocomotionInputProvider::Execute_GetOrientationIntent(OwnerPawn);
 
 			// --- Jump Handling ---
 			InputData.bIsJumpPressed = IGCFLocomotionInputProvider::Execute_GetIsJumpPressed(OwnerPawn);
@@ -37,5 +41,5 @@ void UGCFCachedInputProducer::ProduceInput_Implementation(int32 SimTime, FMoverI
 	}
 	// Inject the final directional intent into Mover's input buffer.
 	InputData.SetMoveInput(EMoveInputType::DirectionalIntent, DesiredMove);
-	InputData.OrientationIntent = OwnerPawn->GetControlRotation().Vector();
+	InputData.OrientationIntent = DesiredOrientation;
 }

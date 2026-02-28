@@ -191,9 +191,14 @@ void AGCFPawn::HandleMoveUpInput_Implementation(float Value)
 }
 
 
-FVector AGCFPawn::GetDesiredMovementVector_Implementation() const
+FVector AGCFPawn::GetMovementIntent_Implementation() const
 {
 	return CachedTargetMovement;
+}
+
+FVector AGCFPawn::GetOrientationIntent_Implementation() const
+{
+	return GetControlRotation().Vector();
 }
 
 
