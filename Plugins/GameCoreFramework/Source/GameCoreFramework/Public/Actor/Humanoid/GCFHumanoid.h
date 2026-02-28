@@ -6,8 +6,6 @@
 #include "Actor/Avatar/GCFAvatarPawn.h"
 #include "GCFHumanoid.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief The base humanoid class used by this project, deriving from AvatarPawn.
  * 
@@ -18,28 +16,28 @@
  * humanoid-specific discrete actions (e.g., Crouch), securely exposing these intents
  * to Control Components and Mover Input Producers without concrete coupling.
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "A humanoid pawn class supporting capsule-based stance changes like crouching."))
-class AGCFHumanoid : public AGCFAvatarPawn
+UCLASS(Config = Game, Meta = (ShortTooltip = "A humanoid pawn class supporting capsule-based stance changes like crouching."))
+class GAMECOREFRAMEWORK_API AGCFHumanoid : public AGCFAvatarPawn
 {
 	GENERATED_BODY()
 
 public:
-	UE_API AGCFHumanoid(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGCFHumanoid(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	class UCapsuleComponent* GetCapsuleComponent() const;
 
 	//~APawn interface
 	/** Overridden to adjust eye height dynamically based on crouch stance. */
-	UE_API virtual FVector GetPawnViewLocation() const override;
+	virtual FVector GetPawnViewLocation() const override;
 	//~End of APawn interface
 
 	//~IGCFLocomotionInputHandler Interface
-	UE_API virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
+	virtual void HandleCrouchInput_Implementation(bool bIsPressed) override;
 	//~End of IGCFLocomotionInputHandler Interface
 
 	//~IGCFLocomotionInputProvider Interface
-	UE_API virtual bool GetWantsToCrouch_Implementation() const override;
+	virtual bool GetWantsToCrouch_Implementation() const override;
 	//~End of IGCFLocomotionInputProvider Interface
 
 protected:
@@ -54,5 +52,3 @@ protected:
 	/** Tracks the physical state of the crouch button to prevent continuous toggling while held. */
 	bool bIsCrouchButtonPressed = false;
 };
-
-#undef UE_API

@@ -9,13 +9,11 @@
 class IGCFMovementConfigReceiver;
 class IGCFLocomotionInputHandler;
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief Static function library dedicated to Movement utilities.
  */
-UCLASS(Abstract, MinimalAPI)
-class UGCFMovementFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(Abstract)
+class GAMECOREFRAMEWORK_API UGCFMovementFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -32,5 +30,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GCF|Movement", meta = (DefaultToSelf = "Context"))
 	static TScriptInterface<IGCFLocomotionInputHandler> ResolveLocomotionInputHandler(const UObject* Context);
 };
-
-#undef UE_API

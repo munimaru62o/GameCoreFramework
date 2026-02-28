@@ -7,8 +7,6 @@
 #include "UObject/WeakObjectPtr.h"
 #include "GCFTeamAgentInterface.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 template <typename InterfaceType> class TScriptInterface;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnGCFTeamIndexChangedDelegate, UObject*, ObjectChangingTeam, int32, OldTeamID, int32, NewTeamID);
@@ -30,13 +28,13 @@ class UGCFTeamAgentInterface : public UGenericTeamAgentInterface
 	GENERATED_UINTERFACE_BODY()
 };
 
-class IGCFTeamAgentInterface : public IGenericTeamAgentInterface
+class GAMECOREFRAMEWORK_API IGCFTeamAgentInterface : public IGenericTeamAgentInterface
 {
 	GENERATED_IINTERFACE_BODY()
 
 	virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() { return nullptr; }
 
-	static UE_API void ConditionalBroadcastTeamChanged(TScriptInterface<IGCFTeamAgentInterface> This, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID);
+	static void ConditionalBroadcastTeamChanged(TScriptInterface<IGCFTeamAgentInterface> This, FGenericTeamId OldTeamID, FGenericTeamId NewTeamID);
 	
 	FOnGCFTeamIndexChangedDelegate& GetTeamChangedDelegateChecked()
 	{
@@ -45,5 +43,3 @@ class IGCFTeamAgentInterface : public IGenericTeamAgentInterface
 		return *Result;
 	}
 };
-
-#undef UE_API

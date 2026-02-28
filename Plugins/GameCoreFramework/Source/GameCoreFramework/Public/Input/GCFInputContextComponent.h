@@ -30,7 +30,7 @@ class FGCFContextBinder;
  * before its movement component or ability system is fully replicated and initialized.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFInputContextComponent : public UControllerComponent
+class UGCFInputContextComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 

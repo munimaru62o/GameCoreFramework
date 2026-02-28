@@ -42,7 +42,7 @@ DECLARE_DELEGATE_RetVal_TwoParams(
  * - Safety: Prevents duplicate bindings via idempotency checks and ensures clean removal upon context changes.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFInputBindingManagerComponent : public UControllerComponent
+class UGCFInputBindingManagerComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 

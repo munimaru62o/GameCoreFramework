@@ -25,7 +25,7 @@ class AController;
  * (i.e., until Pawn->GetController() is valid).
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFControllerPossessionComponent : public UControllerComponent
+class UGCFControllerPossessionComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 
@@ -48,7 +48,7 @@ public:
 	UE_API APawn* GetCurrentPawn() const { return CachedPawn.Get(); }
 
 	/** Called from the owning Controller's OnNewPawnNotifier. */
-	void HandleNewPawn(APawn* NewPawn);
+	UE_API void HandleNewPawn(APawn* NewPawn);
 
 protected:
 	virtual void BeginPlay() override;

@@ -30,7 +30,7 @@ class UGCFAbilityInputRouterComponent;
  * to the central InputBindingManager.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPlayerInputBridgeComponent : public UControllerComponent, public IGCFInputConfigProvider
+class UGCFPlayerInputBridgeComponent final : public UControllerComponent, public IGCFInputConfigProvider
 {
 	GENERATED_BODY()
 

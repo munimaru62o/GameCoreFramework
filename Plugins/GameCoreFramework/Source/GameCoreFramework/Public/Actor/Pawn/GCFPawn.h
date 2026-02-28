@@ -9,10 +9,7 @@
 #include "Movement/Locomotion/GCFLocomotionInputProvider.h"
 #include "Actor/GCFTeamAgentInterface.h"
 #include "GameplayTagAssetInterface.h"
-
 #include "GCFPawn.generated.h"
-
-#define UE_API GAMECOREFRAMEWORK_API
 
 class UGCFPawnData;
 class UGCFPawnExtensionComponent;
@@ -36,15 +33,15 @@ class UMoverComponent;
  * - Implements Locomotion interfaces (Handler/Provider) for decoupled, architecture-agnostic intent routing.
  * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via cached intents.
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFPawn : public AModularPawn, public IGCFLocomotionInputHandler, public IGCFLocomotionInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
+UCLASS(Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
+class GAMECOREFRAMEWORK_API AGCFPawn : public AModularPawn, public IGCFLocomotionInputHandler, public IGCFLocomotionInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
 public:
-	UE_API AGCFPawn(const FObjectInitializer& ObjectInitializer);
+	AGCFPawn(const FObjectInitializer& ObjectInitializer);
 
-	UE_API virtual void PostInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	class USphereComponent* GetSphereComponent() const;
@@ -66,55 +63,55 @@ public:
 
 	// Helper functions to directly modify local tags.
 	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
-	UE_API void AddGameplayTag(const FGameplayTag& Tag);
+	void AddGameplayTag(const FGameplayTag& Tag);
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Tags")
-	UE_API void RemoveGameplayTag(const FGameplayTag& Tag);
+	void RemoveGameplayTag(const FGameplayTag& Tag);
 
 	//~APawn interface
-	UE_API virtual FVector GetPawnViewLocation() const override;
+	virtual FVector GetPawnViewLocation() const override;
 	//~End of APawn interface
 
 	//~IGameplayTagAssetInterface interface
-	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	//~End of IGameplayTagAssetInterface interface
 
 	//~IGCFLocomotionInputHandler Interface
-	UE_API virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
-	UE_API virtual void HandleMoveUpInput_Implementation(float Value) override;
+	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
+	virtual void HandleMoveUpInput_Implementation(float Value) override;
 	//~End of IGCFLocomotionInputHandler Interface
 
 	//~IGCFLocomotionInputProvider Interface
-	UE_API FVector GetDesiredMovementVector_Implementation() const override;
+	FVector GetDesiredMovementVector_Implementation() const override;
 	//~End of IGCFLocomotionInputProvider Interface
 
 protected:
-	UE_API static const FName CollisionComponentName;
-	UE_API static const FName MeshComponentName;
+	static const FName CollisionComponentName;
+	static const FName MeshComponentName;
 
 	//~AActor / APawn Interface
-	UE_API virtual void PossessedBy(AController* NewController) override;
-	UE_API virtual void UnPossessed() override;
-	UE_API virtual void OnRep_Controller() override;
-	UE_API virtual void OnRep_PlayerState() override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+	virtual void OnRep_Controller() override;
+	virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
 
 	//~IGCFTeamAgentInterface interface
-	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
-	UE_API virtual FGenericTeamId GetGenericTeamId() const override;
-	UE_API virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~End of IGCFTeamAgentInterface interface
 
 	// Begins the death sequence for the character (disables collision, disables movement, etc...)
 	UFUNCTION()
-	UE_API virtual void OnDeathStarted(AActor* OwningActor);
+	virtual void OnDeathStarted(AActor* OwningActor);
 
 	// Ends the death sequence for the character (detaches controller, destroys pawn, etc...)
 	UFUNCTION()
-	UE_API virtual void OnDeathFinished(AActor* OwningActor);
+	virtual void OnDeathFinished(AActor* OwningActor);
 
 private:
 	/** Calculates the final movement vector based on current inputs and rotation, storing it for the Mover Producer. */
@@ -173,5 +170,3 @@ private:
 	FVector2D CachedMoveInput = FVector2D::ZeroVector;
 	float CachedUpInput = 0.0f;
 };
-
-#undef UE_API

@@ -24,7 +24,7 @@ class FGCFDelegateHandle;
  * 3. Broadcasts Gameplay Events (OnPossessed/OnUnpossessed) to other systems.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPossessionContextComponent : public UControllerComponent
+class UGCFPossessionContextComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 

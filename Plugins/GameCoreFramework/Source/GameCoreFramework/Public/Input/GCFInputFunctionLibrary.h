@@ -12,8 +12,6 @@ class AController;
 class FGCFDelegateHandle;
 class UObject;
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief Static function library dedicated to Input System utilities.
  * * [Purpose]
@@ -22,8 +20,8 @@ class UObject;
  * - Binding to Input Context changes (Gatekeeper status).
  * - Binding to InputComponent initialization events.
  */
-UCLASS(Abstract, MinimalAPI)
-class UGCFInputFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(Abstract)
+class GAMECOREFRAMEWORK_API UGCFInputFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -45,7 +43,7 @@ public:
 	 * @param bExecuteImmediately  If true, fires immediately with the current state.
 	 * @return Scoped handle for auto-unbinding.
 	 */
-	UE_API static TUniquePtr<FGCFDelegateHandle> BindInputContextScoped(AController* Controller, const FOnInputContextEvaluatedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
+	static TUniquePtr<FGCFDelegateHandle> BindInputContextScoped(AController* Controller, const FOnInputContextEvaluatedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
 
 	/**
 	 * Binds a delegate to be notified when the EnhancedInputComponent is ready/changed.
@@ -54,7 +52,5 @@ public:
 	 * @param bExecuteImmediately  If true, fires immediately if InputComponent is already valid.
 	 * @return Scoped handle for auto-unbinding.
 	 */
-	UE_API static TUniquePtr<FGCFDelegateHandle> BindInputComponentReadyScoped(AController* Controller, const FOnInputComponentReady::FDelegate& Delegate, bool bExecuteImmediately = true);
+	static TUniquePtr<FGCFDelegateHandle> BindInputComponentReadyScoped(AController* Controller, const FOnInputComponentReady::FDelegate& Delegate, bool bExecuteImmediately = true);
 };
-
-#undef UE_API

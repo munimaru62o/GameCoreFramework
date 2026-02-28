@@ -10,8 +10,6 @@
 #include "System/Binder/GCFContextBinder.h"
 #include "GCFLocomotionActionComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class IGCFInputConfigProvider;
 class UGCFInputComponent;
 struct FInputActionValue;
@@ -26,17 +24,21 @@ struct FInputActionValue;
  * By utilizing interface-driven communication, this component is completely decoupled
  * from specific Pawn classes (e.g., AGCFCharacter, AGCFAvatarPawn) and can be reused globally.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFLocomotionActionComponent : public UPawnComponent
+UCLASS(ClassGroup = (GCF), HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+class GAMECOREFRAMEWORK_API UGCFLocomotionActionComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFLocomotionActionComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFLocomotionActionComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	// --- Input Handlers (Pushing intent to Pawn via Interface) ---
+	void Input_Jump(const FInputActionValue& InputActionValue);
+	void Input_Crouch(const FInputActionValue& InputActionValue);
 
 private:
 	/** Checks if the Pawn is ready to receive input, then registers bindings. */
@@ -45,15 +47,9 @@ private:
 	/** Registers input actions (Jump, Crouch) to the InputComponent. */
 	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
 
-	// --- Input Handlers (Pushing intent to Pawn via Interface) ---
-	void Input_Jump(const FInputActionValue& InputActionValue);
-	void Input_Crouch(const FInputActionValue& InputActionValue);
-
 private:
 	/** Binder to observe Pawn readiness. */
 	TUniquePtr<FGCFContextBinder> Binder;
 
 	EGCFPawnReadyState CachedPawnReadyState;
 };
-
-#undef UE_API

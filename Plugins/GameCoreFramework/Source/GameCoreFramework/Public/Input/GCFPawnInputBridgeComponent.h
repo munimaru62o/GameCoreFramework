@@ -32,7 +32,7 @@ class IGCFPawnDataProvider;
  * 3. Routing the resulting physical input events back to the Controller's AbilityInputRouter.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPawnInputBridgeComponent : public UPawnComponent, public IGCFInputConfigProvider
+class UGCFPawnInputBridgeComponent final : public UPawnComponent, public IGCFInputConfigProvider
 {
 	GENERATED_BODY()
 

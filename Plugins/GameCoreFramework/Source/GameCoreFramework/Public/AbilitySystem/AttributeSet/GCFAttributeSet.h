@@ -5,8 +5,6 @@
 #include "AttributeSet.h"
 #include "GCFAttributeSet.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class AActor;
 class UGCFAbilitySystemComponent;
 class UObject;
@@ -47,18 +45,16 @@ DECLARE_MULTICAST_DELEGATE_SixParams(FGCFAttributeEvent, AActor* /*EffectInstiga
  *
  *	Base attribute set class for the project.
  */
-UCLASS(MinimalAPI)
-class UGCFAttributeSet : public UAttributeSet
+UCLASS()
+class GAMECOREFRAMEWORK_API UGCFAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFAttributeSet();
+	UGCFAttributeSet();
 
-	UE_API UWorld* GetWorld() const override;
+	UWorld* GetWorld() const override;
 
-	UE_API UGCFAbilitySystemComponent* GetGCFAbilitySystemComponent() const;
+	UGCFAbilitySystemComponent* GetGCFAbilitySystemComponent() const;
 };
-
-#undef UE_API

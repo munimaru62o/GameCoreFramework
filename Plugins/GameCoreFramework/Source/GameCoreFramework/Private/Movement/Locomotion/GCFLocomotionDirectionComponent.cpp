@@ -12,10 +12,6 @@
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputConfig.h"
 #include "Input/GCFInputComponent.h"
-#include "Components/GameFrameworkComponentManager.h"
-#include "System/Binder/GCFPossessedPawnReadyStateBinder.h"
-
-#include "Misc/EnumClassFlags.h"
 
 
 UGCFLocomotionDirectionComponent::UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer)

@@ -8,8 +8,6 @@
 #include "GameplayCueInterface.h"
 #include "GCFHumanoidWithAbilities.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGCFAbilitySystemComponent;
 class UGCFHealthComponent;
 
@@ -25,24 +23,24 @@ class UGCFHealthComponent;
  * - Player Characters in a Single-ASC setup
  * - The "Body" part in a Dual-ASC setup (handling physical abilities like Jump/Dash)
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base avatar pawn with GAS capabilities."))
+UCLASS(Config = Game, Meta = (ShortTooltip = "The base avatar pawn with GAS capabilities."))
 class AGCFHumanoidWithAbilities : public AGCFHumanoid, public IAbilitySystemInterface, public IGameplayCueInterface
 {
 	GENERATED_BODY()
 
 public:
-	UE_API AGCFHumanoidWithAbilities(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGCFHumanoidWithAbilities(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	//~IAbilitySystemInterface interface
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
-	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~End of IAbilitySystemInterface interface
 
 	//~IGameplayTagAssetInterface interface
-	UE_API virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	UE_API virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	UE_API virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	UE_API virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	//~End of IGameplayTagAssetInterface interface
 
 protected:
@@ -69,5 +67,3 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const class UGCFCombatAttributeSet> CombatSet;
 };
-
-#undef UE_API

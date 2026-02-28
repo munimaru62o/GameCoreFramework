@@ -39,7 +39,7 @@ struct FGameplayTag;
  * or "NPC" simply by swapping the PawnData and attaching this component.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface, public IGCFPawnDataProvider
+class UGCFPawnExtensionComponent final : public UPawnComponent, public IGameFrameworkInitStateInterface, public IGCFPawnDataProvider
 {
 	GENERATED_BODY()
 

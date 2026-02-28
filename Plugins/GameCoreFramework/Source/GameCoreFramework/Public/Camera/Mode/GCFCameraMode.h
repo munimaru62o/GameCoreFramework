@@ -10,8 +10,6 @@
 
 #include "GCFCameraMode.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class AActor;
 class UCanvas;
 class UGCFCameraComponent;
@@ -90,20 +88,20 @@ struct FGCFCameraPolicyData
  * A CameraMode calculates the 'View' (Location, Rotation, FOV) for a frame.
  * Modes are stacked in the CameraComponent and blended together.
  */
-UCLASS(MinimalAPI, Abstract, NotBlueprintable)
-class UGCFCameraMode : public UObject
+UCLASS(Abstract, NotBlueprintable)
+class GAMECOREFRAMEWORK_API UGCFCameraMode : public UObject
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFCameraMode();
+	UGCFCameraMode();
 
-	UE_API UGCFCameraComponent* GetGCFCameraComponent() const;
+	UGCFCameraComponent* GetGCFCameraComponent() const;
 
-	UE_API virtual UWorld* GetWorld() const override;
+	virtual UWorld* GetWorld() const override;
 
-	UE_API AActor* GetTargetActor() const;
+	AActor* GetTargetActor() const;
 
 	const FGCFCameraModeView& GetCameraModeView() const { return View; }
 
@@ -113,41 +111,41 @@ public:
 	// Called when this camera mode is deactivated on the camera mode stack.
 	virtual void OnDeactivation() {};
 
-	UE_API void UpdateCameraMode(float DeltaTime);
+	void UpdateCameraMode(float DeltaTime);
 
 	float GetBlendTime() const { return BlendTime; }
 	float GetBlendWeight() const { return BlendWeight; }
-	UE_API void SetBlendWeight(float Weight);
+	void SetBlendWeight(float Weight);
 
 	FGameplayTag GetCameraTypeTag() const { return PolicyData.CameraTypeTag; }
 	const FGCFCameraPolicyData& GetPolicyData() const { return PolicyData; }
 
-	UE_API virtual void DrawDebug(UCanvas* Canvas) const;
+	virtual void DrawDebug(UCanvas* Canvas) const;
 
 protected:
 	/** Calculates the pivot point (target location) for the camera. Handles crouching offsets. */
-	UE_API virtual FVector GetPivotLocation() const;
+	virtual FVector GetPivotLocation() const;
 
 	/** 
 	 * Returns the pivot location after applying per-axis smoothing interpolation.
 	 * This prevents camera snapping during sudden state changes (e.g., crouching or walking up stairs).
 	 */
-	UE_API virtual FVector GetSmoothedPivotLocation(float DeltaTime);
+	virtual FVector GetSmoothedPivotLocation(float DeltaTime);
 
 	/** Calculates the pivot rotation (usually ControlRotation). */
-	UE_API virtual FRotator GetPivotRotation() const;
+	virtual FRotator GetPivotRotation() const;
 
 	/** Main update logic. Should be overridden by subclasses to apply offsets. */
-	UE_API virtual void UpdateView(float DeltaTime);
+	virtual void UpdateView(float DeltaTime);
 
 	/** Updates the blend alpha and weight. */
-	UE_API virtual void UpdateBlending(float DeltaTime);
+	virtual void UpdateBlending(float DeltaTime);
 
 	/** helper to get current zoom ratio from the component. */
-	UE_API virtual float GetCameraZoomRatio() const;
+	virtual float GetCameraZoomRatio() const;
 
 	/** Helper to evaluate the offset curves based on current Pitch. */
-	UE_API FVector CalculateOffsetFromCurves(float Pitch) const;
+	FVector CalculateOffsetFromCurves(float Pitch) const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -232,5 +230,3 @@ protected:
 	UPROPERTY(transient)
 	uint32 bIsFirstUpdate :1;
 };
-
-#undef UE_API

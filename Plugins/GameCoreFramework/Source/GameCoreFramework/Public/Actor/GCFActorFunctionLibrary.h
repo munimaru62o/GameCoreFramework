@@ -6,8 +6,6 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GCFActorFunctionLibrary.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class APlayerState;
 class AController;
 class APawn;
@@ -16,8 +14,8 @@ class IGCFPawnDataProvider;
 /**
  * @brief Static function library dedicated to Actor utilities.
  */
-UCLASS(Abstract, MinimalAPI)
-class UGCFActorFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(Abstract)
+class GAMECOREFRAMEWORK_API UGCFActorFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -51,5 +49,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GCF|Actor", meta = (DefaultToSelf = "Context"))
 	static TScriptInterface<IGCFPawnDataProvider> ResolvePawnDataProvider(const UObject* Context);
 };
-
-#undef UE_API

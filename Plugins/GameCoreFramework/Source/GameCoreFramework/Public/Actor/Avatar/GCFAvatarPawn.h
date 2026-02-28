@@ -6,8 +6,6 @@
 #include "Actor/Pawn/GCFPawn.h"
 #include "GCFAvatarPawn.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief The base avatar pawn class used by this project.
  * 
@@ -19,13 +17,13 @@
  * establishing an interface-driven architecture to securely push and pull
  * movement intents without requiring tight coupling to concrete classes.
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base humanoid pawn class used by this project."))
-class AGCFAvatarPawn : public AGCFPawn
+UCLASS(Config = Game, Meta = (ShortTooltip = "The base avatar pawn class used by this project."))
+class GAMECOREFRAMEWORK_API AGCFAvatarPawn : public AGCFPawn
 {
 	GENERATED_BODY()
 
 public:
-	UE_API AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGCFAvatarPawn(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	class USkeletalMeshComponent* GetSkeletalMeshComponent() const;
@@ -34,19 +32,19 @@ public:
 	class UGCFCharacterMoverComponent* GetCharacterMoverComponent() const;
 
 	//~AActor interface
-	UE_API virtual void PreInitializeComponents() override;
-	UE_API virtual void BeginPlay() override;
-	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void PreInitializeComponents() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~End of AActor interface
 
 	//~IGCFLocomotionInputHandler Interface
-	UE_API virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
+	virtual void HandleJumpInput_Implementation(bool bIsPressed) override;
 	//~End of IGCFLocomotionInputHandler Interface
 
 	//~IGCFLocomotionInputProvider Interface
-	UE_API virtual bool GetIsJumpPressed_Implementation() const override;
-	UE_API virtual bool GetIsJumpJustPressed_Implementation() const override;
-	UE_API virtual void ConsumeJumpJustPressed_Implementation() override;
+	virtual bool GetIsJumpPressed_Implementation() const override;
+	virtual bool GetIsJumpJustPressed_Implementation() const override;
+	virtual void ConsumeJumpJustPressed_Implementation() override;
 	//~End of IGCFLocomotionInputProvider Interface
 
 protected:
@@ -61,5 +59,3 @@ protected:
 	/** True only on the exact frame the jump button was initially pressed. */
 	bool bIsJumpJustPressed = false;
 };
-
-#undef UE_API

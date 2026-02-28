@@ -31,7 +31,7 @@ class FGCFDelegateHandle;
  * It does NOT require a Pawn to reach "GameplayReady" state (e.g. for Spectators).
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerState, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPlayerExtensionComponent : public UPlayerStateComponent, public IGameFrameworkInitStateInterface
+class UGCFPlayerExtensionComponent final : public UPlayerStateComponent, public IGameFrameworkInitStateInterface
 {
 	GENERATED_BODY()
 

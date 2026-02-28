@@ -16,8 +16,6 @@ class UGCFAbilitySystemComponent;
 class UGCFGameplayAbility;
 class UObject;
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * FGCFAbilitySet_GameplayAbility
  *
@@ -121,8 +119,8 @@ protected:
  *
  *	Non-mutable data asset used to grant gameplay abilities and gameplay effects.
  */
-UCLASS(BlueprintType, Const, MinimalAPI)
-class UGCFAbilitySet : public UPrimaryDataAsset
+UCLASS(BlueprintType, Const)
+class GAMECOREFRAMEWORK_API UGCFAbilitySet : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
@@ -132,7 +130,7 @@ public:
 
 	// Grants the ability set to the specified ability system component.
 	// The returned handles can be used later to take away anything that was granted.
-	 UE_API void GiveToAbilitySystem(UGCFAbilitySystemComponent* GCFASC, FGCFAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
+	 void GiveToAbilitySystem(UGCFAbilitySystemComponent* GCFASC, FGCFAbilitySet_GrantedHandles* OutGrantedHandles, UObject* SourceObject = nullptr) const;
 
 protected:
 
@@ -148,5 +146,3 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Attribute Sets", meta=(TitleProperty=AttributeSet))
 	TArray<FGCFAbilitySet_AttributeSet> GrantedAttributes;
 };
-
-#undef UE_API
