@@ -14,9 +14,9 @@
  * This class specializes the AvatarPawn by assuming the presence of a Capsule Collision
  * and implementing humanoid-specific mechanics such as Crouching (Stance changes).
  * 
- * It provides direct API methods for Control Components (to push input intents)
- * and Mover Input Producers (to pull cached intents), ensuring strict type safety
- * and optimal performance through direct casting.
+ * It extends the interface-driven architecture by providing implementations for
+ * humanoid-specific discrete actions (e.g., Crouch), securely exposing these intents
+ * to Control Components and Mover Input Producers without concrete coupling.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "A humanoid pawn class supporting capsule-based stance changes like crouching."))
 class AGCFHumanoid : public AGCFAvatarPawn
