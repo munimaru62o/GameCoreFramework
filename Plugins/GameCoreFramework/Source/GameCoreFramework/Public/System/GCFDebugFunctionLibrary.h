@@ -53,11 +53,11 @@ public:
 			int64 Val = EnumPtr->GetValueByIndex(i);
 
 			if (Val == 0) continue;
-#if WITH_EDITOR
+#if WITH_EDITORONLY_DATA
 			if (EnumPtr->HasMetaData(TEXT("Hidden"), i)) continue;
 #endif
 			FString EnumName = EnumPtr->GetNameStringByIndex(i);
-			if (EnumName.Contains(TEXT("_MAX"))) continue;
+			if (EnumName.EndsWith(TEXT("_MAX"))) continue;
 
 			if (((int64)Bitmask & Val) == Val) {
 				Results.Add(GetEnumName((TEnum)Val));
