@@ -175,17 +175,15 @@ Now that the robust routing foundation and lifecycle management are complete, th
 
 ---
 
-## 🖋️ Developer's Vision: A Philosophy of Architecture
+## 🖋️ Developer's Vision: A Philosophy on Architecture Design
 
-In building frameworks that support complex systems, programming is not merely about "implementing features." I believe it is a highly sophisticated process of design—how we organize and express complex phenomena.
+To me, system architecture design transcends mere engineering; it is a form of art and self-expression. Releasing this "GameCoreFramework" as an open-source project is not simply about providing a convenient tool, but rather an exhibition of a "piece of work" that embodies my personal aesthetics.
 
-Rather than applying ad-hoc fixes to the daunting challenges inherent in multiplayer and large-scale development, I value taking the time to thoroughly conceptualize how to decouple systems and maintain loose coupling. The very process of refining these ideas, iterating through trial and error, and carefully translating them into code is, to me, the true joy of software development.
+Modern game development grows more complex by the day, yet I firmly believe that "if the internal structure is beautiful, the external behavior will inevitably be beautiful as well." Facing complex phenomena head-on, iterating through trial and error, and carving away the excess like a sculpture to form a single, polished crystal—I believe there is profound value in that very process of thought and exploration.
 
-**GameCoreFramework**, published here as open-source, is not intended to be just another utility tool. It is a personal expression—a piece of craftsmanship—born from a deep pursuit of what constitutes a "beautiful and robust architecture" in the face of gritty challenges like Dual ASC routing and the complete synchronization of asynchronous lifecycles.
+Even in a future where all development processes become increasingly automated and highly efficient, I believe that the skill and joy of grasping the true essence with our own hands and minds to build beautiful structures will never fade.
 
-Even in today’s development scene where efficiency and speed are paramount, I firmly believe that the value of taking the time to sharpen one's design and writing code with a true understanding of its essence will never fade. 
-
-I hope the design philosophies and architectural ideas embedded in this framework will serve as a source of inspiration for engineers around the world who share a love for beautiful, highly maintainable systems.
+I hope that the design philosophies and ideas poured into this framework will serve as a source of inspiration for engineers around the world who share a love for "beautiful, highly maintainable systems."
 
 ---
 
