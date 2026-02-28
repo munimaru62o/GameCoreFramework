@@ -33,7 +33,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
 	FVector GetMovementIntent() const;
 
-	/** * Returns the intended forward facing direction (Orientation Intent) of the pawn.
+	/** 
+	 * Returns the intended forward facing direction (Orientation Intent) of the pawn.
 	 * This allows the Pawn to dictate its facing direction (e.g., matching camera, locking on target, or twin-stick aiming).
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
