@@ -9,14 +9,12 @@
 #include "System/Lifecycle/GCFStateTypes.h"
 #include "GCFDebugFunctionLibrary.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * Utility library for formatting and broadcasting debug information.
  * Uses the Gameplay Message Subsystem to dispatch logs and states without direct UI dependencies.
  */
-UCLASS(Abstract, MinimalAPI)
-class UGCFDebugFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS()
+class GAMECOREFRAMEWORK_API UGCFDebugFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -87,5 +85,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GCF|Debug")
 	static void SendPawnStateBitMessage(const UObject* WorldContext, EGCFDebugStateCategory Category, EGCFPawnReadyState State, const FLinearColor& DisplayColor = FLinearColor::White);
 };
-
-#undef UE_API

@@ -7,8 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "GCFHealthAttributeSet.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API 
-
 struct FGameplayEffectSpec;
 class AActor;
 
@@ -36,8 +34,8 @@ DECLARE_MULTICAST_DELEGATE_SixParams(FAttributeEvent, AActor* /*EffectInstigator
 /**
  *
  */
-UCLASS(MinimalAPI)
-class UGCFHealthAttributeSet : public UAttributeSet
+UCLASS()
+class GAMECOREFRAMEWORK_API UGCFHealthAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 
@@ -86,6 +84,4 @@ protected:
 	FGameplayAttributeData Heal;
 };
 
-
-#undef UE_API
 #undef ATTRIBUTE_ACCESSORS

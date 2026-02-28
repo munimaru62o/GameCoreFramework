@@ -10,12 +10,7 @@
 #include "Movement/GCFMovementTypes.h"
 #include "GCFLocomotionDirectionComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
-enum class EGCFPawnReadyState : uint8;
 class UGCFInputComponent;
-class IGCFPawnDataProvider;
-class UGCFMovementConfig;
 struct FInputActionValue;
 
 /**
@@ -26,24 +21,17 @@ struct FInputActionValue;
  * 2. Initializes movement settings (speed, acceleration) from PawnData via IGCFMovementConfigReceiver.
  * 3. Adapts movement direction based on the current Camera Policy (e.g., Camera-relative vs World-relative).
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFLocomotionDirectionComponent : public UControllerComponent
+UCLASS(ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+class GAMECOREFRAMEWORK_API UGCFLocomotionDirectionComponent : public UControllerComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
-	/** Binds Input Actions when the Input Component is ready. */
-	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
-
-	/** Called when the Camera Policy changes (e.g., FreeLook <-> Locked). */
-	void HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy);
 
 	/** Input Action Handlers */
 	void Input_Move(const FInputActionValue& Value);
@@ -55,10 +43,15 @@ private:
 	FRotator CalcMovementRotation(AController* Controller) const;
 
 private:
+	/** Binds Input Actions when the Input Component is ready. */
+	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
+
+	/** Called when the Camera Policy changes (e.g., FreeLook <-> Locked). */
+	void HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy);
+
+private:
 	/** Handle for rotation policy delegate. */
 	TUniquePtr<FGCFDelegateHandle> Handle;
 
 	EGCFMovementRotationPolicy CachedPolicy;
 };
-
-#undef UE_API

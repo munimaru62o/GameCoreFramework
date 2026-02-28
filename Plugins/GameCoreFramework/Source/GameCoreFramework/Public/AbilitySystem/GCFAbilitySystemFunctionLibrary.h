@@ -6,13 +6,11 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GCFAbilitySystemFunctionLibrary.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGCFAbilitySystemComponent;
 
 
-UCLASS(Abstract, MinimalAPI)
-class UGCFAbilitySystemFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(Abstract)
+class GAMECOREFRAMEWORK_API UGCFAbilitySystemFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -76,5 +74,3 @@ public:
 		return Cast<T>(ResolveAbilitySystemComponentOwner(TargetActor));
 	}
 };
-
-#undef UE_API

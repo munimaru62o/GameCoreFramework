@@ -7,8 +7,6 @@
 #include "Templates/SubclassOf.h"
 #include "GCFAssetManager.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UPrimaryDataAsset;
 
 class UGCFGameData;
@@ -21,17 +19,17 @@ class UGCFPawnData;
  *	It is expected that most games will want to override AssetManager as it provides a good place for game-specific loading logic.
  *	This class is used by setting 'AssetManagerClassName' in DefaultEngine.ini.
  */
-UCLASS(MinimalAPI, Config = Game)
-class UGCFAssetManager : public UAssetManager
+UCLASS(Config = Game)
+class GAMECOREFRAMEWORK_API UGCFAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFAssetManager();
+	UGCFAssetManager();
 
 	// Returns the AssetManager singleton object.
-	static UE_API UGCFAssetManager& Get();
+	static UGCFAssetManager& Get();
 
 	// Returns the asset referenced by a TSoftObjectPtr.  This will synchronously load the asset if it's not already loaded.
 	template<typename AssetType>
@@ -42,10 +40,10 @@ public:
 	static TSubclassOf<AssetType> GetSubclass(const TSoftClassPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);
 
 	// Logs all assets currently loaded and tracked by the asset manager.
-	static UE_API void DumpLoadedAssets();
+	static void DumpLoadedAssets();
 
-	UE_API const UGCFGameData& GetGameData();
-	UE_API const UGCFPawnData* GetDefaultPawnData() const;
+	const UGCFGameData& GetGameData();
+	const UGCFPawnData* GetDefaultPawnData() const;
 
 protected:
 	template <typename GameDataClass>
@@ -61,20 +59,20 @@ protected:
 	}
 
 
-	static UE_API UObject* SynchronousLoadAsset(const FSoftObjectPath& AssetPath);
-	static UE_API bool ShouldLogAssetLoads();
+	static UObject* SynchronousLoadAsset(const FSoftObjectPath& AssetPath);
+	static bool ShouldLogAssetLoads();
 
 	// Thread safe way of adding a loaded asset to keep in memory.
-	UE_API void AddLoadedAsset(const UObject* Asset);
+	void AddLoadedAsset(const UObject* Asset);
 
 	//~UAssetManager interface
-	UE_API virtual void StartInitialLoading() override;
+	virtual void StartInitialLoading() override;
 #if WITH_EDITOR
-	UE_API virtual void PreBeginPIE(bool bStartSimulate) override;
+	virtual void PreBeginPIE(bool bStartSimulate) override;
 #endif
 	//~End of UAssetManager interface
 
-	UE_API UPrimaryDataAsset* LoadGameDataOfClass(TSubclassOf<UPrimaryDataAsset> DataClass, const TSoftObjectPtr<UPrimaryDataAsset>& DataClassPath, FPrimaryAssetType PrimaryAssetType);
+	UPrimaryDataAsset* LoadGameDataOfClass(TSubclassOf<UPrimaryDataAsset> DataClass, const TSoftObjectPtr<UPrimaryDataAsset>& DataClassPath, FPrimaryAssetType PrimaryAssetType);
 
 protected:
 
@@ -92,13 +90,13 @@ protected:
 
 private:
 	// Flushes the StartupJobs array. Processes all startup work.
-	UE_API void DoAllStartupJobs();
+	void DoAllStartupJobs();
 
 	// Sets up the ability system
-	UE_API void InitializeGameplayCueManager();
+	void InitializeGameplayCueManager();
 
 	// Called periodically during loads, could be used to feed the status to a loading screen
-	UE_API void UpdateInitialGameContentLoadPercent(float GameContentPercent);
+	void UpdateInitialGameContentLoadPercent(float GameContentPercent);
 
 	// The list of tasks to execute on startup. Used to track startup progress.
 	TArray<FGCFAssetManagerStartupJob> StartupJobs;
@@ -165,5 +163,3 @@ TSubclassOf<AssetType> UGCFAssetManager::GetSubclass(const TSoftClassPtr<AssetTy
 
 	return LoadedSubclass;
 }
-
-#undef UE_API

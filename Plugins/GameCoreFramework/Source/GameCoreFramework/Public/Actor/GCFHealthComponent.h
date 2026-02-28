@@ -5,8 +5,6 @@
 #include "Components/GameFrameworkComponent.h"
 #include "GCFHealthComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API 
-
 class UGCFHealthComponent;
 
 class UAbilitySystemComponent;
@@ -37,14 +35,14 @@ enum class EDeathState : uint8
  *
  *	An actor component used to handle anything related to health.
  */
-UCLASS(MinimalAPI, Blueprintable, Meta=(BlueprintSpawnableComponent))
-class UGCFHealthComponent : public UGameFrameworkComponent
+UCLASS(Blueprintable, Meta=(BlueprintSpawnableComponent))
+class GAMECOREFRAMEWORK_API UGCFHealthComponent : public UGameFrameworkComponent
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFHealthComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFHealthComponent(const FObjectInitializer& ObjectInitializer);
 
 	// Returns the health component if one exists on the specified actor.
 	UFUNCTION(BlueprintPure, Category = "|Health")
@@ -52,23 +50,23 @@ public:
 
 	// Initialize the component using an ability system component.
 	UFUNCTION(BlueprintCallable, Category = "|Health")
-	UE_API void InitializeWithAbilitySystem(UAbilitySystemComponent* InASC);
+	void InitializeWithAbilitySystem(UAbilitySystemComponent* InASC);
 
 	// Uninitialize the component, clearing any references to the ability system.
 	UFUNCTION(BlueprintCallable, Category = "|Health")
-	UE_API void UninitializeFromAbilitySystem();
+	void UninitializeFromAbilitySystem();
 
 	// Returns the current health value.
 	UFUNCTION(BlueprintCallable, Category = "|Health")
-	UE_API float GetHealth() const;
+	float GetHealth() const;
 
 	// Returns the current maximum health value.
 	UFUNCTION(BlueprintCallable, Category = "|Health")
-	UE_API float GetMaxHealth() const;
+	float GetMaxHealth() const;
 
 	// Returns the current health in the range [0.0, 1.0].
 	UFUNCTION(BlueprintCallable, Category = "|Health")
-	UE_API float GetHealthNormalized() const;
+	float GetHealthNormalized() const;
 
 	UFUNCTION(BlueprintCallable, Category = "|Health")
 	EDeathState GetDeathState() const { return DeathState; }
@@ -77,13 +75,13 @@ public:
 	bool IsDeadOrDying() const { return (DeathState > EDeathState::NotDead); }
 
 	// Begins the death sequence for the owner.
-	UE_API virtual void StartDeath();
+	virtual void StartDeath();
 
 	// Ends the death sequence for the owner.
-	UE_API virtual void FinishDeath();
+	virtual void FinishDeath();
 
 	// Applies enough damage to kill the owner.
-	//UE_API virtual void DamageSelfDestruct(bool bFellOutOfWorld = false);
+	//virtual void DamageSelfDestruct(bool bFellOutOfWorld = false);
 
 public:
 
@@ -105,16 +103,16 @@ public:
 
 protected:
 
-	UE_API virtual void OnUnregister() override;
+	virtual void OnUnregister() override;
 
-	UE_API void ClearGameplayTags();
+	void ClearGameplayTags();
 
-	UE_API virtual void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
-	UE_API virtual void HandleMaxHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
-	UE_API virtual void HandleOutOfHealth(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	virtual void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	virtual void HandleMaxHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	virtual void HandleOutOfHealth(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
 	UFUNCTION()
-	UE_API virtual void OnRep_DeathState(EDeathState OldDeathState);
+	virtual void OnRep_DeathState(EDeathState OldDeathState);
 
 protected:
 
@@ -130,5 +128,3 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_DeathState)
 	EDeathState DeathState;
 };
-
-#undef UE_API

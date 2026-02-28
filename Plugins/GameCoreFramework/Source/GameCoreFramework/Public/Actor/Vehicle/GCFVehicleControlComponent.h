@@ -10,8 +10,6 @@
 #include "System/Binder/GCFContextBinder.h"
 #include "GCFVehicleControlComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class IGCFInputConfigProvider;
 class UGCFInputComponent;
 struct FInputActionValue;
@@ -27,13 +25,13 @@ struct FInputActionValue;
  * Unlike LocomotionDirectionComponent (which handles continuous vectors like steering or throttle),
  * this handles discrete vehicle actions.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+UCLASS(ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
 class UGCFVehicleControlComponent : public UPawnComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFVehicleControlComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFVehicleControlComponent(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,5 +54,3 @@ private:
 
 	EGCFPawnReadyState CachedPawnReadyState;
 };
-
-#undef UE_API

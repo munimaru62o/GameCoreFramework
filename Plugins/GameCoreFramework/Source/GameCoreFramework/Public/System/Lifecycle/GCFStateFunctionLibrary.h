@@ -13,8 +13,6 @@ class APlayerState;
 class AController;
 class FGCFDelegateHandle;
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief Static function library dedicated to State monitoring and Lifecycle events.
  * * [Purpose]
@@ -26,8 +24,8 @@ class FGCFDelegateHandle;
  * The returned TUniquePtr<FGCFDelegateHandle> must be stored by the caller.
  * When the handle goes out of scope, the delegate is automatically unbound.
  */
-UCLASS(Abstract, MinimalAPI)
-class UGCFStateFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(Abstract)
+class GAMECOREFRAMEWORK_API UGCFStateFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
@@ -40,7 +38,7 @@ public:
 	 * @param bExecuteImmediately  If true, checks the current state and fires the delegate immediately.
 	 * @return A scoped handle. The binding is removed when this handle is destroyed.
 	 */
-	UE_API static TUniquePtr<FGCFDelegateHandle> BindPawnReadyStateScoped(APawn* Pawn, const FGCFOnPawnReadyStateChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
+	static TUniquePtr<FGCFDelegateHandle> BindPawnReadyStateScoped(APawn* Pawn, const FGCFOnPawnReadyStateChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
 
 	/**
 	 * Binds a delegate to the PlayerState's "Ready State" changes.
@@ -49,7 +47,7 @@ public:
 	 * @param bExecuteImmediately  If true, checks the current state and fires the delegate immediately.
 	 * @return A scoped handle.
 	 */
-	UE_API static TUniquePtr<FGCFDelegateHandle> BindPlayerReadyStateScoped(APlayerState* PlayerState, const FGCFOnPlayerReadyStateChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
+	static TUniquePtr<FGCFDelegateHandle> BindPlayerReadyStateScoped(APlayerState* PlayerState, const FGCFOnPlayerReadyStateChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
 
 	/**
 	 * Binds a delegate to monitor Possession changes on a Controller.
@@ -59,7 +57,5 @@ public:
 	 * @param bExecuteImmediately  If true, fires the delegate immediately with the current Pawn (if any).
 	 * @return A scoped handle.
 	 */
-	UE_API static TUniquePtr<FGCFDelegateHandle> BindPossessionScoped(AController* Controller, const FOnPossessedPawnChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
+	static TUniquePtr<FGCFDelegateHandle> BindPossessionScoped(AController* Controller, const FOnPossessedPawnChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
 };
-
-#undef UE_API

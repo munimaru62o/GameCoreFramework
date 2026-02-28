@@ -32,7 +32,7 @@ class UGCFAbilitySystemComponent;
  * tightly coupling the input logic to a specific Pawn class.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFAbilityInputRouterComponent : public UControllerComponent
+class UGCFAbilityInputRouterComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 
@@ -53,21 +53,17 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	/**
-	 * Updates the reference to the Pawn's ASC when possession changes.
-	 */
+	/** Updates the reference to the "Body" ASC when possession changes. */
 	void HandlePossessedPawnChanged(AActor* Actor, bool bPossessed);
 
-	/**
-	 * Updates the reference to the PlayerState's ASC when the player becomes ready.
-	 */
+	/** Updates the reference to the "Soul" ASC when the player enters the GamePlay state. */
 	void HandlePlayerReadyStateChanged(const FGCFPlayerReadyStateSnapshot& Snapshot);
 
+	/** Checks if the target ASC owns an activatable ability matching the given input tag. */
+	bool HasMatchingAbility(UAbilitySystemComponent* ASC, const FGameplayTag& InputTag) const;
 
-	bool HasMachingAbility(UAbilitySystemComponent* ASC, const FGameplayTag& InputTag) const;
-
-
-	void ExecRouteTag(UGCFAbilitySystemComponent* ASC, const FGameplayTag& InputTag, bool bPressed) const;
+	/** Pushes the input event directly into the specified ASC and handles debug logging. */
+	void InjectInputToASC(UGCFAbilitySystemComponent* ASC, const FGameplayTag& InputTag, bool bPressed) const;
 
 private:
 	/** Reference to the "Soul" ASC (Persistent, e.g., Global Skills, Meta-game). */

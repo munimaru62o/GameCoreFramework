@@ -6,8 +6,6 @@
 #include "Engine/DataAsset.h"
 #include "GCFPawnData.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API 
-
 class APawn;
 class UGCFAbilitySet;
 class UGCFCameraMode;
@@ -41,13 +39,13 @@ struct FGCFInputMappingContextInfo
  *
  *	Non-mutable data asset that contains properties used to define a pawn.
  */
-UCLASS(MinimalAPI, BlueprintType, Const, Meta = (DisplayName = " Pawn Data", ShortTooltip = "Data asset used to define a Pawn."))
-class UGCFPawnData : public UPrimaryDataAsset
+UCLASS(BlueprintType, Const, Meta = (DisplayName = " Pawn Data", ShortTooltip = "Data asset used to define a Pawn."))
+class GAMECOREFRAMEWORK_API UGCFPawnData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFPawnData(const FObjectInitializer& ObjectInitializer);
+	UGCFPawnData(const FObjectInitializer& ObjectInitializer);
 
 public:
 
@@ -79,5 +77,3 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	TObjectPtr<UGCFMovementConfig> MovementConfig;
 };
-
-#undef UE_API

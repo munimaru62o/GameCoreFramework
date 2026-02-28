@@ -6,8 +6,6 @@
 
 #include "GCFGameData.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGameplayEffect;
 class UObject;
 
@@ -16,17 +14,17 @@ class UObject;
  *
  *	Non-mutable data asset that contains global game data.
  */
-UCLASS(MinimalAPI, BlueprintType, Const, Meta = (DisplayName = "GCF Game Data", ShortTooltip = "Data asset containing global game data."))
-class UGCFGameData : public UPrimaryDataAsset
+UCLASS(BlueprintType, Const, Meta = (DisplayName = "GCF Game Data", ShortTooltip = "Data asset containing global game data."))
+class GAMECOREFRAMEWORK_API UGCFGameData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFGameData();
+	UGCFGameData();
 
 	// Returns the loaded game data.
-	static UE_API const UGCFGameData& Get();
+	static const UGCFGameData& Get();
 
 public:
 
@@ -42,5 +40,3 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> DynamicTagGameplayEffect;
 };
-
-#undef UE_API

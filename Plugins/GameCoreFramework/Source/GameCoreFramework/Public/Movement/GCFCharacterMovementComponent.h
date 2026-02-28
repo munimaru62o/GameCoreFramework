@@ -8,8 +8,6 @@
 #include "Movement/GCFMovementConfigReceiver.h"
 #include "GCFCharacterMovementComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UAbilitySystemComponent;
 
 /**
@@ -46,20 +44,20 @@ struct FGCFCharacterGroundInfo
  * - Ability System integration (Tag-based movement blocking).
  * - Based on Lyra's robust movement implementation.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, Blueprintable, Meta = (BlueprintSpawnableComponent))
-class UGCFCharacterMovementComponent : public UCharacterMovementComponent, public IGCFMovementConfigReceiver
+UCLASS(ClassGroup = (GCF), Within = Pawn, Blueprintable, Meta = (BlueprintSpawnableComponent))
+class GAMECOREFRAMEWORK_API UGCFCharacterMovementComponent : public UCharacterMovementComponent, public IGCFMovementConfigReceiver
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFCharacterMovementComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFCharacterMovementComponent(const FObjectInitializer& ObjectInitializer);
 
 	//~IGCFMovementConfigReceiver interface
-	UE_API virtual void ApplyMovementConfig_Implementation(const UGCFMovementConfig* Config) override;
+	virtual void ApplyMovementConfig_Implementation(const UGCFMovementConfig* Config) override;
 	//~End of IGCFMovementConfigReceiver interface
 
 	//~UActorComponent interface
-	UE_API virtual void BeginPlay() override; // Added for caching
+	virtual void BeginPlay() override; // Added for caching
 	//~End of UActorComponent interface
 
 	/**
@@ -70,7 +68,7 @@ public:
 	const FGCFCharacterGroundInfo& GetGroundInfo();
 
 	/** Allows external systems to force a replicated acceleration (used for prediction corrections). */
-	UE_API void SetReplicatedAcceleration(const FVector& InAcceleration);
+	void SetReplicatedAcceleration(const FVector& InAcceleration);
 
 protected:
 	virtual void SimulateMovement(float DeltaTime) override;
@@ -94,5 +92,3 @@ private:
 	 */
 	mutable TWeakObjectPtr<UAbilitySystemComponent> CachedAbilitySystemComponent;
 };
-
-#undef UE_API

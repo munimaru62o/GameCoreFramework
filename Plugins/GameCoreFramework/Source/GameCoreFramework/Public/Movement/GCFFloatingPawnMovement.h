@@ -8,23 +8,18 @@
 #include "Movement/GCFMovementConfigReceiver.h"
 #include "GCFFloatingPawnMovement.generated.h"
 
-
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * @brief GCF-compliant wrapper for UFloatingPawnMovement.
  * * Extends the standard engine floating movement to implement IGCFMovementConfigReceiver.
  * This allows the component to receive data-driven configuration from UGCFMovementConfig.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, Blueprintable, Meta = (BlueprintSpawnableComponent))
-class UGCFFloatingPawnMovement : public UFloatingPawnMovement, public IGCFMovementConfigReceiver
+UCLASS(ClassGroup = (GCF), Within = Pawn, Blueprintable, Meta = (BlueprintSpawnableComponent))
+class GAMECOREFRAMEWORK_API UGCFFloatingPawnMovement : public UFloatingPawnMovement, public IGCFMovementConfigReceiver
 {
 	GENERATED_BODY()
 
 public:
 	//~IGCFMovementConfigReceiver interface
-	UE_API virtual void ApplyMovementConfig_Implementation(const UGCFMovementConfig* Config) override;
+	virtual void ApplyMovementConfig_Implementation(const UGCFMovementConfig* Config) override;
 	//~End of IGCFMovementConfigReceiver interface
 };
-
-#undef UE_API

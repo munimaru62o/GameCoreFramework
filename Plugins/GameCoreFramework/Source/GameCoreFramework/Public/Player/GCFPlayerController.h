@@ -9,9 +9,6 @@
 #include "Messages/GCFMessageTypes.h"
 #include "GCFPlayerController.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
-
 struct FGenericTeamId;
 struct FComponentRequestHandle;
 
@@ -45,68 +42,68 @@ struct FGCFPolicyChangedCursorMessage;
  *
  *	The base player controller class used by this project.
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base player controller class used by this project."))
-class AGCFPlayerController : public AModularPlayerController, public IGCFTeamAgentInterface
+UCLASS(Config = Game, Meta = (ShortTooltip = "The base player controller class used by this project."))
+class GAMECOREFRAMEWORK_API AGCFPlayerController : public AModularPlayerController, public IGCFTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API AGCFPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGCFPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UE_API virtual void SetupInputComponent() override;
+	virtual void SetupInputComponent() override;
 
-	UE_API virtual void SetPawn(APawn* InPawn) override;
-
-	UFUNCTION(BlueprintCallable, Category = "GCF|PlayerController")
-	UE_API AGCFPlayerState* GetGCFPlayerState() const;
+	virtual void SetPawn(APawn* InPawn) override;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|PlayerController")
-	UE_API UGCFAbilitySystemComponent* GetGCFAbilitySystemComponent() const;
+	AGCFPlayerState* GetGCFPlayerState() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|PlayerController")
-	UE_API AGCFHUD* GetGCFHUD() const;
+	UGCFAbilitySystemComponent* GetGCFAbilitySystemComponent() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GCF|PlayerController")
+	AGCFHUD* GetGCFHUD() const;
 
 	// Run a cheat command on the server.
 	UFUNCTION(Reliable, Server, WithValidation)
-	UE_API void ServerCheat(const FString& Msg);
+	void ServerCheat(const FString& Msg);
 
 	// Run a cheat command on the server for all players.
 	UFUNCTION(Reliable, Server, WithValidation)
-	UE_API void ServerCheatAll(const FString& Msg);
+	void ServerCheatAll(const FString& Msg);
 
 	//~AActor interface
-	UE_API virtual void PreInitializeComponents() override;
-	UE_API virtual void BeginPlay() override;
-	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	UE_API virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PreInitializeComponents() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	//~End of AActor interface
 
 	//~AController interface
-	UE_API virtual void OnPossess(APawn* InPawn) override;
-	UE_API virtual void OnUnPossess() override;
-	UE_API virtual void AcknowledgePossession(class APawn* P);
-	UE_API virtual void InitPlayerState() override;
-	UE_API virtual void CleanupPlayerState() override;
-	UE_API virtual void OnRep_PlayerState() override;
-	UE_API virtual void OnRep_Pawn() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
+	virtual void AcknowledgePossession(class APawn* P);
+	virtual void InitPlayerState() override;
+	virtual void CleanupPlayerState() override;
+	virtual void OnRep_PlayerState() override;
+	virtual void OnRep_Pawn() override;
 	//~End of AController interface
 
 	//~APlayerController interface
-	UE_API virtual void ReceivedPlayer() override;
-	UE_API virtual void PlayerTick(float DeltaTime) override;
-	UE_API virtual void SetPlayer(UPlayer* InPlayer) override;
-	UE_API virtual void AddCheats(bool bForce) override;
-	UE_API virtual void UpdateForceFeedback(IInputInterface* InputInterface, const int32 ControllerId) override;
-	UE_API virtual void UpdateHiddenComponents(const FVector& ViewLocation, TSet<FPrimitiveComponentId>& OutHiddenComponents) override;
-	UE_API virtual void PreProcessInput(const float DeltaTime, const bool bGamePaused) override;
-	UE_API virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void ReceivedPlayer() override;
+	virtual void PlayerTick(float DeltaTime) override;
+	virtual void SetPlayer(UPlayer* InPlayer) override;
+	virtual void AddCheats(bool bForce) override;
+	virtual void UpdateForceFeedback(IInputInterface* InputInterface, const int32 ControllerId) override;
+	virtual void UpdateHiddenComponents(const FVector& ViewLocation, TSet<FPrimitiveComponentId>& OutHiddenComponents) override;
+	virtual void PreProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	//~End of APlayerController interface
 	
 	//~IGCFTeamAgentInterface interface
-	UE_API virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
-	UE_API virtual FGenericTeamId GetGenericTeamId() const override;
-	UE_API virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual FOnGCFTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~End of IGCFTeamAgentInterface interface
 
 	FDelegateHandle RegisterAndExecuteDelegate(const FOnInputComponentReady::FDelegate& Delegate, bool bExecuteImmediately = true);
@@ -117,11 +114,11 @@ public:
 	 * Outputs the current input binding state to the log for debugging purposes.
 	 */
 	UFUNCTION(Exec)
-	UE_API void GCF_DumpInputBindings();
+	void GCF_DumpInputBindings();
 
 protected:
 	// Called when the player state is set or cleared
-	UE_API virtual void OnPlayerStateChanged();
+	virtual void OnPlayerStateChanged();
 
 private:
 	UFUNCTION()
@@ -175,6 +172,3 @@ private:
 
 	TUniquePtr<FGCFMessageSubscription> MessageHandle;
 };
-
-
-#undef UE_API
