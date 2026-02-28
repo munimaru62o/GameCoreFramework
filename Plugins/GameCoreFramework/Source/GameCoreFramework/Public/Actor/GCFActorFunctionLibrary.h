@@ -12,11 +12,6 @@ class APlayerState;
 class AController;
 class APawn;
 class IGCFPawnDataProvider;
-class IGCFAvatarActionHandler;
-class IGCFAvatarActionProvider;
-class IGCFHumanoidActionHandler;
-class IGCFHumanoidActionProvider;
-
 
 /**
  * @brief Static function library dedicated to Actor utilities.

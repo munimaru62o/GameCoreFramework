@@ -8,9 +8,6 @@
 
 #define UE_API GAMECOREFRAMEWORK_API
 
-class UGCFAvatarControlComponent;
-enum class EStanceMode : uint8;
-
 /**
  * @brief The base avatar pawn class used by this project.
  * 
