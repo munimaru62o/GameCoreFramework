@@ -134,8 +134,8 @@ void UGCFAbilityInputRouterComponent::InjectInputToASC(UGCFAbilitySystemComponen
 		return;
 	}
 
-	const bool bHasMachingAbility = HasMatchingAbility(ASC, InputTag);
-	if (bHasMachingAbility) {
+	const bool bHasMatchingAbility = HasMatchingAbility(ASC, InputTag);
+	if (bHasMatchingAbility) {
 		if (bPressed) {
 			ASC->AbilityInputTagPressed(InputTag);
 		} else {
@@ -145,7 +145,7 @@ void UGCFAbilityInputRouterComponent::InjectInputToASC(UGCFAbilitySystemComponen
 
 	// Logging based on routing success
 	if (bPressed) {
-		if (bHasMachingAbility) {
+		if (bHasMatchingAbility) {
 			UGCFDebugFunctionLibrary::SendLogMessage(this, EGCFDebugLogVerbosity::Success, FString::Printf(TEXT("%s: Routed to %s"), *InputTag.GetTagName().ToString(), *ASC->GetOwner()->GetName()));
 		} else {
 			UGCFDebugFunctionLibrary::SendLogMessage(this, EGCFDebugLogVerbosity::Error, TEXT("No Target (Ability Not Found)"));
