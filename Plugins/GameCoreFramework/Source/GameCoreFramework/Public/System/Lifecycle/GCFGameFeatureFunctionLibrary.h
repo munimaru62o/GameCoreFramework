@@ -23,7 +23,7 @@ class UGameFrameworkComponentManager;
  * allowing other components to wait for specific dependencies to be met.
  */
 UCLASS(Abstract)
-class  UGCFGameFeatureFunctionLibrary : public UBlueprintFunctionLibrary
+class GAMECOREFRAMEWORK_API UGCFGameFeatureFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
