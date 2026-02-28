@@ -5,19 +5,16 @@
 #include "CoreMinimal.h"
 #include "GCFDebugTypes.generated.h"
 
-
 class UObject;
 
 UENUM(BlueprintType)
 enum class EGCFDebugLogVerbosity : uint8
 {
     Info,
-    Success, // 緑色にする用
-    Warning, // 黄色にする用
-    Error    // グレーにする用（No Targetなど）
+    Success, // Used for green text formatting
+    Warning, // Used for yellow text formatting
+    Error    // Used for gray text formatting (e.g., No Target, Failures)
 };
-
-
 
 UENUM(BlueprintType)
 enum class EGCFDebugStateCategory : uint8
@@ -28,8 +25,6 @@ enum class EGCFDebugStateCategory : uint8
     Possession,
     InputContext,
 };
-
-
 
 USTRUCT(BlueprintType)
 struct FGCFDebugLogEntry
@@ -43,8 +38,6 @@ struct FGCFDebugLogEntry
     FString Message;
 };
 
-
-
 USTRUCT(BlueprintType)
 struct FGCFDebugStateEntry
 {
@@ -53,19 +46,18 @@ struct FGCFDebugStateEntry
     UPROPERTY(BlueprintReadWrite)
     EGCFDebugStateCategory Category = EGCFDebugStateCategory::None;
 
-    // 更新したい項目（例: "Possession", "InputContext", "ReadyState"）
+    // The item label to update (e.g., "Possession", "InputContext", "ReadyState")
     UPROPERTY(BlueprintReadWrite)
     FString Label;
 
-    // 表示する内容（例: "HumanPawn", "IMC_Vehicle"）
+    // The content value to display (e.g., "HumanPawn", "IMC_Vehicle")
     UPROPERTY(BlueprintReadWrite)
     FString Value;
 
-    // 状態による色指定（任意）
+    // Optional display color based on the current state
     UPROPERTY(BlueprintReadWrite)
     FLinearColor DisplayColor = FLinearColor::White;
 };
-
 
 USTRUCT(BlueprintType)
 struct FGCFDebugInputGroup
