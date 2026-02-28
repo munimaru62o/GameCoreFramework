@@ -34,16 +34,14 @@ public:
 	FGCFDelegateHandle& operator=(const FGCFDelegateHandle&) = delete;
 
 	/**
-	 * @brief Factory method to create a scoped handle for component delegates.
-	 * * @tparam TrackerType Component class type (e.g. UGCFPawnReadyStateComponent)
-	 * @tparam RegisterFnType Member function pointer type for Registration
-	 * @tparam RemoveFnType Member function pointer type for Removal
-	 * @tparam DelegateType The delegate type being bound
-	 * * @param Tracker The component instance to bind to.
-	 * @param bExecuteImmediately Whether to execute the delegate immediately upon binding.
-	 * @param RegisterFn Pointer to the Register function (e.g. &UComponent::RegisterDelegate).
-	 * @param RemoveFn Pointer to the Remove function (e.g. &UComponent::RemoveDelegate).
-	 * @param Delegate The delegate payload to bind.
+	 * @brief Binds a delegate and returns an RAII handle for automatic unbinding.
+	 *
+	 * @param Tracker             The target object owning the delegate (e.g., a Component).
+	 * @param bExecuteImmediately If true, fires the delegate immediately upon registration.
+	 * @param RegisterFn          Pointer to the target's registration function.
+	 * @param RemoveFn            Pointer to the target's unregistration function.
+	 * @param Delegate            The delegate payload to bind.
+	 * @return A unique pointer to the RAII handle, or nullptr if binding fails.
 	 */
 	template<typename TrackerType, typename RegisterFnType, typename RemoveFnType, typename DelegateType>
 	static TUniquePtr<FGCFDelegateHandle> CreateScoped(TrackerType* Tracker, bool bExecuteImmediately, RegisterFnType RegisterFn, RemoveFnType RemoveFn, DelegateType&& Delegate)

@@ -10,10 +10,6 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GCFAvatarPawn)
 
-class AActor;
-class FLifetimeProperty;
-class IRepChangedPropertyTracker;
-class UInputComponent;
 
 const FName AGCFAvatarPawn::AvatarCollisionComponentName(TEXT("AvatarCollisionComponent"));
 const FName AGCFAvatarPawn::AvatarMeshComponentName(TEXT("AvatarMeshComponent"));

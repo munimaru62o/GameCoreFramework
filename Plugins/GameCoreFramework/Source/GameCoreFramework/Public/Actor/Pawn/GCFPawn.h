@@ -33,7 +33,8 @@ class UMoverComponent;
  * - Integrated with Modular Gameplay (PawnExtensionComponent).
  * - Handles controller/player state replication lifecycle.
  * - Supports GCF Camera system.
- * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via caching.
+ * - Implements Locomotion interfaces (Handler/Provider) for decoupled, architecture-agnostic intent routing.
+ * - Supports both traditional FloatingPawnMovement and the new Mover plugin architecture via cached intents.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
 class AGCFPawn : public AModularPawn, public IGCFLocomotionInputHandler, public IGCFLocomotionInputProvider, public IGCFTeamAgentInterface, public IGameplayTagAssetInterface

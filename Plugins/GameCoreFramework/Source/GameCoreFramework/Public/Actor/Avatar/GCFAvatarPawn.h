@@ -8,9 +8,6 @@
 
 #define UE_API GAMECOREFRAMEWORK_API
 
-class UGCFAvatarControlComponent;
-enum class EStanceMode : uint8;
-
 /**
  * @brief The base avatar pawn class used by this project.
  * 
@@ -18,9 +15,9 @@ enum class EStanceMode : uint8;
  * root collision components (e.g., Capsule) to derived classes.
  * It is designed to work seamlessly with the Mover plugin.
  * 
- * It provides direct API methods for Control Components (to push input intents)
- * and Mover Input Producers (to pull cached intents), ensuring strict type safety
- * and optimal performance through direct casting.
+ * It implements IGCFLocomotionInputHandler and IGCFLocomotionInputProvider,
+ * establishing an interface-driven architecture to securely push and pull
+ * movement intents without requiring tight coupling to concrete classes.
  */
 UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base humanoid pawn class used by this project."))
 class AGCFAvatarPawn : public AGCFPawn
