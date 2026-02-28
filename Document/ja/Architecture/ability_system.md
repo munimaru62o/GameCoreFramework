@@ -1,5 +1,7 @@
 # GAS統合とAbilityルーティング (Dual ASC & Router パターン)
 
+🌍 *他の言語で読む: [English](../../en/Architecture/ability_system.md) | [日本語 (Japanese)](../../ja/Architecture/ability_system.md)* 
+
 ## 概要
 本システムは、Unreal EngineのGameplay Ability System（GAS）を大規模マルチプレイや複雑なポゼッション（憑依）要件に適応させるためのコアモジュールです。
 

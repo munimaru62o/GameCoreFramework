@@ -1,5 +1,7 @@
 # インプットシステム (InputBridge & Manager パターン)
 
+🌍 *他の言語で読む: [English](../../en/Architecture/input_system.md) | [日本語 (Japanese)](../../ja/Architecture/input_system.md)* 
+
 ## 概要
 本システムは、Unreal Engine 5の「Enhanced Input System」をベースにしながら、マルチプレイやポゼッション（憑依）特有の非同期問題（初期化のレースコンディション）を解決するために構築された入力ルーティング基盤です。
 

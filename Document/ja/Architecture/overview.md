@@ -1,5 +1,7 @@
 # アーキテクチャ概要
 
+🌍 *他の言語で読む: [English](../../en/Architecture/overview.md) | [日本語 (Japanese)](../../ja/Architecture/overview.md)* 
+
 ## 概要
 
 本プロジェクト「GameCoreFramework (GCF)」は、Unreal Engine 5のモダンなアーキテクチャ（Lyra Starter Game等）を一度解体し、特定のゲームジャンルに依存しない**汎用的なゲームフレームワーク**として再設計したものです。

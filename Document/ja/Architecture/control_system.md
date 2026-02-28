@@ -1,5 +1,7 @@
 # アクター制御システム (Interface駆動オプトイン制御 & Control System)
 
+🌍 *他の言語で読む: [English](../../en/Architecture/control_system.md) | [日本語 (Japanese)](../../ja/Architecture/control_system.md)* 
+
 ## 概要
 本システムは、プレイヤーの「移動の意思（入力）」と、肉体側の「物理的な挙動（歩行、運転など）」を完全に切り離すためのアーキテクチャです。
 

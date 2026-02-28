@@ -4,7 +4,7 @@
 ![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-*他の言語で読む: [English](README.md), [日本語 (Japanese)](README_ja.md)*
+🌍 *他の言語で読む: [English](README.md) | [日本語 (Japanese)](README_ja.md)*
 
 ## 🎯 プロジェクト概要
 
