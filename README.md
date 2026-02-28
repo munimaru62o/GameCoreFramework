@@ -36,17 +36,17 @@ Fundamentally eliminates reliance on per-frame `Tick` processing by default. The
 
 For a deep dive into the GCF design philosophy and individual systems, please refer to the following documents:
 
-- **[Architecture Overview](Document/en/Architecture/overview.md)**
-  - Summarizes the core philosophy (e.g., Separation of Soul and Body) to prevent "initialization race conditions" and "bloated responsibilities" common in multiplayer development, along with lessons learned from practical failures.
+- **[Architecture Overview](Document/en/Architecture/overview.md)**  
+  Summarizes the core philosophy (e.g., Separation of Soul and Body) to prevent "initialization race conditions" and "bloated responsibilities" common in multiplayer development, along with lessons learned from practical failures.
 
-- **[GAS Integration & Ability Routing (Dual ASC & Router Pattern)](Document/en/Architecture/ability_system.md)**
-  - Details the advanced "Dual ASC Architecture" where both the PlayerState and the Pawn possess their own Ability System Component. Explains the routing mechanism that eliminates tight coupling between inputs and abilities, dynamically dispatching inputs based on tag prefixes.
+- **[GAS Integration & Ability Routing (Dual ASC & Router Pattern)](Document/en/Architecture/ability_system.md)**  
+  Details the advanced "Dual ASC Architecture" where both the PlayerState and the Pawn possess their own Ability System Component. Explains the routing mechanism that eliminates tight coupling between inputs and abilities, dynamically dispatching inputs based on tag prefixes.
 
-- **[Input System (InputBridge & Manager Pattern)](Document/en/Architecture/input_system.md)**
-  - A robust manager design that queues binding requests until all contexts are ready, applying them simultaneously at a safe timing. This completely eradicates input binding crashes caused by asynchronous loading during possession.
+- **[Input System (InputBridge & Manager Pattern)](Document/en/Architecture/input_system.md)**  
+  A robust manager design that queues binding requests until all contexts are ready, applying them simultaneously at a safe timing. This completely eradicates input binding crashes caused by asynchronous loading during possession.
 
-- **[Actor Control System (Interface-Driven Control System)](Document/en/Architecture/control_system.md)**
-  - Completely decouples the "player's intended input" from the "Pawn's physical behavior and unique actions" using Interfaces. This prevents casting hell and loosely handles not only movement but also vehicle-specific actions (e.g., jumping, turning on headlights).
+- **[Actor Control System (Interface-Driven Intent Transmission & Opt-In Design)](Document/en/Architecture/control_system.md)**  
+  Details how the player's "operating intent" is completely separated from the Pawn's "physical behavior" via interfaces. It explains the ultimate loosely coupled architecture functioning as an "intent bucket brigade"—where the input component *Pushes* the intent, the Pawn *Caches* it, and the physics engine (e.g., the Mover plugin) *Pulls* and translates it.
 
 ---
 
@@ -186,17 +186,3 @@ See the [LICENSE](LICENSE) file for details.
 **⚠️ Epic Games Content Notice**
 This project contains code portions and assets inspired by or originating from the *Lyra Starter Game*. These specific Epic Games materials are subject to the Unreal Engine End User License Agreement (EULA).
 For detailed information on which files are covered by which license, please refer to [NOTICE.md](NOTICE.md).
-
----
-
-## 🖋️ Developer's Vision: A Philosophy of Architecture
-
-In building frameworks that support complex systems, programming is not merely about "implementing features." I believe it is a highly sophisticated process of design—how we organize and express complex phenomena.
-
-Rather than applying ad-hoc fixes to the daunting challenges inherent in multiplayer and large-scale development, I value taking the time to thoroughly conceptualize how to decouple systems and maintain loose coupling. The very process of refining these ideas, iterating through trial and error, and carefully translating them into code is, to me, the true joy of software development.
-
-**GameCoreFramework**, published here as open-source, is not intended to be just another utility tool. It is a personal expression—a piece of craftsmanship—born from a deep pursuit of what constitutes a "beautiful and robust architecture" in the face of gritty challenges like Dual ASC routing and the complete synchronization of asynchronous lifecycles.
-
-Even in today’s development scene where efficiency and speed are paramount, I firmly believe that the value of taking the time to sharpen one's design and writing code with a true understanding of its essence will never fade. 
-
-I hope the design philosophies and architectural ideas embedded in this framework will serve as a source of inspiration for engineers around the world who share a love for beautiful, highly maintainable systems.

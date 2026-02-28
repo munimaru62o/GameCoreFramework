@@ -176,4 +176,18 @@ Now that the robust routing foundation and lifecycle management are complete, th
 
 ---
 
+## 🖋️ Developer's Vision: A Philosophy of Architecture
+
+In building frameworks that support complex systems, programming is not merely about "implementing features." I believe it is a highly sophisticated process of design—how we organize and express complex phenomena.
+
+Rather than applying ad-hoc fixes to the daunting challenges inherent in multiplayer and large-scale development, I value taking the time to thoroughly conceptualize how to decouple systems and maintain loose coupling. The very process of refining these ideas, iterating through trial and error, and carefully translating them into code is, to me, the true joy of software development.
+
+**GameCoreFramework**, published here as open-source, is not intended to be just another utility tool. It is a personal expression—a piece of craftsmanship—born from a deep pursuit of what constitutes a "beautiful and robust architecture" in the face of gritty challenges like Dual ASC routing and the complete synchronization of asynchronous lifecycles.
+
+Even in today’s development scene where efficiency and speed are paramount, I firmly believe that the value of taking the time to sharpen one's design and writing code with a true understanding of its essence will never fade. 
+
+I hope the design philosophies and architectural ideas embedded in this framework will serve as a source of inspiration for engineers around the world who share a love for beautiful, highly maintainable systems.
+
+---
+
 *Note: This project is currently in a state of evolution, and the current design is not the final answer. The design and form of separation of responsibilities are expected to evolve further through future implementation and validation.*
