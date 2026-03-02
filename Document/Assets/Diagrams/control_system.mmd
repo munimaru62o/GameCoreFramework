@@ -103,7 +103,7 @@ classDiagram
     }
 
     %% シミュレーション & 物理ドメイン (Mover)
-    class UGCFCachedInputProducer {
+    class UGCFLocomotionInputProducer {
         <<MoverInputProducer>>
         +ProduceInput()
     }
@@ -165,7 +165,7 @@ classDiagram
     APawn <|-- AGCFWheeledVehiclePawn
 
     UGCFMoverComponent <|-- UGCFCharacterMoverComponent
-    UGCFCachedInputProducer <|-- UGCFHumanoidInputProducer
+    UGCFLocomotionInputProducer <|-- UGCFHumanoidInputProducer
 
     %% インターフェースの実装 (親クラスのみに集約)
     IGCFMovementConfigReceiver <|.. UGCFMoverComponent
@@ -180,10 +180,10 @@ classDiagram
     UGCFLocomotionDirectionComponent --> IGCFLocomotionInputHandler : Push Directional Intent
     UGCFLocomotionActionComponent --> IGCFLocomotionInputHandler : Push Action Intent
     
-    UGCFCachedInputProducer --> IGCFLocomotionInputProvider : Pull Cached Intents
+    UGCFLocomotionInputProducer --> IGCFLocomotionInputProvider : Pull Cached Intents
     UGCFHumanoidInputProducer --> IGCFLocomotionInputProvider : Pull Crouch Intent
     
-    UGCFCachedInputProducer --> UGCFMoverComponent : Inject to InputCmd
+    UGCFLocomotionInputProducer --> UGCFMoverComponent : Inject to InputCmd
     UGCFHumanoidInputProducer ..> FGCFHumanoidInputs : Inject to InputCollection
 
     %% その他の制御フロー
