@@ -10,8 +10,6 @@
 #include "Components/ControllerComponent.h"
 #include "GCFControllerPossessionComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class APawn;
 class AController;
 
@@ -24,13 +22,13 @@ class AController;
  * - **Safe Possession**: Delays the notification until the Pawn has fully acknowledged the Controller
  * (i.e., until Pawn->GetController() is valid).
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFControllerPossessionComponent : public UControllerComponent
+UCLASS(ClassGroup = (GCF), Within = Controller, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+class GAMECOREFRAMEWORK_API UGCFControllerPossessionComponent final : public UControllerComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFControllerPossessionComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFControllerPossessionComponent(const FObjectInitializer& ObjectInitializer);
 
 	/** Helper to find this component on an Actor (Controller). */
 	UFUNCTION(BlueprintPure, Category = "GCF|Possession")
@@ -40,14 +38,17 @@ public:
 	 * Registers a delegate and optionally executes it immediately with the current state.
 	 * @return Handle to unregister later.
 	 */
-	UE_API FDelegateHandle RegisterAndExecuteDelegate(const FOnPossessedPawnChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
+	FDelegateHandle RegisterAndExecuteDelegate(const FOnPossessedPawnChangedNative::FDelegate& Delegate, bool bExecuteImmediately = true);
 
-	UE_API void RemoveDelegate(const FDelegateHandle& Handle);
+	void RemoveDelegate(const FDelegateHandle& Handle);
 
 	/** Returns the current "Confirmed" Pawn (Source of Truth). */
-	UE_API APawn* GetCurrentPawn() const { return CachedPawn.Get(); }
+	APawn* GetCurrentPawn() const { return CachedPawn.Get(); }
 
-	/** Called from the owning Controller's OnNewPawnNotifier. */
+	/** 
+	 * Called to notify the component of a potential Pawn change.
+	 * Triggered by the Controller's OnNewPawnNotifier or explicitly via AcknowledgePossession.
+	 */
 	void HandleNewPawn(APawn* NewPawn);
 
 protected:
@@ -66,7 +67,6 @@ private:
 	/** Commits the new pawn and broadcasts the change. */
 	void SetNewPawn(APawn* NewPawn);
 
-
 private:
 	/** The Pawn that is fully linked and confirmed. */
 	TWeakObjectPtr<APawn> CachedPawn;
@@ -79,6 +79,3 @@ private:
 
 	FOnPossessedPawnChangedNative OnPawnChangedNative;
 };
-
-
-#undef UE_API

@@ -5,19 +5,17 @@
 #include "Subsystems/EngineSubsystem.h"
 #include "GCFExperienceManager.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 /**
  * Manager for experiences - primarily for arbitration between multiple PIE sessions
  */
-UCLASS(MinimalAPI)
-class UGCFExperienceManager : public UEngineSubsystem
+UCLASS()
+class GAMECOREFRAMEWORK_API UGCFExperienceManager : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
 public:
 #if WITH_EDITOR
-	UE_API void OnPlayInEditorBegun();
+	void OnPlayInEditorBegun();
 
 	static void NotifyOfPluginActivation(const FString PluginURL);
 	static bool RequestToDeactivatePlugin(const FString PluginURL);
@@ -31,5 +29,3 @@ private:
 	// (to allow first in, last out activation management during PIE)
 	TMap<FString, int32> GameFeaturePluginRequestCountMap;
 };
-
-#undef UE_API

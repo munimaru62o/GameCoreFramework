@@ -4,7 +4,7 @@
 #include "Movement/GCFMovementFunctionLibrary.h"
 #include "GCFShared.h"
 #include "Movement/GCFMovementConfigReceiver.h"
-#include "Movement/GCFLocomotionHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 
 
 TScriptInterface<IGCFMovementConfigReceiver> UGCFMovementFunctionLibrary::ResolveMovementConfigReceiver(const UObject* Context)
@@ -13,7 +13,7 @@ TScriptInterface<IGCFMovementConfigReceiver> UGCFMovementFunctionLibrary::Resolv
 }
 
 
-TScriptInterface<IGCFLocomotionHandler> UGCFMovementFunctionLibrary::ResolveLocomotionHandler(const UObject* Context)
+TScriptInterface<IGCFLocomotionInputHandler> UGCFMovementFunctionLibrary::ResolveLocomotionInputHandler(const UObject* Context)
 {
-	return GCF::Context::ResolveInterface<IGCFLocomotionHandler, UGCFLocomotionHandler>(Context);
+	return GCF::Context::ResolveInterface<IGCFLocomotionInputHandler, UGCFLocomotionInputHandler>(Context);
 }

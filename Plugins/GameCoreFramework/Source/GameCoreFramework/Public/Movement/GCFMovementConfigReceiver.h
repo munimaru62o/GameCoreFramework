@@ -7,8 +7,6 @@
 #include "UObject/Interface.h"
 #include "GCFMovementConfigReceiver.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGCFMovementConfig;
 
 UINTERFACE(MinimalAPI, Blueprintable)
@@ -22,7 +20,7 @@ class UGCFMovementConfigReceiver : public UInterface
  * * Implemented by components (like GCFCharacterMovementComponent) that need to
  * apply speed, acceleration, or other physics settings from a shared config asset.
  */
-class UE_API IGCFMovementConfigReceiver
+class GAMECOREFRAMEWORK_API IGCFMovementConfigReceiver
 {
 	GENERATED_BODY()
 
@@ -34,5 +32,3 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Movement")
 	void ApplyMovementConfig(const UGCFMovementConfig* Config);
 };
-
-#undef UE_API

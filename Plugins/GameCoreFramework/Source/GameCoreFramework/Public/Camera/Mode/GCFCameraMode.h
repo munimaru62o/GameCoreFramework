@@ -10,8 +10,6 @@
 
 #include "GCFCameraMode.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class AActor;
 class UCanvas;
 class UGCFCameraComponent;
@@ -90,20 +88,20 @@ struct FGCFCameraPolicyData
  * A CameraMode calculates the 'View' (Location, Rotation, FOV) for a frame.
  * Modes are stacked in the CameraComponent and blended together.
  */
-UCLASS(MinimalAPI, Abstract, NotBlueprintable)
-class UGCFCameraMode : public UObject
+UCLASS(Abstract, NotBlueprintable)
+class GAMECOREFRAMEWORK_API UGCFCameraMode : public UObject
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API UGCFCameraMode();
+	UGCFCameraMode();
 
-	UE_API UGCFCameraComponent* GetGCFCameraComponent() const;
+	UGCFCameraComponent* GetGCFCameraComponent() const;
 
-	UE_API virtual UWorld* GetWorld() const override;
+	virtual UWorld* GetWorld() const override;
 
-	UE_API AActor* GetTargetActor() const;
+	AActor* GetTargetActor() const;
 
 	const FGCFCameraModeView& GetCameraModeView() const { return View; }
 
@@ -113,35 +111,41 @@ public:
 	// Called when this camera mode is deactivated on the camera mode stack.
 	virtual void OnDeactivation() {};
 
-	UE_API void UpdateCameraMode(float DeltaTime);
+	void UpdateCameraMode(float DeltaTime);
 
 	float GetBlendTime() const { return BlendTime; }
 	float GetBlendWeight() const { return BlendWeight; }
-	UE_API void SetBlendWeight(float Weight);
+	void SetBlendWeight(float Weight);
 
 	FGameplayTag GetCameraTypeTag() const { return PolicyData.CameraTypeTag; }
 	const FGCFCameraPolicyData& GetPolicyData() const { return PolicyData; }
 
-	UE_API virtual void DrawDebug(UCanvas* Canvas) const;
+	virtual void DrawDebug(UCanvas* Canvas) const;
 
 protected:
 	/** Calculates the pivot point (target location) for the camera. Handles crouching offsets. */
-	UE_API virtual FVector GetPivotLocation() const;
+	virtual FVector GetPivotLocation() const;
+
+	/** 
+	 * Returns the pivot location after applying per-axis smoothing interpolation.
+	 * This prevents camera snapping during sudden state changes (e.g., crouching or walking up stairs).
+	 */
+	virtual FVector GetSmoothedPivotLocation(float DeltaTime);
 
 	/** Calculates the pivot rotation (usually ControlRotation). */
-	UE_API virtual FRotator GetPivotRotation() const;
+	virtual FRotator GetPivotRotation() const;
 
 	/** Main update logic. Should be overridden by subclasses to apply offsets. */
-	UE_API virtual void UpdateView(float DeltaTime);
+	virtual void UpdateView(float DeltaTime);
 
 	/** Updates the blend alpha and weight. */
-	UE_API virtual void UpdateBlending(float DeltaTime);
+	virtual void UpdateBlending(float DeltaTime);
 
 	/** helper to get current zoom ratio from the component. */
-	UE_API virtual float GetCameraZoomRatio() const;
+	virtual float GetCameraZoomRatio() const;
 
 	/** Helper to evaluate the offset curves based on current Pitch. */
-	UE_API FVector CalculateOffsetFromCurves(float Pitch) const;
+	FVector CalculateOffsetFromCurves(float Pitch) const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -193,10 +197,36 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Offset", Meta = (EditCondition = "bUseRuntimeFloatCurves"))
 	FRuntimeFloatCurve TargetOffsetZ;
 
+	/** Current interpolated location of the camera pivot. */
+	UPROPERTY(Transient)
+	FVector CurrentPivotLocation = FVector::ZeroVector;
+
+	/** Enable interpolation for the X axis (Forward/Backward). */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpX = false;
+
+	/** Interpolation speed for the X axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpX"))
+	float PivotInterpSpeedX = 10.0f;
+
+	/** Enable interpolation for the Y axis (Left/Right). */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpY = false;
+
+	/** Interpolation speed for the Y axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpY"))
+	float PivotInterpSpeedY = 10.0f;
+
+	/** Enable interpolation for the Z axis (Up/Down). Recommended to be true to smooth out stairs and crouching. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation")
+	bool bEnablePivotInterpZ = true;
+
+	/** Interpolation speed for the Z axis. */
+	UPROPERTY(EditDefaultsOnly, Category = "GCF|Camera|Interpolation", Meta = (EditCondition = "bEnablePivotInterpZ"))
+	float PivotInterpSpeedZ = 10.0f;
+
 protected:
 	/** If true, skips all interpolation and puts camera in ideal location.  Automatically set to false next frame. */
 	UPROPERTY(transient)
-	uint32 bResetInterpolation:1;
+	uint32 bIsFirstUpdate :1;
 };
-
-#undef UE_API

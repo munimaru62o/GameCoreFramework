@@ -5,11 +5,9 @@
 
 #include "CoreMinimal.h"
 #include "Actor/Vehicle/GCFModularVehicle.h"
-#include "Movement/GCFLocomotionHandler.h"
+#include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 
 #include "GCFWheeledVehiclePawn.generated.h"
-
-#define UE_API GAMECOREFRAMEWORK_API
 
 class UGCFPawnData;
 class USphereComponent;
@@ -27,15 +25,15 @@ class UGCFPawnInputBridgeComponent;
  * Handles locomotion input routing, state replication (e.g., headlights), and lifecycle
  * management when drivers possess or unpossess the vehicle.
  */
-UCLASS(MinimalAPI, Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
-class AGCFWheeledVehiclePawn : public AGCFModularVehicle, public IGCFLocomotionHandler
+UCLASS(Config = Game, Meta = (ShortTooltip = "The base pawn class used by this project."))
+class AGCFWheeledVehiclePawn : public AGCFModularVehicle, public IGCFLocomotionInputHandler
 {
 	GENERATED_BODY()
 
 public:
-	UE_API AGCFWheeledVehiclePawn(const FObjectInitializer& ObjectInitializer);
+	AGCFWheeledVehiclePawn(const FObjectInitializer& ObjectInitializer);
 
-	UE_API virtual void PostInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
 	UFUNCTION(BlueprintCallable, Category = "GCF|Pawn")
 	const UGCFPawnData* GetPawnData() const;
@@ -56,10 +54,10 @@ protected:
 	virtual void OnRep_PlayerState() override;
 	//~End of AActor / APawn Interface
 
-	//~IGCFLocomotionHandler Interface
+	//~IGCFLocomotionInputHandler Interface
 	virtual void HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation) override;
 	virtual void HandleMoveUpInput_Implementation(float Value) override;
-	//~End of IGCFLocomotionHandler Interface
+	//~End of IGCFLocomotionInputHandler Interface
 
 	/** Blueprint hook to update visual effects or lights when the headlight state changes. */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "GCF|Vehicle")
@@ -67,11 +65,11 @@ protected:
 
 	// Begins the death sequence for the character (disables collision, disables movement, etc...)
 	UFUNCTION()
-	UE_API virtual void OnDeathStarted(AActor* OwningActor);
+	virtual void OnDeathStarted(AActor* OwningActor);
 
 	// Ends the death sequence for the character (detaches controller, destroys pawn, etc...)
 	UFUNCTION()
-	UE_API virtual void OnDeathFinished(AActor* OwningActor);
+	virtual void OnDeathFinished(AActor* OwningActor);
 
 private:
 	/** Applies the handbrake to the Chaos Vehicle Movement Component. */
@@ -111,5 +109,3 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_IsHeadLightTurnOn)
 	bool bIsHeadLightTurnOn;
 };
-
-#undef UE_API

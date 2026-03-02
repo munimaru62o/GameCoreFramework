@@ -1,106 +1,117 @@
-# Actor Control System (Interface-Driven Control System)
+# Actor Control System (Interface-Driven Opt-In Control)
+
+🌍 *Read this in other languages: [English](../../en/Architecture/control_system.md) | [日本語 (Japanese)](../../ja/Architecture/control_system.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
 
 ## Overview
-This system is an architecture designed to completely decouple the player's "intention to move" (input) from the "physical behavior" (walking, driving, etc.) of the physical body. 
+This system provides an architecture designed to clearly separate and abstract the player's "movement intent (input)" from the body's "physical behavior (walking, driving, etc.)."
 
-It prevents the hardcoding of movement logic into the `ACharacter` class—a common pitfall in standard Unreal Engine development—and provides a loosely coupled movement control foundation using interfaces and a component-oriented design.
+It prevents the hardcoding of movement logic into `ACharacter`—a frequent issue in standard Unreal Engine development—and establishes a loosely coupled movement control foundation utilizing Interfaces and a "Push ➔ Cache ➔ Pull" bucket relay mechanism.
 
 ---
 
 ## 🛑 Problems Solved
 
-Hardcoding movement logic directly into Pawn or Character classes leads to the following issues in a production environment:
+Writing movement logic directly within Pawn or Character classes leads to the following issues in production:
 
-1. **Cast Proliferation Due to Base Class Dependency:**  
-   "Bipedal humans" and "four-wheeled vehicles" have different base classes (`ACharacter` and `AWheeledVehiclePawn`). Hardcoding movement logic leads to an endless proliferation of conditional branches (Casts) to control them with the same controller, severely bloating the codebase.
+1. **Cast Proliferation Due to Base Class Dependency:** "Bipedal humans" and "four-wheeled vehicles" have different base classes (`ACharacter` and `AWheeledVehiclePawn`). Hardcoding movement logic causes the complexity of branching (Casting) to increase significantly when trying to operate them with the same controller, leading to bloated code.
 
-2. **Direct References to Physics Components:**  
-   Tight coupling to specific physical APIs, such as the standard `CharacterMovementComponent` or the new `Mover` plugin, makes it impossible to apply parameters (like movement speed) through a common flow, hindering the ability to easily swap components.
+2. **Direct References to Physics Components:** Tight coupling to specific physics APIs, such as the standard `CharacterMovementComponent` or the new `Mover` feature, makes it difficult to apply data (like movement speed) through a common flow and hinders component replacement.
 
-3. **Tight Coupling Between Movement Vectors and Cameras:**  
-   If movement direction and camera orientation are too rigidly connected, flexible presentations and viewpoint controls—such as "moving the camera independently while keeping the controlled character stationary"—become impossible to implement cleanly.
+3. **Tight Coupling of Movement Vectors and Cameras:** If the movement direction is too rigidly tied to the camera's rotation, it becomes difficult to implement flexible presentations or viewpoint controls, such as "moving the camera independently while the controlled character remains fixed."
 
-This system solves these issues through "Abstraction via Interfaces" and "Domain Separation."
+This system solves these challenges through "abstraction via interfaces" and "strict domain separation."
 
 ---
 
-## 📐 The 4 Layers of the Architecture
+## 📐 The Four Architecture Layers
 
-<img width="7569" height="7299" alt="control_system drawio" src="https://github.com/user-attachments/assets/97115d82-d51a-46f8-a7e0-a036e7f816b5" />
+<img width="11889" height="7089" alt="control_system drawio" src="https://github.com/user-attachments/assets/05639ceb-493b-43ff-9841-2513ced4837c" />
 
-*▲ Click or download the image to view the class diagram in detail.*
+*▲ Click or download the image to enlarge and view the details of the class diagram.*
 
-Based on the class diagram, the structure of this system is broadly divided into the following four layers:
+The structure of this system is broadly divided into the following four layers. Its defining characteristic is the clear separation between the "Soul (Controller)" and the "Body (Pawn)."
 
-### 1. Input & Controller Layer (Operation & Universal Intent Layer)
-Receives player input and calculates the universal intent of "how to move," independent of the physical body.
-- **[`UGCFMovementControlComponent`][GCFMovementControlComponent]** / **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: Attached to the Player Controller (the "Soul"). They handle generic movement inputs (like analog stick events) and camera operations, containing absolutely no logic tied to specific bodies (like humans or cars).
+### 1. Input & Controller Layer (Soul / Universal Intent Layer)
+This layer receives input from the player and calculates a universal intent ("how I want to move") that does not depend on the physical body.
 
-### 2. Pawn & Implementation Layer (Body & Specific Execution Layer)
-Receives universal commands from the controller and executes physical behaviors or unique actions specific to that "Body" (Pawn).
-- **[`UGCFCharacterControlComponent`][GCFCharacterControlComponent]** / **[`UGCFVehicleControlComponent`][GCFVehicleControlComponent]**: Attached directly to the Pawn side (the "Body"). They handle specific input operations strictly dependent on that body type, such as jumping (for humans) or turning on headlights (for vehicles).
-- **[`IGCFLocomotionHandler`][GCFLocomotionHandler]**: The core interface of this system. The Controller's **[`UGCFMovementControlComponent`][GCFMovementControlComponent]** transmits the movement vector to the body exclusively through this interface, without ever needing to check the target's class type.
+- **[`UGCFLocomotionDirectionComponent`][GCFLocomotionDirectionComponent]**: Attached to the PlayerController (Soul). It processes universal movement vectors (Direction) from analog sticks and pushes the intent without caring about the structure of the target body.
 
-### 3. Data Layer (Data-Driven Layer)
-Manages movement parameters (speed, acceleration, etc.).
-- **[`UGCFMovementConfig`][GCFMovementConfig] (DataAsset)**: Holds movement parameters that can be easily tuned by game designers.
-- **[`IGCFMovementConfigReceiver`][GCFMovementConfigReceiver]**: An interface for receiving data. By having standard components like [`UGCFCharacterMovementComponent`][GCFCharacterMovementComponent] or the new [`UGCFMoverComponent`][GCFMoverComponent] implement this, parameters (Config) can be applied via a unified flow regardless of the underlying physics component.
+- **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: Handles viewpoint operations and controls the camera's rotation (ControlRotation) completely independently of the movement logic.
 
-### 4. SubSystem & Camera Layer (Camera & State Monitoring Layer)
-Decouples camera behavior from movement logic and controls it via a message-based system.
-- **`UGameplayMessageSubsystem`**: Broadcasts the controller's calculation results and camera policy changes without directly binding events.
-- **[`GCFCameraMode`][GCFCameraMode]**: Abstracts camera policies (e.g., Orbit, Third-Person) and flexibly switches camera behavior based on the current movement state.
+### 2. Pawn & Implementation Layer (Body / Specific Action & Intent Cache Layer)
+This layer caches universal commands from the controller and processes action inputs that depend on specific bodies, such as "Jump" or "Crouch."
+- **GCF Pawn 3-Tier Architecture**: Strictly divides Pawn classes based on physical requirements.
+  - [`AGCFPawn`][GCFPawn]: The purest base class, solely responsible for caching intents.
+  - [`AGCFAvatarPawn`][GCFAvatarPawn]: Possesses a skeletal mesh; handles shape-independent universal actions like "Jump."
+  - [`AGCFHumanoid`][GCFHumanoid]: Possesses a capsule collision; handles specialized actions highly dependent on capsules, like "Crouch."
+
+- **[`UGCFLocomotionActionComponent`][GCFLocomotionActionComponent]**: Attached to the Pawn (Body) to push intents for specific actions (Jump/Crouch, etc.).
+
+- **[`IGCFLocomotionInputHandler`][GCFLocomotionInputHandler]**: An interface for "Pushing" intents from the input component to the Pawn.
+
+- **[`IGCFLocomotionInputProvider`][GCFLocomotionInputProvider]**: A read-only interface used by the Mover's producer to safely "Pull" the intents cached in the Pawn.
+
+### 3. Data & Simulation Layer (Data-Driven / Physics Simulation Layer)
+This layer manages actual physical movement and parameters (speed, acceleration, etc.).
+- **[`UGCFLocomotionInputProducer`][GCFLocomotionInputProducer]**: In UE5's Mover plugin, this component pulls intents from the Pawn via interfaces, translates them, and transmits them to the physics engine.
+  - *Note: If you need to pass specialized input structures to Mover (e.g., [`FGCFHumanoidInputs`][GCFHumanoidInputs] for crouching), you can safely inject this by creating a derived [`UGCFHumanoidInputProducer`][GCFHumanoidInputProducer], reusing the core logic.*
+
+- **[`UGCFMovementConfig`][GCFMovementConfig] (DataAsset)**: Holds movement parameters that can be adjusted by planners.
+
+- **[`IGCFMovementConfigReceiver`][GCFMovementConfigReceiver]**: An interface that allows parameters to be applied via a common flow, regardless of whether the internal physics component is Mover or the legacy CMC.
+
+### 4. SubSystem & Camera Layer (Camera / State Monitoring Layer)
+This layer separates camera behavior from movement logic and controls it via message broadcasting.
+- **`UGameplayMessageSubsystem`**: Broadcasts controller calculation results or camera policy changes without direct event binding.
+
+- **[`GCFCameraMode`][GCFCameraMode]**: Abstracts camera policies (Orbit, ThirdPerson, etc.) and flexibly switches camera behavior based on the movement state.
 
 ---
 
-## ⚙️ Core Mechanism: Interface-Driven Movement Flow
+## ⚙️ Core Mechanism: The Intent "Bucket Relay" (Push ➔ Cache ➔ Pull)
 
-The flow from the player tilting the stick to the character moving is as follows:
+The sequence from when a player tilts a thumbstick to when the character moves is handled in a 3-step "bucket relay" optimized for the Mover plugin.
 
-1. **Input Reception:**  
-   The input action bound from the [`UGCFInputComponent`][GCFInputComponent] fires, calling `Input_Move()` on the [`UGCFMovementControlComponent`][GCFMovementControlComponent].
+1. **Intent Transmission (Push):** When the [`UGCFLocomotionDirectionComponent`][GCFLocomotionDirectionComponent] or [`UGCFLocomotionActionComponent`][GCFLocomotionActionComponent] detects input, it dispatches (Pushes) the intent ("I want to move this way", "I want to jump") via the **[`IGCFLocomotionInputHandler`][GCFLocomotionInputHandler]** without casting to a specific Pawn class.
 
-2. **Movement Vector Calculation:**  
-   The controller calculates the actual movement vector the Pawn should take, based on the camera's current rotation.
+2. **Relay and Retention (Cache & Opt-In):** The Pawn receiving the command safely ignores actions it cannot execute (e.g., a car crouching) thanks to UHT's (Unreal Header Tool) default interface implementation. It overrides (Opts-in) only the features it supports and saves (caches) the state in variables in preparation for the Mover's requests.
 
-3. **Command Transmission via Interface:**  
-   The controller checks if the currently possessed Pawn implements the **[`IGCFLocomotionHandler`][GCFLocomotionHandler]**. If it does, it passes the calculated vector to `HandleMoveInput()`.
-
-4. **Physical Execution per Body:**  
-   If the command is received by an [`AGCFCharacter`][GCFCharacter], `AddMovementInput` is called. If received by an [`AGCFWheeledVehiclePawn`][GCFWheeledVehiclePawn], it is translated into throttle and steering processing.
+3. **Intent Extraction and Execution (Pull):** Every frame, the Mover's **[`UGCFLocomotionInputProducer`][GCFLocomotionInputProducer]** (or its derived classes) actively extracts (Pulls) the cached movement vectors, orientation, and action intents from the Pawn via the **[`IGCFLocomotionInputProvider`][GCFLocomotionInputProvider]**, applying them to the actual physics simulation.
 
 ---
 
 ## 🎯 Benefits of This Design
 
-- **Ultimate Plug & Play:**  
-  When adding a new "flying vehicle" or a "monster with a completely new walking algorithm," you don't need to change a single line of code on the controller side (e.g., `Input_Move`). Simply implementing the [`IGCFLocomotionHandler`][GCFLocomotionHandler] on the new Pawn makes it instantly playable.
+- **High-Level Plug & Play** When adding a new "flying vehicle" or a "monster with entirely new walking algorithms," the system can be expanded without modifying existing core logic. Simply implementing the interface (opting-in) on the new Pawn makes it instantly controllable.
 
-- **Coexistence of Old and New Physics Engines:**  
-  Thanks to the [`IGCFMovementConfigReceiver`][GCFMovementConfigReceiver] interface, parameters can be streamed from the same DataAsset (MovementConfig) regardless of whether the Pawn uses the legacy CharacterMovement or the next-gen Mover plugin.
+- **Zero-Boilerplate Design Leveraging UHT** By utilizing the default behavior of interfaces, this design minimizes redundant code (boilerplate), such as forcing a "non-jumping car" to implement numerous empty jump functions.
 
-- **Team Development Scalability:**  
-  As long as programmers adhere to the "Interface contract," they have complete freedom over the internal implementation of individual Pawns. This prevents conflicts and chained bugs during parallel development by multiple people.
+- **Core Logic Reuse and Safe Scalability** Common operations like movement and jumping are handled by a single base Producer. Only when unique processing (like crouching) is required do you inherit and expand the Producer. This scales safely across the entire project without creating tight coupling.
 
-- **Seamless Integration of Event-Driven and Tick-Based Simulations:**  
-  The next-generation Mover plugin requires Tick-based input prediction, whereas this framework operates on an Event-Driven architecture. To absorb this paradigm shift, we built an "Input Cache Mechanism" where input results are temporarily synthesized and held as vectors, allowing the Mover's Producer ([`UGCFCachedInputProducer`][GCFCachedInputProducer]) to safely read them via an Interface. This fully supports Mover's powerful rollback mechanics while preserving the lightweight nature of event-driven execution.
+- **Team Development Scalability** As long as programmers adhere to the "Interface Standards (Push/Pull)," they are free to implement the internal logic of individual Pawns however they see fit. This prevents conflicts and cascading bugs during parallel development by multiple people.
+
+- **Seamless Integration of Event-Driven and Tick-Based Simulations** The Mover plugin requires Tick-based input prediction, whereas this framework is event-driven. To absorb this paradigm difference, we built a "Cache & Pull Mechanism" using the Pawn as a relay point. This maintains the lightness of event-driven architecture while fully utilizing Mover's powerful network synchronization and rollback capabilities.
 
 
-[GCFCharacter]:                  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
-[GCFWheeledVehiclePawn]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
-[GCFCharacterControlComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacterControlComponent.h
-[GCFVehicleControlComponent]:    ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFVehicleControlComponent.h
+[GCFCharacter]:                          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Character/GCFCharacter.h
+[GCFPawn]:                               ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Pawn/GCFPawn.h
+[GCFAvatarPawn]:                         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Avatar/GCFAvatarPawn.h
+[GCFHumanoid]:                           ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Humanoid/GCFHumanoid.h
+[GCFWheeledVehiclePawn]:                 ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Vehicle/GCFWheeledVehiclePawn.h
 
-[GCFMovementControlComponent]:   ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
-[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-[GCFMoverComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMoverComponent.h
-[GCFCharacterMovementComponent]: ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
-[GCFMovementConfig]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
-[GCFMovementConfigReceiver]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
-[GCFLocomotionHandler]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFLocomotionHandler.h
-[GCFCachedInputProducer]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFCachedInputProducer.h
+[GCFLocomotionDirectionComponent]:       ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionDirectionComponent.h
+[GCFLocomotionActionComponent]:          ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionActionComponent.h
+[GCFLocomotionInputHandler]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionInputHandler.h
+[GCFLocomotionInputProvider]:            ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionInputProvider.h
+[GCFMoverComponent]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFMoverComponent.h
+[GCFLocomotionInputProducer]:            ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Producer/GCFLocomotionInputProducer.h
+[GCFHumanoidInputProducer]:              ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Producer/GCFHumanoidInputProducer.h
+[GCFHumanoidInputs]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Input/GCFHumanoidInputs.h
+[GCFCharacterMovementComponent]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
+[GCFMovementConfig]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfig.h
+[GCFMovementConfigReceiver]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementConfigReceiver.h
 
-[GCFCameraMode]:                 ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
-[GCFCameraControlComponent]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
+[GCFCameraMode]:                         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/Mode/GCFCameraMode.h
+[GCFCameraControlComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
 
-[GCFInputComponent]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h
+[GCFInputComponent]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputComponent.h

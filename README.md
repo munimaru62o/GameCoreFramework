@@ -1,85 +1,84 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
-![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-0.9.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-*Read this in other languages: [English](README.md), [日本語 (Japanese)](README_ja.md)*
+🌍 *Read this in other languages: [English](README.md) | [日本語 (Japanese)](README_ja.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
 
 ## 🎯 Project Overview
 
-This project is a highly extensible, loosely-coupled, modular game framework for Unreal Engine 5. It is built upon the modern architecture of the **Lyra Starter Game** and the design philosophies of the **Gameplay Ability System (GAS)**.
+This project is a highly extensible, loosely coupled modular game framework built upon the modern architecture of Unreal Engine 5 (inspired by Lyra Starter Game) and the design philosophy of the Gameplay Ability System (GAS).
 
 ---
 
 ## 💡 Core Design Philosophy
 
-- **Complete Separation of Concerns**  
-Eliminates hardcoding within `ACharacter` or `APlayerController` by dividing features into independent components (GameFeatures). This allows developers to safely inject new features and characters without polluting or breaking the existing codebase.
+- **Clear Separation of Concerns**
+  By eliminating hardcoding in `ACharacter` and `APlayerController`, each feature is divided into independent components (GameFeatures). This allows you to safely add and expand new features and characters without polluting the existing codebase.
 
-- **Separation of "Soul" and "Body"**  
-Strictly separates the responsibilities of the `PlayerState` (the persistent "Soul") and the `Pawn` (the temporary "Body"). This architecture allows abilities and input bindings to be cleanly categorized into persistent elements and temporary, body-specific elements.
+- **Separation of Soul and Body**
+  The responsibilities of the PlayerState (the persistent "Soul") and the Pawn (the temporary "Body") are clearly separated. This makes it possible to decompose Ability and Input bindings into persistent and temporary ones, achieving a flexible system that is not dictated by the current possession state.
 
-- **Data-Driven Routing**  
-Constructed a routing layer driven by `DataAssets`, enabling non-programmers (designers and artists) to bind inputs to abilities and tweak behaviors without touching a single line of C++. This maximizes the team's iteration speed.
+- **Data-Driven Routing**
+  A routing layer is established via DataAssets, enabling non-programmers (planners and artists) to link inputs with abilities and adjust behaviors without touching C++ code. This maximizes the iteration speed of the entire team.
 
-- **Safe Asynchronous Lifecycle Management**  
-Utilizes the `GameFrameworkComponentManager` (GFCM) to strictly manage component dependencies and initialization states (Feature States). By implementing a hybrid approach of event-driven and state management, the system ensures synchronization of the latest state at all times, systemically preventing UE's notorious initialization order issues (e.g., referencing unspawned objects).
+- **Safe Asynchronous Lifecycle Management**
+  Utilizing the `GameFrameworkComponentManager` (GFCM), the dependencies and initialization states (Feature States) of each component are strictly managed. By implementing a hybrid architecture of event-driven and state management, the system can always synchronize to the latest state. This prevents at the system level the frequent Unreal Engine initialization order issue where "referenced objects have not yet been spawned."
 
-- **Performance-Oriented Tickless Design**  
-Fundamentally eliminates reliance on per-frame `Tick` processing by default. The system operates entirely on an event-driven model and state broadcasts. This drastically cuts idle CPU overhead, delivering overwhelming performance by keeping Game Thread processing times down to a few milliseconds.
+- **Performance-Oriented Tickless Design**
+  Reliance on per-frame `Tick` processing is fundamentally eliminated. The system operates primarily through an Event-Driven model and state broadcasting. This suppresses CPU overhead on the Game Thread, maintaining high runtime performance.
 
 ---
 
 ## 📚 Detailed Documentation
 
-For a deep dive into the GCF design philosophy and individual systems, please refer to the following documents:
+For details on the design philosophy and individual systems of GCF, please refer to the following documentation:
 
 - **[Architecture Overview](Document/en/Architecture/overview.md)**
-  - Summarizes the core philosophy (e.g., Separation of Soul and Body) to prevent "initialization race conditions" and "bloated responsibilities" common in multiplayer development, along with lessons learned from practical failures.
+  Summarizes the core philosophy (e.g., Separation of Soul and Body) to systematically prevent "initialization race conditions" and "responsibility bloat" that frequently occur in multiplayer development, along with lessons learned from practical failures.
 
-- **[GAS Integration & Ability Routing (Dual ASC & Router Pattern)](Document/en/Architecture/ability_system.md)**
-  - Details the advanced "Dual ASC Architecture" where both the PlayerState and the Pawn possess their own Ability System Component. Explains the routing mechanism that eliminates tight coupling between inputs and abilities, dynamically dispatching inputs based on tag prefixes.
+- **[GAS Integration and Ability Routing (Dual ASC & Router Pattern)](Document/en/Architecture/ability_system.md)**
+  Explains the advanced "Dual ASC Architecture" where both the PlayerState and the Pawn have an ASC. It details the routing mechanism that eliminates tight coupling between inputs and abilities, dynamically switching the execution target based on tag prefixes.
 
 - **[Input System (InputBridge & Manager Pattern)](Document/en/Architecture/input_system.md)**
-  - A robust manager design that queues binding requests until all contexts are ready, applying them simultaneously at a safe timing. This completely eradicates input binding crashes caused by asynchronous loading during possession.
+  Details a robust manager design that queues requests until the state is ready and applies them safely all at once. This prevents input binding crashes caused by asynchronous loading during possession.
 
-- **[Actor Control System (Interface-Driven Control System)](Document/en/Architecture/control_system.md)**
-  - Completely decouples the "player's intended input" from the "Pawn's physical behavior and unique actions" using Interfaces. This prevents casting hell and loosely handles not only movement but also vehicle-specific actions (e.g., jumping, turning on headlights).
+- **[Actor Control System (Interface-Driven Intent Dispatch & Opt-In Design)](Document/en/Architecture/control_system.md)**
+  Explains the highly decoupled architecture based on an "Intent Bucket Relay." It clearly separates the player's "movement intent" from the Pawn's "physical behavior" using interfaces, where the input side Pushes the intent, the Pawn Caches it, and the physics engine (like Mover) Pulls and translates it.
 
 ---
 
-## 🚀 Quick Start (Demo Environment Setup)
+## 🚀 Quick Start (Installation Guide)
 
-This repository is structured as an all-in-one package, containing both the core framework (plugin) and a sample project where you can immediately test its behavior.
+This repository integrates the core framework (Plugin) and a sample project so you can immediately verify its behavior.
 
-To maximize extensibility and robustness, this framework relies on the latest foundational plugins included in Epic Games' "Lyra Starter Game". Please follow the steps below to set up the demo environment.
+To maximize extensibility and robustness, this framework depends on the latest foundation plugins included in Epic Games' official "Lyra Starter Game." Please build the demo environment by following the steps below.
 
 ### Step 1: Clone the Repository
 
-1. Clone this repository to your local machine, or download and extract the ZIP file.
+1. Clone this repository locally or download and extract the ZIP file.
 
-### Step 2: Port Lyra Dependencies (Required)
+### Step 2: Transplant Lyra Dependency Plugins (Required)
 
-To compile and run this framework, you must download the **Lyra Starter Game (UE5.7 compatible version)** from the Epic Games Launcher and copy specific plugins into this repository.
+To compile and run this framework, you must download the "Lyra Starter Game (UE5.7 compatible version)" from the Epic Games Launcher and copy specific plugins into this repository.
 
-1. Open the Lyra Starter Game project directory (`[LyraProjectDirectory]/Plugins/`).
+1. Open the Lyra Starter Game project folder (`[LyraProjectDirectory]/Plugins/`).
+2. Copy the following Lyra-specific plugin folders into the `Plugins` folder of your cloned repository:
 
-2. Copy the following Lyra-specific plugin folders into the `Plugins` folder of this cloned repository:
+   - CommonGame
+   - CommonUser
+   - CommonLoadingScreen
+   - GameplayMessageRouter
+   - ModularGameplayActors
+   - GameSubtitles
+   - UIExtension
 
-  - CommonGame
-  - CommonUser
-  - CommonLoadingScreen
-  - GameplayMessageRouter
-  - ModularGameplayActors
-  - GameSubtitles
-  - UIExtension
+*(Note: Engine plugins like GameFeatures and Mover are already built into the UE engine and do not need to be copied)*
 
-*(Note: Built-in engine plugins like `GameFeatures` and `Mover` do not need to be copied as they are already included in the engine).*
-
-▼ Final Directory Structure
+▼ Example of the final directory structure
 ```text
-GameCoreFramework/ (Cloned repository root)
+GameCoreFramework/ (Root of the cloned repository)
  ├── GCF_SampleProject.uproject
  ├── Source/
  └── Plugins/
@@ -91,111 +90,96 @@ GameCoreFramework/ (Cloned repository root)
 
 ### Step 3: Build the Project
 
-1. Right-click the `GCF_SampleProject.uproject` file in the repository root and select **"Generate Visual Studio project files"**.
-
+1. Right-click `GCF_SampleProject.uproject` at the root of the repository and select "Generate Visual Studio project files."
 2. Open the generated `.sln` (or your IDE's project file) and build the project (e.g., Development Editor).
-
-3. Once the editor launches, go to `Edit > Plugins` and ensure that this plugin and its dependencies (`GameplayAbilities`, `EnhancedInput`, `Mover`, etc.) are Enabled.
+3. Once the editor launches, verify from `Edit > Plugins` that this plugin and its dependencies (GameplayAbilities, EnhancedInput, Mover, etc.) are Enabled.
 
 ---
 
 ### Integrating into Your Own Project
 
-If you wish to integrate this framework into your own game project, simply copy the `Plugins/GameCoreFramework` folder from this repository, along with the Lyra dependency plugins prepared in `Step 2`, directly into your own project's `Plugins` folder.
+If you wish to introduce this framework into your own game project, simply **copy the `Plugins/GameCoreFramework` folder from this repository directly into your project's `Plugins` folder**, along with the Lyra dependency plugins prepared in `Step 2`.
 
+## 🎬 Demo & Samples
 
-## 🎬 Demos & Samples
-
-This project includes demo assets to help you understand the framework's behavior.  
-The design allows you to dynamically switch abilities and behaviors simply by editing `DataAssets` without modifying any C++ code.
+This project includes demo assets to help you verify its behavior.
+It is designed so that you can dynamically switch abilities and behaviors simply by editing DataAssets, without altering any C++ code.
 
 ```text
 GameCoreFramework/Content/Sample
-├── Assets/         # Assets for Pawns, Particles, etc.
-├── Blueprints/     # Blueprint classes for Pawns and Abilities
-├── DataAssets/     # Core data-driven definitions
+├── Assets/         # Assets for Pawns and Particles
+├── Blueprints/     # BP classes for Pawns and Abilities
+├── DataAssets/     # The core of the data-driven design; DataAssets are defined here
 ├── Experiences/    # Experience definitions
-├── Maps/           # Demo map definitions
-└── UI/             # Debug HUD UI definitions
+└── Maps/           # Demo map definitions
+└── UI/             # UI definitions for the Debug HUD
 ```
 
-### 🖥️ Sample Video  
+> **⚠️ Note on Experience Loading Functionality:** Because this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of the core foundation, dynamic Experience switching via UI is not currently implemented. Assigning or changing the Experience is designed to be done solely via the "Default Gameplay Experience" setting within the target map's `World Settings`.
 
-https://github.com/user-attachments/assets/16ca9d37-960a-498f-86c2-08032df4a68d
+### 🖥️ Sample Video
 
-#### **💡 Video Highlights**
-You can observe the "perfect synchronization of lifecycles": the moment possession changes, the old body's input bindings are safely discarded, **the new Pawn's `InputBinding` is dynamically updated**, and the abilities granted to the new body are immediately activated and routed.
+https://github.com/user-attachments/assets/1ab546e9-f2b7-4c96-ad29-9a86f2c24af6
 
-#### 📊 On-Screen Debug Information
-- **Debug Input Info:** Real-time display of currently active input actions and their routing status.
-- **Debug State Info:** Monitors GFCM's `InitState` (initialization phases of each feature) and current possession status.
-- **Debug Log:** Outputs possession switch events and tag transmission logs routed via the Ability Router.
+#### **💡 Highlights of the Video**
+You can observe that the moment possession changes, the input bindings of the old Body are safely discarded, and **the new Pawn's `InputBinding` is dynamically updated.** It also demonstrates "safe synchronization of lifecycles," where Abilities granted to the new Body are immediately activated and routed.
+
+#### 📊 Debug Information on Screen
+- **Debug Input Info:** Displays currently active bound input actions and routing states in real-time.
+- **Debug State Info:** Monitors GFCM's `InitState` (the initialization phase of each feature) and the current possession state.
+- **Debug Log:** Outputs possession switch events and tag transmission logs via the Ability Router.
 
 #### 🎮 Executing Possession and Target Selection
-- Possession is transferred by executing the `Interact` ability (a persistent ability of the "Soul") towards any highlighted target Actor.
-- The target is dynamically selected based on the camera mode (center of the screen in TPS mode, or based on the mouse cursor position in Top-Down mode).
+- Execute the `Interact` ability (a persistent ability on the Soul side) against an Actor highlighted (outlined) on the screen to transfer possession.
+- Targets are dynamically selected based on the camera mode. (In TPS mode, it's based on the center of the screen; in Top-Down mode, it's based on the mouse cursor position).
 
-#### 🤖 Playable Actor Variations (Coexistence of New/Old Systems and Physics Engines)
-To prove the architecture's loose coupling, the framework seamlessly transitions between Pawns equipped with entirely different physics components:
-- **White Mannequin:** Uses the standard `CharacterMovementComponent` with Jump/Crouch functions.
-- **Colored Mannequin:** Adds execution functions for dedicated abilities defined specifically for the current "body", in addition to the white mannequin's features.
-- **Sphere (Mover):** Tick-based movement control via UE5's next-gen `Mover` plugin, paired with a Top-Down camera.
-- **Vehicle (Chaos Vehicle):** Full vehicle control via `ChaosVehicleMovementComponent`, including unique actions like Headlights and Handbrake.
+#### 🤖 Variations of Playable Actors (Coexistence of Old/New Systems and Physics Engines)
+To prove the decoupled nature of the architecture, the player seamlessly transitions between Pawns with completely different physics components.
+- **White Mannequin:** Movement, Jump, and Crouch functions powered by this framework's proprietary `GCFCharacterMover`, based on UE5's next-gen `Mover` plugin.
+- **Colored Mannequin:** Movement control using the legacy `CharacterMovementComponent`, plus the execution of dedicated abilities uniquely defined for the current "Body."
+- **Sphere (Mover):** Tick-based movement control using the `Mover` plugin, viewed from a Top-Down camera.
+- **Vehicle (Chaos Vehicle):** Authentic vehicle control using the `ChaosVehicleMovementComponent`, along with specific operations like Headlights and Handbrake.
 
-### 🌐 Client Sample Video (Network Lag Simulation)  
+### 🌐 Client Sample Video (Network Lag Simulation)
 
-https://github.com/user-attachments/assets/81f024e5-7cbc-49cd-8b14-850ba394b52f
+https://github.com/user-attachments/assets/f3c54c69-b6dc-4071-a949-bfde364a2029
 
-#### **💡 Video Highlights**
-Even in poor network environments where "reversed initialization orders" or "lifecycle discrepancies during asynchronous loading (race conditions)" occur due to lag, you can see how GFCM's strict state management perfectly absorbs these issues.
+#### **💡 Highlights of the Video**
+You can observe that even in a poor network environment where communication delays cause "initialization order reversals" or "lifecycle desyncs during asynchronous loading (race conditions)," GFCM's strict state management safely absorbs these issues.
 
 #### 📡 Test Environment (Intentional Network Latency)
-Simulates severe network constraints common in multiplayer games on a Client connected to a Listen Server.
-- **Latency:** 200 ms
+A harsh network restriction frequently encountered in multiplayer is emulated on a Client connected to a Listen Server.
+- **Latency (Ping):** 200 ms
 - **Packet Loss:** 10%
 
-Even under such severe lag conditions, the possession transition completes safely. Null reference crashes and input binding failures are completely prevented, proving the architecture's robust functionality.
+It proves that the architecture functions robustly even under such severe lag conditions: possession transfers safely complete, and the occurrence of Null reference crashes or input binding failures is suppressed at the design level.
 
 ---
 
-## 📌 Project Status & Contribution Policy
+## 📌 Project Status and Contribution
 
-This project is published primarily as a **reference implementation and for educational purposes** to demonstrate a modern architecture design in Unreal Engine 5.
+This project is a demonstration of modern architecture design in Unreal Engine 5 and is published personally for **learning and reference purposes**.
 
-Therefore, please note that I am **not actively accepting Pull Requests (PRs)** for new features, mechanical changes, or major structural overhauls. (Minor bug fixes or typo corrections are appreciated, but please consider opening an issue to discuss them before submitting a PR).
+Therefore, with the exception of bug fixes, **we generally do not accept** Pull Requests (PRs) for "adding new features" or "large-scale changes that affect the core design."
 
-If you find the design philosophy of this framework useful, please feel free to fork this repository, or simply take the architectural concepts and code snippets to build your own robust projects under the MIT License!
+If you resonate with the design philosophy of this framework, please feel free to Fork this repository or take the code and architectural ideas back to your own projects (within the scope of the MIT License)!
 
 ---
 
 ## 💖 Credits & Acknowledgments
 
-- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine)** by Epic Games: 
-  Heavily inspired the application of modular design philosophies.
-- **Unreal Engine Community**: 
-  Thanks to all developers who share their best practices.
+- **[Lyra Starter Game](https://dev.epicgames.com/documentation/en-us/unreal-engine/lyra-sample-game-in-unreal-engine)** by Epic Games:
+  Significantly influenced the utilization of modular design philosophies.
+- **Unreal Engine Community**:
+  Thanks to all the developers who share their best practices.
 
 ---
 
 ## ⚖ License
 
-The original code in this project is licensed under the **MIT License**.
-See the [LICENSE](LICENSE) file for details. 
+The original code of this project is licensed under the **MIT License**.
+See [LICENSE](LICENSE) for more details.
 
-**⚠️ Epic Games Content Notice**
-This project contains code portions and assets inspired by or originating from the *Lyra Starter Game*. These specific Epic Games materials are subject to the Unreal Engine End User License Agreement (EULA).
-For detailed information on which files are covered by which license, please refer to [NOTICE.md](NOTICE.md).
-
----
-
-## 🖋️ Developer's Vision: A Philosophy of Architecture
-
-In building frameworks that support complex systems, programming is not merely about "implementing features." I believe it is a highly sophisticated process of design—how we organize and express complex phenomena.
-
-Rather than applying ad-hoc fixes to the daunting challenges inherent in multiplayer and large-scale development, I value taking the time to thoroughly conceptualize how to decouple systems and maintain loose coupling. The very process of refining these ideas, iterating through trial and error, and carefully translating them into code is, to me, the true joy of software development.
-
-**GameCoreFramework**, published here as open-source, is not intended to be just another utility tool. It is a personal expression—a piece of craftsmanship—born from a deep pursuit of what constitutes a "beautiful and robust architecture" in the face of gritty challenges like Dual ASC routing and the complete synchronization of asynchronous lifecycles.
-
-Even in today’s development scene where efficiency and speed are paramount, I firmly believe that the value of taking the time to sharpen one's design and writing code with a true understanding of its essence will never fade. 
-
-I hope the design philosophies and architectural ideas embedded in this framework will serve as a source of inspiration for engineers around the world who share a love for beautiful, highly maintainable systems.
+**⚠️ Notice Regarding Epic Games Content**
+This project contains code and assets inspired by or derived from the "Lyra Starter Game." These Epic Games contents are subject to the Unreal Engine End User License Agreement (EULA).
+For details on which files fall under which license, please be sure to check [NOTICE.md](NOTICE.md).

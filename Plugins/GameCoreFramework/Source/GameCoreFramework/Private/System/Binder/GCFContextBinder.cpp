@@ -18,12 +18,12 @@ void FGCFContextBinder::Activate()
 		return;
 	}
 
-	// 1. Fast Path: 既に取得可能なら即時実行し、監視はしない（要件次第で監視してもOK）
+	// 1. Fast Path: If the condition is already met, resolve immediately and bypass further monitoring.
 	if (TryResolveImmediate()) {
 		return;
 	}
 
-	// 2. Slow Path: GFCMに登録して待つ
+	// 2. Slow Path: Register an extension handler with the GFCM and wait for the event.
 	if (GFCM.IsValid() && !ReceiverClass.IsNull()) {
 		ExtensionHandle = GFCM->AddExtensionHandler(
 			ReceiverClass,

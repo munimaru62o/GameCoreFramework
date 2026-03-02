@@ -36,8 +36,8 @@ struct FGCFCheatToRun
 /**
  * Developer settings / editor cheats
  */
-UCLASS(config=EditorPerProjectUserSettings, MinimalAPI)
-class UGCFDeveloperSettings : public UDeveloperSettingsBackedByCVars
+UCLASS(config=EditorPerProjectUserSettings)
+class GAMECOREFRAMEWORK_API UGCFDeveloperSettings : public UDeveloperSettingsBackedByCVars
 {
 	GENERATED_BODY()
 
@@ -94,7 +94,7 @@ public:
 #if WITH_EDITOR
 public:
 	// Called by the editor engine to let us pop reminder notifications when cheats are active
-	GAMECOREFRAMEWORK_API void OnPlayInEditorStarted() const;
+	void OnPlayInEditorStarted() const;
 
 private:
 	void ApplySettings();

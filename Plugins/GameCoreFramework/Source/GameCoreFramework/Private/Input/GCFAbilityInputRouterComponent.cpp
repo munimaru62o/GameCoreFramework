@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "Input/GCFAbilityInputRouterComponent.h"
-
 #include "GCFShared.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/PlayerController.h"
@@ -12,10 +11,8 @@
 #include "System/Binder/GCFControllerPossessionBinder.h"
 #include "System/Binder/GCFPlayerReadyStateBinder.h"
 #include "Components/GameFrameworkComponentManager.h"
-
 #include "AbilitySystem/GCFAbilitySystemFunctionLibrary.h" 
 #include "Misc/EnumClassFlags.h"
-
 #include "System/GCFDebugFunctionLibrary.h"
 
 
@@ -30,6 +27,8 @@ UGCFAbilityInputRouterComponent::UGCFAbilityInputRouterComponent(const FObjectIn
 
 void UGCFAbilityInputRouterComponent::InitializeComponent()
 {
+	Super::InitializeComponent();
+
 	if (AController* Controller = GetController<AController>()) {
 		// Only active for Local Players (Input Source)
 		if (!Controller->IsLocalController()) {
@@ -39,10 +38,12 @@ void UGCFAbilityInputRouterComponent::InitializeComponent()
 
 		if (UGameFrameworkComponentManager* GFCM = UGameFrameworkComponentManager::GetForActor(GetOwner())) {
 			// Observe Possession changes to update the "Body" ASC reference
-			BinderList.Emplace(FGCFControllerPossessionBinder::CreateBinder(GFCM, Controller, FGCFBooleanStateSignature::CreateUObject(this, &ThisClass::HandlePossessedPawnChanged)));
+			BinderList.Emplace(FGCFControllerPossessionBinder::CreateBinder(
+				GFCM, Controller, FGCFBooleanStateSignature::CreateUObject(this, &ThisClass::HandlePossessedPawnChanged)));
 
 			// Observe Player Readiness to update the "Soul" ASC reference
-			BinderList.Emplace(FGCFPlayerReadyStateBinder::CreateBinder(GFCM, Controller, FGCFOnPlayerReadyStateChangedNative::FDelegate::CreateUObject(this, &ThisClass::HandlePlayerReadyStateChanged)));
+			BinderList.Emplace(FGCFPlayerReadyStateBinder::CreateBinder(
+				GFCM, Controller, FGCFOnPlayerReadyStateChangedNative::FDelegate::CreateUObject(this, &ThisClass::HandlePlayerReadyStateChanged)));
 		}
 	}
 }
@@ -91,10 +92,7 @@ void UGCFAbilityInputRouterComponent::RouteInputTag(const FGameplayTag& InputTag
 	const bool bIsPawnTag = InputTag.MatchesTag(GCFGameplayTags::InputTag_Ability_Pawn);
 
 	if (!bIsPlayerTag && !bIsPawnTag) {
-		UE_LOG(LogGCFSystem, Warning, TEXT(
-			"GCFAbilityInputRouter: Invalid input tag [%s]. "
-			"Expected Ability.Input.Player.* or Ability.Input.Pawn.*"
-		), *InputTag.ToString());
+		UE_LOG(LogGCFSystem, Warning, TEXT("GCFAbilityInputRouter: Invalid input tag [%s]. Expected Ability.Input.Player.* or Ability.Input.Pawn.*"), *InputTag.ToString());
 		return;
 	}
 
@@ -105,17 +103,17 @@ void UGCFAbilityInputRouterComponent::RouteInputTag(const FGameplayTag& InputTag
 
 	// Route to "Soul" (PlayerState)
 	if (bIsPlayerTag && PlayerStateASC.Get()) {
-		ExecRouteTag(PlayerStateASC.Get(), InputTag, bPressed);
+		InjectInputToASC(PlayerStateASC.Get(), InputTag, bPressed);
 	}
 
 	// Route to "Body" (Pawn)
 	if (bIsPawnTag && CurrentPawnASC.Get()) {
-		ExecRouteTag(CurrentPawnASC.Get(), InputTag, bPressed);
+		InjectInputToASC(CurrentPawnASC.Get(), InputTag, bPressed);
 	}
 }
 
 
-bool UGCFAbilityInputRouterComponent::HasMachingAbility(UAbilitySystemComponent* ASC, const FGameplayTag& InputTag) const
+bool UGCFAbilityInputRouterComponent::HasMatchingAbility(UAbilitySystemComponent* ASC, const FGameplayTag& InputTag) const
 {
 	if (!ASC) {
 		return false;
@@ -130,14 +128,14 @@ bool UGCFAbilityInputRouterComponent::HasMachingAbility(UAbilitySystemComponent*
 }
 
 
-void UGCFAbilityInputRouterComponent::ExecRouteTag(UGCFAbilitySystemComponent* ASC, const FGameplayTag& InputTag, bool bPressed) const
+void UGCFAbilityInputRouterComponent::InjectInputToASC(UGCFAbilitySystemComponent* ASC, const FGameplayTag& InputTag, bool bPressed) const
 {
 	if (!ASC) {
 		return;
 	}
 
-	const bool bHasMachingAbility = HasMachingAbility(ASC, InputTag);
-	if (bHasMachingAbility) {
+	const bool bHasMatchingAbility = HasMatchingAbility(ASC, InputTag);
+	if (bHasMatchingAbility) {
 		if (bPressed) {
 			ASC->AbilityInputTagPressed(InputTag);
 		} else {
@@ -145,8 +143,9 @@ void UGCFAbilityInputRouterComponent::ExecRouteTag(UGCFAbilitySystemComponent* A
 		}
 	}
 
+	// Logging based on routing success
 	if (bPressed) {
-		if (bHasMachingAbility) {
+		if (bHasMatchingAbility) {
 			UGCFDebugFunctionLibrary::SendLogMessage(this, EGCFDebugLogVerbosity::Success, FString::Printf(TEXT("%s: Routed to %s"), *InputTag.GetTagName().ToString(), *ASC->GetOwner()->GetName()));
 		} else {
 			UGCFDebugFunctionLibrary::SendLogMessage(this, EGCFDebugLogVerbosity::Error, TEXT("No Target (Ability Not Found)"));

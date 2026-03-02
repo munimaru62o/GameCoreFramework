@@ -3,12 +3,17 @@
 
 #include "Actor/Pawn/GCFPawn.h"
 #include "Actor/Data/GCFPawnData.h"
-#include "System/Lifecycle/GCFPawnExtensionComponent.h"
 #include "Camera/GCFCameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "System/Lifecycle/GCFPawnReadyStateComponent.h"
+#include "System/Lifecycle/GCFPawnExtensionComponent.h"
 #include "Input/GCFPawnInputBridgeComponent.h"
 #include "MoverComponent.h"
+#include "GCFShared.h"
+
+const FName AGCFPawn::CollisionComponentName(TEXT("PawnCollisionComponent"));
+const FName AGCFPawn::MeshComponentName(TEXT("PawnMeshComponent"));
 
 
 AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
@@ -22,25 +27,58 @@ AGCFPawn::AGCFPawn(const FObjectInitializer& ObjectInitializer)
 
 	// Create the collision sphere and set it as Root.
 	// This enables basic collision detection for floating movement.
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-	CollisionComponent->InitSphereRadius(32.0f);
-	CollisionComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	CollisionComponent->SetMobility(EComponentMobility::Movable);
-	RootComponent = CollisionComponent;
+	CollisionComponent = CreateOptionalDefaultSubobject<USphereComponent>(CollisionComponentName);
+	if (USphereComponent* SphereComp = GetSphereComponent()) {
+		SphereComp->InitSphereRadius(32.0f);
+		SphereComp->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+		SphereComp->SetMobility(EComponentMobility::Movable);
+		RootComponent = SphereComp;
+	}
 
-	PawnExtensionComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("GCFPawnExtensionComponent"));
-	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("GCFPawnReadyStateComponent"));
-	PawnInputBridgeComponent = CreateDefaultSubobject<UGCFPawnInputBridgeComponent>(TEXT("PawnInputBridgeComponent"));
+	MeshComponent = CreateOptionalDefaultSubobject<UStaticMeshComponent>(MeshComponentName);
+	if (UStaticMeshComponent* StaticMeshComp = GetStaticMesh()) {
+		StaticMeshComp->SetupAttachment(RootComponent);
+	}
 
 	CameraComponent = CreateDefaultSubobject<UGCFCameraComponent>(TEXT("GCFCameraComponent"));
 	CameraComponent->SetupAttachment(CollisionComponent);
 	CameraComponent->bUsePawnControlRotation = false; // Camera rotation is handled by the CameraComponent/Modes.
+
+	PawnExtensionComponent = CreateDefaultSubobject<UGCFPawnExtensionComponent>(TEXT("GCFPawnExtensionComponent"));
+	PawnReadyStateComponent = CreateDefaultSubobject<UGCFPawnReadyStateComponent>(TEXT("GCFPawnReadyStateComponent"));
+	PawnInputBridgeComponent = CreateDefaultSubobject<UGCFPawnInputBridgeComponent>(TEXT("PawnInputBridgeComponent"));
 }
 
 
 void AGCFPawn::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// Only initialize Mover logic if explicitly opted-in via bUseMoverComponent.
+	// This allows for A/B testing between Mover and legacy CMC on the same base class.
+	if (bUseMoverComponent) {
+		MoverComponent = FindComponentByClass<UMoverComponent>();
+
+		if (MoverComponent) {
+			// Failsafe: Disable standard movement replication as Mover handles its own Network Prediction.
+			SetReplicateMovement(false);
+		} else {
+			// Warn the developer if they opted into Mover but forgot to attach the component in Blueprint.
+			UE_LOG(LogGCFCharacter, Warning, TEXT("[GCFPawn] bUseMoverComponent is true on %s, but no UMoverComponent was found!"), *GetName());
+		}
+	}
+}
+
+
+USphereComponent* AGCFPawn::GetSphereComponent() const
+{
+	return Cast<USphereComponent>(CollisionComponent);
+}
+
+
+UStaticMeshComponent* AGCFPawn::GetStaticMesh() const
+{
+	return Cast<UStaticMeshComponent>(MeshComponent);
 }
 
 
@@ -55,23 +93,44 @@ const UGCFPawnData* AGCFPawn::GetPawnData() const
 
 void AGCFPawn::PossessedBy(AController* NewController)
 {
+	const FGenericTeamId OldTeamID = MyTeamID;
+
 	Super::PossessedBy(NewController);
 
 	// Notify extension component on Server side possession.
 	if (PawnExtensionComponent) {
 		PawnExtensionComponent->OnControllerAssigned();
 	}
+
+	// Grab the current team ID and listen for future changes
+	if (IGCFTeamAgentInterface* ControllerAsTeamProvider = Cast<IGCFTeamAgentInterface>(NewController)) {
+		MyTeamID = ControllerAsTeamProvider->GetGenericTeamId();
+		ControllerAsTeamProvider->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnControllerChangedTeam);
+	}
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }
 
 
 void AGCFPawn::UnPossessed()
 {
+	AController* const OldController = GetController();
+
+	// Stop listening for changes from the old controller
+	const FGenericTeamId OldTeamID = MyTeamID;
+	if (IGCFTeamAgentInterface* ControllerAsTeamProvider = Cast<IGCFTeamAgentInterface>(OldController)) {
+		ControllerAsTeamProvider->GetTeamChangedDelegateChecked().RemoveAll(this);
+	}
+
 	Super::UnPossessed();
 
 	// Notify extension component to clean up or reset state.
 	if (PawnExtensionComponent) {
 		PawnExtensionComponent->HandleControllerChanged();
 	}
+
+	// Determine what the new team ID should be afterwards
+	MyTeamID = DetermineNewTeamAfterPossessionEnds(OldTeamID);
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }
 
 
@@ -132,6 +191,17 @@ void AGCFPawn::HandleMoveUpInput_Implementation(float Value)
 }
 
 
+FVector AGCFPawn::GetMovementIntent_Implementation() const
+{
+	return CachedTargetMovement;
+}
+
+FVector AGCFPawn::GetOrientationIntent_Implementation() const
+{
+	return GetControlRotation().Vector();
+}
+
+
 void AGCFPawn::UpdateCachedTargetMovement()
 {
 	// Horizontal Movement Calculation (Applied with Camera/Controller rotation)
@@ -146,10 +216,87 @@ void AGCFPawn::UpdateCachedTargetMovement()
 }
 
 
-FVector AGCFPawn::GetDesiredMovementVector_Implementation() const
+void AGCFPawn::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 {
-	return CachedTargetMovement;
+	if (GetController() == nullptr) {
+		if (HasAuthority()) {
+			const FGenericTeamId OldTeamID = MyTeamID;
+			MyTeamID = NewTeamID;
+			ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
+		} else {
+			UE_LOG(LogGCFCharacter, Error, TEXT("You can't set the team ID on a character (%s) except on the authority"), *GetPathNameSafe(this));
+		}
+	} else {
+		UE_LOG(LogGCFCharacter, Error, TEXT("You can't set the team ID on a possessed character (%s); it's driven by the associated controller"), *GetPathNameSafe(this));
+	}
 }
+
+
+FGenericTeamId AGCFPawn::GetGenericTeamId() const
+{
+	return MyTeamID;
+}
+
+
+FOnGCFTeamIndexChangedDelegate* AGCFPawn::GetOnTeamIndexChangedDelegate()
+{
+	return &OnTeamChangedDelegate;
+}
+
+
+void AGCFPawn::OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)
+{
+	const FGenericTeamId MyOldTeamID = MyTeamID;
+	MyTeamID = IntegerToGenericTeamId(NewTeam);
+	ConditionalBroadcastTeamChanged(this, MyOldTeamID, MyTeamID);
+}
+
+
+FGenericTeamId AGCFPawn::DetermineNewTeamAfterPossessionEnds(FGenericTeamId OldTeamID) const
+{
+	// This could be changed to return, e.g., OldTeamID if you want to keep it assigned afterwards, or return an ID for some neutral faction, or etc...
+	return FGenericTeamId::NoTeam;
+}
+
+
+FVector AGCFPawn::GetPawnViewLocation() const
+{
+	// Return the actor's world location offset by the calculated eye height.
+	return GetActorLocation() + (FVector::UpVector * BaseEyeHeight);
+}
+
+
+// --- IGameplayTagAssetInterface Implementation ---
+void AGCFPawn::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer.AppendTags(PawnTags);
+}
+
+bool AGCFPawn::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	return PawnTags.HasTag(TagToCheck);
+}
+
+bool AGCFPawn::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return PawnTags.HasAll(TagContainer);
+}
+
+bool AGCFPawn::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return PawnTags.HasAny(TagContainer);
+}
+
+void AGCFPawn::AddGameplayTag(const FGameplayTag& Tag)
+{
+	PawnTags.AddTag(Tag);
+}
+
+void AGCFPawn::RemoveGameplayTag(const FGameplayTag& Tag)
+{
+	PawnTags.RemoveTag(Tag);
+}
+// --------------------------------------------------
 
 
 void AGCFPawn::OnDeathStarted(AActor*)

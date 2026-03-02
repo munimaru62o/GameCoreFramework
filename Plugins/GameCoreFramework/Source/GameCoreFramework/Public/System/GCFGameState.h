@@ -7,8 +7,6 @@
 
 #include "GCFGameState.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 struct FGCFVerbMessage;
 
 class APlayerState;
@@ -23,30 +21,30 @@ struct FFrame;
  *
  *	The base game state class used by this project.
  */
-UCLASS(MinimalAPI, Config = Game)
-class AGCFGameState : public AModularGameStateBase, public IAbilitySystemInterface
+UCLASS(Config = Game)
+class GAMECOREFRAMEWORK_API AGCFGameState : public AModularGameStateBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API AGCFGameState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGCFGameState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	//~AActor interface
-	UE_API virtual void PreInitializeComponents() override;
-	UE_API virtual void PostInitializeComponents() override;
-	UE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	UE_API virtual void Tick(float DeltaSeconds) override;
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
 	//~End of AActor interface
 
 	//~AGameStateBase interface
-	UE_API virtual void AddPlayerState(APlayerState* PlayerState) override;
-	UE_API virtual void RemovePlayerState(APlayerState* PlayerState) override;
-	UE_API virtual void SeamlessTravelTransitionCheckpoint(bool bToTransitionMap) override;
+	virtual void AddPlayerState(APlayerState* PlayerState) override;
+	virtual void RemovePlayerState(APlayerState* PlayerState) override;
+	virtual void SeamlessTravelTransitionCheckpoint(bool bToTransitionMap) override;
 	//~End of AGameStateBase interface
 
 	//~IAbilitySystemInterface
-	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~End of IAbilitySystemInterface
 
 	// Gets the ability system component used for game wide things
@@ -56,21 +54,21 @@ public:
 	// Send a message that all clients will (probably) get
 	// (use only for client notifications like eliminations, server join messages, etc... that can handle being lost)
 	UFUNCTION(NetMulticast, Unreliable, BlueprintCallable, Category = "GCF|GameState")
-	UE_API void MulticastMessageToClients(const FGCFVerbMessage Message);
+	void MulticastMessageToClients(const FGCFVerbMessage Message);
 
 	// Send a message that all clients will be guaranteed to get
 	// (use only for client notifications that cannot handle being lost)
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "GCF|GameState")
-	UE_API void MulticastReliableMessageToClients(const FGCFVerbMessage Message);
+	void MulticastReliableMessageToClients(const FGCFVerbMessage Message);
 
 	// Gets the server's FPS, replicated to clients
-	UE_API float GetServerFPS() const;
+	float GetServerFPS() const;
 
 	// Indicate the local player state is recording a replay
-	UE_API void SetRecorderPlayerState(APlayerState* NewPlayerState);
+	void SetRecorderPlayerState(APlayerState* NewPlayerState);
 
 	// Gets the player state that recorded the replay, if valid
-	UE_API APlayerState* GetRecorderPlayerState() const;
+	APlayerState* GetRecorderPlayerState() const;
 
 	// Delegate called when the replay player state changes
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnRecorderPlayerStateChanged, APlayerState*);
@@ -95,8 +93,6 @@ protected:
 	TObjectPtr<APlayerState> RecorderPlayerState;
 
 	UFUNCTION()
-	UE_API void OnRep_RecorderPlayerState();
+	void OnRep_RecorderPlayerState();
 
 };
-
-#undef UE_API

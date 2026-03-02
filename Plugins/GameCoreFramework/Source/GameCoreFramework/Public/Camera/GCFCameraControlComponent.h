@@ -10,8 +10,6 @@
 #include "Messages/GCFMessageTypes.h"
 #include "GCFCameraControlComponent.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGCFCameraComponent;
 class UGCFInputComponent;
 class IGCFPawnDataProvider;
@@ -26,17 +24,17 @@ struct FGCFPolicyChangedMovementRotationMessage;
  * 2. Feeds rotation input to the Pawn (AddControllerYawInput).
  * 3. Listens for "Rotation Policy" changes broadcasted by the active CameraMode.
  */
-UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFCameraControlComponent : public UControllerComponent
+UCLASS(ClassGroup = (GCF), Within = PlayerController, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
+class GAMECOREFRAMEWORK_API UGCFCameraControlComponent : public UControllerComponent
 {
 	GENERATED_BODY()
 
 public:
-	UE_API UGCFCameraControlComponent(const FObjectInitializer& ObjectInitializer);
+	UGCFCameraControlComponent(const FObjectInitializer& ObjectInitializer);
 
 	/** Registers a delegate to observe rotation policy changes (FreeLook vs Locked). */
-	UE_API FDelegateHandle RegisterAndExecuteDelegate(const FGCFOnMovementRotationPolicyChanged::FDelegate& Delegate, bool bExecuteImmediately = true);
-	UE_API void RemoveDelegate(const FDelegateHandle& Handle);
+	FDelegateHandle RegisterAndExecuteDelegate(const FGCFOnMovementRotationPolicyChanged::FDelegate& Delegate, bool bExecuteImmediately = true);
+	void RemoveDelegate(const FDelegateHandle& Handle);
 
 protected:
 	virtual void BeginPlay() override;
@@ -68,5 +66,3 @@ private:
 
 	FGCFOnMovementRotationPolicyChanged OnRotationPolicyChanged;
 };
-
-#undef UE_API

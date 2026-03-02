@@ -32,7 +32,7 @@ struct FActorInitStateChangedParams;
  * It serves as the "Single Source of Truth" for the Pawn's readiness state within the Controller context.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = Pawn, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision), meta = (BlueprintSpawnableComponent))
-class UGCFPawnReadyStateComponent : public UPawnComponent
+class UGCFPawnReadyStateComponent final : public UPawnComponent
 {
 	GENERATED_BODY()
 

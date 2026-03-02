@@ -104,31 +104,34 @@ FVector UGCFCameraMode::GetPivotLocation() const
 	const AActor* TargetActor = GetTargetActor();
 	check(TargetActor);
 
-	if (const APawn* TargetPawn = Cast<APawn>(TargetActor))
-	{
-		// Height adjustments for characters to account for crouching.
-		if (const ACharacter* TargetCharacter = Cast<ACharacter>(TargetPawn))
-		{
-			const ACharacter* TargetCharacterCDO = TargetCharacter->GetClass()->GetDefaultObject<ACharacter>();
-			check(TargetCharacterCDO);
-
-			const UCapsuleComponent* CapsuleComp = TargetCharacter->GetCapsuleComponent();
-			check(CapsuleComp);
-
-			const UCapsuleComponent* CapsuleCompCDO = TargetCharacterCDO->GetCapsuleComponent();
-			check(CapsuleCompCDO);
-
-			const float DefaultHalfHeight = CapsuleCompCDO->GetUnscaledCapsuleHalfHeight();
-			const float ActualHalfHeight = CapsuleComp->GetUnscaledCapsuleHalfHeight();
-			const float HeightAdjustment = (DefaultHalfHeight - ActualHalfHeight) + TargetCharacterCDO->BaseEyeHeight;
-
-			return TargetCharacter->GetActorLocation() + (FVector::UpVector * HeightAdjustment);
-		}
-
+	if (const APawn* TargetPawn = Cast<APawn>(TargetActor)) {
 		return TargetPawn->GetPawnViewLocation();
 	}
-
 	return TargetActor->GetActorLocation();
+}
+
+FVector UGCFCameraMode::GetSmoothedPivotLocation(float DeltaTime)
+{
+	const FVector TargetPivotLocation = GetPivotLocation();
+
+	if (bIsFirstUpdate) {
+		// Snap immediately to the target location without smoothing.
+		CurrentPivotLocation = TargetPivotLocation;
+	} else {
+		// Apply interpolation per axis based on designer settings.
+		CurrentPivotLocation.X = bEnablePivotInterpX
+			? FMath::FInterpTo(CurrentPivotLocation.X, TargetPivotLocation.X, DeltaTime, PivotInterpSpeedX)
+			: TargetPivotLocation.X;
+
+		CurrentPivotLocation.Y = bEnablePivotInterpY
+			? FMath::FInterpTo(CurrentPivotLocation.Y, TargetPivotLocation.Y, DeltaTime, PivotInterpSpeedY)
+			: TargetPivotLocation.Y;
+
+		CurrentPivotLocation.Z = bEnablePivotInterpZ
+			? FMath::FInterpTo(CurrentPivotLocation.Z, TargetPivotLocation.Z, DeltaTime, PivotInterpSpeedZ)
+			: TargetPivotLocation.Z;
+	}
+	return CurrentPivotLocation;
 }
 
 FRotator UGCFCameraMode::GetPivotRotation() const
@@ -168,6 +171,8 @@ void UGCFCameraMode::UpdateCameraMode(float DeltaTime)
 {
 	UpdateView(DeltaTime);
 	UpdateBlending(DeltaTime);
+
+	bIsFirstUpdate = false;
 }
 
 void UGCFCameraMode::UpdateView(float DeltaTime)

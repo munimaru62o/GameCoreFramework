@@ -5,29 +5,27 @@
 #include "GameFramework/WorldSettings.h"
 #include "GCFWorldSettings.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
-
 class UGCFExperienceDefinition;
 
 /**
  * The default world settings object, used primarily to set the default gameplay experience to use when playing on this map
  */
-UCLASS(MinimalAPI)
-class AGCFWorldSettings : public AWorldSettings
+UCLASS()
+class GAMECOREFRAMEWORK_API AGCFWorldSettings : public AWorldSettings
 {
 	GENERATED_BODY()
 
 public:
 
-	UE_API AGCFWorldSettings(const FObjectInitializer& ObjectInitializer);
+	AGCFWorldSettings(const FObjectInitializer& ObjectInitializer);
 
 #if WITH_EDITOR
-	UE_API virtual void CheckForErrors() override;
+	virtual void CheckForErrors() override;
 #endif
 
 public:
 	// Returns the default experience to use when a server opens this map if it is not overridden by the user-facing experience
-	UE_API FPrimaryAssetId GetDefaultGameplayExperience() const;
+	FPrimaryAssetId GetDefaultGameplayExperience() const;
 
 protected:
 	// The default experience to use when a server opens this map if it is not overridden by the user-facing experience
@@ -43,5 +41,3 @@ public:
 	bool ForceStandaloneNetMode = false;
 #endif
 };
-
-#undef UE_API

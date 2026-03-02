@@ -30,7 +30,7 @@ struct FActorInitStateChangedParams;
  * reliable source rather than checking scattered boolean flags across multiple classes.
  */
 UCLASS(MinimalAPI, ClassGroup = (GCF), Within = PlayerState, HideCategories = (Tags, Activation, Cooking, AssetUserData, Collision, Networking, Replication), meta = (BlueprintSpawnableComponent, CollapseCategories))
-class UGCFPlayerReadyStateComponent : public UPlayerStateComponent
+class UGCFPlayerReadyStateComponent final : public UPlayerStateComponent
 {
 	GENERATED_BODY()
 

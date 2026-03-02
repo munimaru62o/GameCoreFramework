@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
+// Portions Copyright (c) 2026 munimaru62o. All rights reserved.
 
 #include "Actor/Character/GCFCharacterWithAbilities.h"
 #include "AbilitySystem/GCFAbilitySystemComponent.h"

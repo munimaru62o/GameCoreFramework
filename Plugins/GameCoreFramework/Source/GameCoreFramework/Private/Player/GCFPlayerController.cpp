@@ -33,13 +33,13 @@
 #include "System/Lifecycle/GCFPossessionContextComponent.h"
 #include "AbilitySystem/GCFAbilitySystemFunctionLibrary.h"
 #include "Camera/GCFCameraControlComponent.h"
-#include "Movement/GCFMovementControlComponent.h"
+#include "Movement/Locomotion/GCFLocomotionDirectionComponent.h"
 #include "Messages/GCFGameplayMessages.h"
 
 #include "MoverComponent.h"
 #include "Backends/MoverNetworkPredictionLiaison.h"
 #include "Components/SphereComponent.h"
-#include "Movement/Mover/GCFDummyMovementMode.h"
+#include "Movement/Mover/Mode/GCFDummyMovementMode.h"
 
 #include "System/GCFDeveloperSettings.h"
 #include "GameMapsSettings.h"
