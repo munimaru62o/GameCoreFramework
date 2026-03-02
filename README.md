@@ -1,7 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
-![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-0.9.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 🌍 *Read this in other languages: [English](README.md) | [日本語 (Japanese)](README_ja.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
@@ -119,9 +119,11 @@ GameCoreFramework/Content/Sample
 └── UI/             # Debug HUD UI definitions
 ```
 
+> **⚠️ Note: Regarding Experience Loading** > Since this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of its core foundation, dynamic Experience switching via the UI is not implemented at this time. The framework is designed so that specifying or changing the Experience is done exclusively through the "Default Gameplay Experience" property within the `World Settings` of the target map.
+
 ### 🖥️ Sample Video  
 
-https://github.com/user-attachments/assets/16ca9d37-960a-498f-86c2-08032df4a68d
+https://github.com/user-attachments/assets/1ab546e9-f2b7-4c96-ad29-9a86f2c24af6
 
 #### **💡 Video Highlights**
 You can observe the "perfect synchronization of lifecycles": the moment possession changes, the old body's input bindings are safely discarded, **the new Pawn's `InputBinding` is dynamically updated**, and the abilities granted to the new body are immediately activated and routed.
@@ -137,14 +139,14 @@ You can observe the "perfect synchronization of lifecycles": the moment possessi
 
 #### 🤖 Playable Actor Variations (Coexistence of New/Old Systems and Physics Engines)
 To prove the architecture's loose coupling, the framework seamlessly transitions between Pawns equipped with entirely different physics components:
-- **White Mannequin:** Uses the standard `CharacterMovementComponent` with Jump/Crouch functions.
-- **Colored Mannequin:** Adds execution functions for dedicated abilities defined specifically for the current "body", in addition to the white mannequin's features.
+- **White Mannequin:** Movement and Jump/Crouch mechanics powered by the framework's custom `GCFCharacterMover`, based on UE5's next-generation `Mover` plugin.
+- **Colored Mannequin:** Traditional movement control using the legacy `CharacterMovementComponent`, combined with the execution of dedicated abilities specific to the current "body".
 - **Sphere (Mover):** Tick-based movement control via UE5's next-gen `Mover` plugin, paired with a Top-Down camera.
 - **Vehicle (Chaos Vehicle):** Full vehicle control via `ChaosVehicleMovementComponent`, including unique actions like Headlights and Handbrake.
 
 ### 🌐 Client Sample Video (Network Lag Simulation)  
 
-https://github.com/user-attachments/assets/81f024e5-7cbc-49cd-8b14-850ba394b52f
+https://github.com/user-attachments/assets/f3c54c69-b6dc-4071-a949-bfde364a2029
 
 #### **💡 Video Highlights**
 Even in poor network environments where "reversed initialization orders" or "lifecycle discrepancies during asynchronous loading (race conditions)" occur due to lag, you can see how GFCM's strict state management perfectly absorbs these issues.

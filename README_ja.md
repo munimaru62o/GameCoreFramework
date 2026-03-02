@@ -1,7 +1,7 @@
 # GameCoreFramework (GCF)
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.7+-white.svg?logo=unrealengine&logoColor=white&color=0E1128)
-![Version](https://img.shields.io/badge/Version-0.8.2_Beta-blue.svg)
+![Version](https://img.shields.io/badge/Version-0.9.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 🌍 *他の言語で読む: [English](README.md) | [日本語 (Japanese)](README_ja.md)*
@@ -119,9 +119,11 @@ GameCoreFramework/Content/Sample
 └── UI/             # デバッグHUD用UI定義
 ```
 
+> **⚠️ 補足: Experienceのロード機能について** > 本フレームワークは、コア基盤の堅牢性を重視した最小構成（MVP）として構築されているため、現時点ではUIを介した動的なExperienceの切り替え機能は実装されていません。Experienceの指定・変更は、対象マップの `World Settings` 内にある「Default Gameplay Experience」からのみ行う設計となっています。
+
 ### 🖥️ Sample動画  
 
-https://github.com/user-attachments/assets/16ca9d37-960a-498f-86c2-08032df4a68d
+https://github.com/user-attachments/assets/1ab546e9-f2b7-4c96-ad29-9a86f2c24af6
 
 #### **💡 本動画の見どころ**
 ポゼッション（憑依）を変更した瞬間に、古い肉体の入力バインドが安全に破棄され、**新しいPawnの `InputBinding` が動的に更新される様子**や、新しい肉体に付与されたAbilityが即座に有効化・ルーティングされる「ライフサイクルの完全な同期」を確認できます。
@@ -137,14 +139,14 @@ https://github.com/user-attachments/assets/16ca9d37-960a-498f-86c2-08032df4a68d
 
 #### 🤖 操作可能なActorのバリエーション（新旧システム・物理エンジンの共存）
 アーキテクチャの疎結合性を証明するため、全く異なる物理コンポーネントを持つPawn間をシームレスに行き来します。
-- **白いマネキン:** 従来の `CharacterMovementComponent` による移動と、Jump / Crouch 機能。
-- **色付きマネキン:** 白いマネキンの機能に加え、現在の「肉体」に固有で定義された専用アビリティの実行機能。
+- **白いマネキン:** UE5の次世代システム `Mover` プラグインをベースにした本フレームワーク独自の `GCFCharacterMover` による移動と、Jump / Crouch 機能。
+- **色付きマネキン:** 従来の `CharacterMovementComponent` を使用した移動制御に加え、現在の「肉体」に固有で定義された専用アビリティの実行機能。
 - **球体 (Mover):** UE5の次世代システム `Mover` プラグインによるTickベースの移動制御と、見下ろし視点カメラ。
 - **車両 (Chaos Vehicle):** `ChaosVehicleMovementComponent` による本格的な車両制御と、Headlight / Handbrake などの固有操作。
 
 ### 🌐 Client Sample動画（Network Lag Simulation）  
 
-https://github.com/user-attachments/assets/81f024e5-7cbc-49cd-8b14-850ba394b52f
+https://github.com/user-attachments/assets/f3c54c69-b6dc-4071-a949-bfde364a2029
 
 #### **💡 本動画の見どころ**
 劣悪な通信環境下において、通信遅延による「初期化順序の逆転」や「非同期ロード時のライフサイクルのズレ（レースコンディション）」が発生しても、GFCMによる厳格な状態管理がそれらを完全に吸収している様子が確認できます。
