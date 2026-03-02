@@ -28,7 +28,7 @@ This system solves these issues through "Abstraction via Interfaces" and "Strict
 
 ## 📐 The 4 Layers of the Architecture
 
-<img width="11889" height="7089" alt="control_system drawio" src="https://github.com/user-attachments/assets/ee58b564-9fd2-4455-8dc6-ebddf42a762a" />
+<img width="11889" height="7089" alt="control_system drawio" src="https://github.com/user-attachments/assets/05639ceb-493b-43ff-9841-2513ced4837c" />
 
 *▲ Please click or download the image to view the details of the class diagram.*
 
@@ -56,7 +56,7 @@ This layer caches the universal commands from the controller and handles action 
 
 ### 3. Data & Simulation Layer (Data-Driven & Physics Simulation)
 This layer manages the actual physical movement and parameters (speed, acceleration, etc.).
-- **[`UGCFCachedInputProducer`][GCFCachedInputProducer]**: A component in the UE5 Mover plugin that "Pulls" intents from the Pawn via interfaces, translating and transmitting them to the physics engine.
+- **[`UGCFLocomotionInputProducer`][GCFLocomotionInputProducer]**: A component in the UE5 Mover plugin that "Pulls" intents from the Pawn via interfaces, translating and transmitting them to the physics engine.
   - *Note: If specialized input structures (like [`FGCFHumanoidInputs`][GCFHumanoidInputs] for crouching) need to be passed to the Mover, creating a derived class like [`UGCFHumanoidInputProducer`][GCFHumanoidInputProducer] allows for safe expansion (Injection) while reusing the core logic.*
 
 - **[`UGCFMovementConfig`][GCFMovementConfig] (DataAsset)**: Holds movement parameters that can be adjusted by game designers.
@@ -79,7 +79,7 @@ The flow from when a player tilts the stick to when the character moves is handl
 
 2. **Caching & Opt-In:** The receiving Pawn safely ignores actions it cannot execute (like a car crouching) thanks to UHT's default interface implementations. It only overrides (Opts-in) the features it supports, saving the state into variables (Cache) in preparation for the Mover's request.
 
-3. **Pulling & Execution:** Every frame, the Mover's **[`UGCFCachedInputProducer`][GCFCachedInputProducer]** (or its derived classes) safely "Pulls" the cached movement vectors, orientation, and action intents from the Pawn via **[`IGCFLocomotionInputProvider`][GCFLocomotionInputProvider]** and applies them to the actual physics simulation.
+3. **Pulling & Execution:** Every frame, the Mover's **[`UGCFLocomotionInputProducer`][GCFLocomotionInputProducer]** (or its derived classes) safely "Pulls" the cached movement vectors, orientation, and action intents from the Pawn via **[`IGCFLocomotionInputProvider`][GCFLocomotionInputProvider]** and applies them to the actual physics simulation.
 
 ---
 
@@ -112,7 +112,7 @@ The flow from when a player tilts the stick to when the character moves is handl
 [GCFLocomotionInputHandler]:             ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionInputHandler.h
 [GCFLocomotionInputProvider]:            ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionInputProvider.h
 [GCFMoverComponent]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/GCFMoverComponent.h
-[GCFCachedInputProducer]:                ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Producer/GCFCachedInputProducer.h
+[GCFLocomotionInputProducer]:            ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Producer/GCFLocomotionInputProducer.h
 [GCFHumanoidInputProducer]:              ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Producer/GCFHumanoidInputProducer.h
 [GCFHumanoidInputs]:                     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Mover/Input/GCFHumanoidInputs.h
 [GCFCharacterMovementComponent]:         ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFCharacterMovementComponent.h
