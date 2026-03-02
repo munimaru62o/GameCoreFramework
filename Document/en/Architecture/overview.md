@@ -85,15 +85,14 @@ The `UGCFAbilityInputRouterComponent` automatically dispatches inputs based on t
 
 As a result, the input side (Controller or InputComponent) does not need to know "whose ASC it is." It becomes possible to **dynamically switch the execution target simply by throwing a "Tag."**
 
-### 2. Lag Mitigation and Optimization for Next-Gen Network Sync (NPP / Mover)
+### 2. Complete Integration of the Next-Gen Movement System (Mover) & Loosely Coupled Architecture
+To maximize the potential of the "Mover" plugin—Unreal Engine 5's next-generation movement system—we have built a clean, lightweight `APawn`-based movement foundation that does not rely on the legacy `ACharacter`.
 
-When deploying Unreal Engine 5's next-generation network synchronization foundations—the Network Prediction Plugin (NPP) and the Mover plugin—in a production environment, this system solves fatal sync discrepancies and extrapolation runaways caused by the engine's internal specifications at the architectural level.
+- **The Intent Bucket Brigade (Push ➔ Cache ➔ Pull)**
+  The transmission from the player's "operating intent" to the "physical behavior" is completely decoupled using interfaces. We have realized the ultimate loosely coupled architecture: the input side *Pushes* the intent without caring about the target's class, the Pawn interprets and holds (*Caches*) it according to its own physical body, and finally, the Mover's producer retrieves (*Pulls*) it. As a result, even if possession is transferred from a "human who can jump" to a "car that cannot jump", the controls switch seamlessly without any code breaking.
 
-- **Maintaining Clock Sync in Hybrid Environments (Adopting the Adapter Pattern):**  
-  In a game environment where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` coexist, NPP's simulation clock tends to isolate and sleep per system. As a result, when a player operates a CMC, network packets from others' Movers (e.g., drones) are discarded as "future data," causing freezing issues (Extrapolation Starvation). This system builds a robust infrastructure that keeps the NPP clock globally synchronized regardless of the Pawn the player possesses, by placing a "lightweight, physics-less dummy Mover" on the `PlayerController` side as an Adapter that constantly communicates with the server.
-
-- **Input Sanitization to Safely Prevent Extrapolation Runaway:**  
-  When packet loss occurs, Mover's Simulated Proxies reuse the last received input data to predict future positions (Extrapolation). However, in low-friction situations like flying, this "stale input" causes the character to accelerate and move forward infinitely, triggering severe rubber-banding (Rollback) upon packet arrival. This system implements a hack that strictly clears only the direction vector of the "disposable input snapshot for prediction calculations" generated every frame, just before processing, without polluting the NPP core buffer. This completely prevents fatal overshooting in laggy environments while fully ensuring the safety of NPP's rollback mechanism.
+- **Maintaining Clock Sync in Hybrid Environments (Adapter Pattern)** In a game environment where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` (Network Prediction Plugin) coexist, the simulation clock sleeps in isolation for each system. Because of this, when a player is controlling a CMC, network packets from another player's Mover (like a drone) are discarded as "future data," causing a freezing issue known as Extrapolation Starvation.
+  In this system, we provide a **"lightweight dummy Mover with no physical collision"** as an Adapter to the `PlayerController`, which always communicates with the server. This establishes a robust infrastructure that keeps the network clock globally synchronized, regardless of which Pawn the player currently possesses.
 
 ---
 
@@ -120,18 +119,20 @@ Open the input configuration and simply bind the standard Unreal InputAction to 
   - **InputAction:** `IA_Jump` (Physical input such as Spacebar or gamepad button)
   - **GameplayTag:** `InputTag.Ability.Pawn.Jump`
 
-### Example 2: Adding a "New Vehicle" by Programmers (Interface-Driven)
-For example, if you want to add a "Hoverboard" with entirely new physics behavior, you do not need to rewrite the input processing (`Input_Move`, etc.) on the controller side.
-Simply implement the `IGCFLocomotionHandler` interface in the new Pawn class and convert the received universal vector into its unique propulsion force.
+### Example 2: Adding a "New Vehicle" by a Programmer (Opt-In Design via Interfaces)
+For example, if you want to add a "Hoverboard" with a completely new physical behavior, you do not need to rewrite the input processing on the controller side.
+Simply implement the `IGCFLocomotionInputHandler` interface in the new Pawn class, receive the transmitted universal "movement intent (vector)", and interpret it as your own unique propulsion.
 
 ```cpp
 // AGCFHoverboardPawn.cpp
-// Just by overriding the interface function, it accepts universal operations from the controller.
-void AGCFHoverboardPawn::HandleMoveInput(const FVector& MovementVector)
+// By simply overriding the interface function, it receives the universal operating intent Pushed by the controller.
+void AGCFHoverboardPawn::HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation)
 {
-    // Receive the "desired direction (MovementVector)" calculated by the controller,
-    // and simply convert it into physics thruster processing specific to the hoverboard.
-    HoverThrusterComponent->AddForce(MovementVector * HoverThrustPower);
+    // Cache the "intended movement direction" calculated by the controller,
+    // and translate it into physical thruster processing specific to the hoverboard.
+    CachedMoveInput = InputValue;
+    CachedMoveRotation = MovementRotation;
+    UpdateHoverThrusters();
 }
 ```
 
