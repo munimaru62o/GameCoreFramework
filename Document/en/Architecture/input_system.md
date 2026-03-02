@@ -3,91 +3,85 @@
 🌍 *Read this in other languages: [English](../../en/Architecture/input_system.md) | [日本語 (Japanese)](../../ja/Architecture/input_system.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
 
 ## Overview
-This system is an input routing foundation built upon Unreal Engine 5's "Enhanced Input System." It is specifically designed to resolve asynchronous issues (initialization race conditions) unique to multiplayer games and possession mechanics.
+This system is an input routing foundation built upon Unreal Engine 5's "Enhanced Input System." It is specifically designed to resolve asynchronous initialization issues (race conditions) that frequently occur in multiplayer and possession-based gameplay.
 
-To ensure that input-processing components do not directly depend on specific input configurations (`InputConfig`) or target actors (Pawns, etc.), the system is completely decoupled using the **Bridge Pattern** and **Manager (Mediator) Pattern**.
+To prevent the components processing inputs from depending directly on specific input settings (InputConfig) or target actors (such as Pawns), it utilizes the **Bridge pattern** and **Manager (Mediator) pattern** to achieve a highly abstracted and loosely coupled architecture.
 
 ---
 
 ## 🛑 Problems Solved
 
-Traditional input binding implementations frequently encounter the following issues:
+Traditional input binding implementations often suffer from the following issues:
 
-1. **Reliance on Fleeting Events (Race Conditions)**  
-Relying on the uncertain timing of "the moment of possession" often leads to attempts to bind inputs before the Pawn's data has finished loading, resulting in frequent crashes due to null references.
+1. **Dependency on Fleeting Events (Race Conditions):** Relying on uncertain timings such as the exact "moment of possession" increases the risk of Null pointer reference crashes, as the system might attempt to bind inputs before the Pawn's data has finished loading.
 
-2. **Hardcoding Input Logic in Pawns**  
-Hardcoding input handling directly within `SetupPlayerInputComponent` makes it extremely difficult to dynamically attach, detach, or switch inputs when transferring to a vehicle or another body.
+2. **Hardcoded Input Processing in Pawns:** Writing logic directly within `SetupPlayerInputComponent` becomes a factor that hinders the flexible attachment and detachment of features when switching dynamically (e.g., when transitioning to a vehicle).
 
-3. **Mixing "Soul" and "Body" Inputs**  
-Writing inputs for opening system menus (the Soul) and jumping (the Body) in the exact same place leads to bloated, monolithic classes with ambiguous responsibilities.
+3. **Confusion Between "Soul" and "Body":** Inputs for opening system menus (Soul) and inputs for jumping (Body) end up being defined in the same place, leading to bloated classes.
 
-This system resolves these issues at the architectural level by dividing the input pipeline into "4 Layers."
+This system solves these challenges at the architectural level by dividing the responsibilities into four distinct layers.
 
 ---
 
-## 📐 The 4 Layers of the Architecture
+## 📐 The Four Architecture Layers
 
 <img width="10509" height="5289" alt="input_system drawio" src="https://github.com/user-attachments/assets/6bb5c28e-f7a7-423f-add1-d2f1173a91a5" />
 
-*▲ Click or download the image to view the class diagram in detail.*
+*▲ Click or download the image to enlarge and view the details of the class diagram.*
 
-The class structure of this system is broadly categorized into four layers:
+The class diagram of this system is broadly categorized into four layers:
 
 ### 1. Feature & Data Layer (Data-Driven Layer)
-This layer defines inputs as data assets rather than hardcoding them in C++.
+This layer defines inputs as DataAssets rather than hardcoding them in C++.
 
-- **[`UGCFPawnData`][GCFPawnData]** / **[`UGCFInputConfig`][GCFInputConfig]**: Holds the Input Mapping Contexts (IMC) and input action definitions that a specific Pawn should possess.
-- **`GameFeatureAction`**: Dynamically injects input definitions using configuration files tied to the player via GameFeatures, without modifying the existing codebase.
+- **[`UGCFPawnData`][GCFPawnData]** / **[`UGCFInputConfig`][GCFInputConfig]**: Holds the "Input Mapping Context (IMC)" and Input Action definitions required for a specific Pawn.
+
+- **`GameFeatureAction`:** Uses the GameFeature system to dynamically inject input definitions into players without modifying existing code.
 
 ### 2. Lifecycle & Framework Layer (State & Lifecycle Management Layer)
-This layer absorbs discrepancies caused by possession and asynchronous loading, guaranteeing safe execution timing.
+This layer absorbs the "desync" caused by possession and asynchronous loading, ensuring safe timing.
 
 - **`UGameFrameworkComponentManager` (GFCM):** Synchronizes and monitors the Feature States across the entire system.
+
 - **[`UGCFPawnReadyStateComponent`][GCFPawnReadyStateComponent]** / **[`UGCFPlayerReadyStateComponent`][GCFPlayerReadyStateComponent]**: Individually monitors the initialization states of the Body (Pawn) and the Soul (PlayerState).
-- **[`UGCFInputContextComponent`][GCFInputContextComponent]**: Monitors each ReadyState via the [`FGCFContextBinder`][GCFContextBinder] and notifies the Manager when a safe state for input binding (the Context) is fully prepared.
+
+- **[`UGCFInputContextComponent`][GCFInputContextComponent]**: Monitors various ReadyStates via [`FGCFContextBinder`][GCFContextBinder] and notifies the Manager when the "Input Context" (a safe state to perform input binding) is ready.
 
 ### 3. Core Manager & Routing Layer (Mediator & Bridge Layer)
-The core of the system that connects binding requests to actual input configurations.
+The core of the system, acting as a hub that connects binding requests to actual input configurations.
 
-- **[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent]**: The central hub that receives all input binding requests. If states are incomplete, it queues the requests via `ProcessPendingBindings()` and safely executes the bindings the exact moment it receives the green light from the [`UGCFInputContextComponent`][GCFInputContextComponent].
-- **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: Implements the [`IUGCFInputConfigProvider`][GCFInputConfigProvider] interface, abstracting whether the configuration is for the "Soul" or the "Body," and provides it to the Manager.
+- **[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent]**: The central hub that receives all input binding requests. If the state is incomplete, it queues the requests via `ProcessPendingBindings()`. It executes the bindings safely immediately after the completion of the initialization sequence is confirmed by the [`UGCFInputContextComponent`][GCFInputContextComponent].
+
+- **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: Implements the [`IUGCFInputConfigProvider`][GCFInputConfigProvider] interface to abstract whether the input settings belong to the "Soul" or the "Body," providing them to the Manager.
 
 ### 4. Consumer Layer
-This layer drives game logic using the actual inputs.
+The layer where game logic actually consumes the inputs.
 
-- **[`UGCFMovementControlComponent`][GCFMovementControlComponent]** / **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: These components do not need to know "what kind of Pawn" they are controlling. They simply send a Request to the [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent], asking it to "bind the movement inputs."
+- **[`UGCFMovementControlComponent`][GCFMovementControlComponent]** / **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: These components do not need to know "which Pawn they are controlling." They simply send a request to the [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] asking to "bind movement inputs."
 
 ---
 
 ## ⚙️ Core Mechanism: Safe Asynchronous Binding Flow
 
-The flow from requesting an input binding to its safe completion in this system operates as follows:
+The flow to ensure input binding is safely completed in this system is as follows:
 
-1. **Request**  
-   A consumer (e.g., [`UGCFMovementControlComponent`][GCFMovementControlComponent]) requests the [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] to bind an input action.
+1. **Binding Request (Request):** A consumer (e.g., [`UGCFMovementControlComponent`][GCFMovementControlComponent]) requests the [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] to bind Input Actions.
 
-2. **Pending**  
-   At this stage, the Pawn's data might still be loading asynchronously. The Manager does not execute the request immediately; instead, it temporarily stores it in an **internal queue (PendingBindings)**.
+2. **Pending (Queueing):** At this point, the Pawn data might still be loading asynchronously. The Manager does not execute the request immediately but instead **temporarily stores the request in an internal queue (PendingBindings)**.
 
-3. **Context Ready**  
-   Once data loading and possession are complete under the strict management of GFCM, the [`UGCFInputContextComponent`][GCFInputContextComponent] fires an event signaling that "the input context is ready (`OnContextChanged`)."
+3. **State Confirmation (Context Ready):** Once the data load and possession are completed under GFCM's management, the [`UGCFInputContextComponent`][GCFInputContextComponent] fires an event indicating that the input context is ready (`OnContextChanged`).
 
-4. **Execute**  
-   The Manager receives this notification and simultaneously executes the addition of Mapping Contexts to the `UEnhancedInputLocalPlayerSubsystem` and the actual delegate bindings to the [`UGCFInputComponent`][GCFInputComponent].
+4. **Safe Execution (Execute):** The Manager receives the notification and safely executes the addition of Mapping Contexts to the `UEnhancedInputLocalPlayerSubsystem` and the actual delegate bindings to the [`UGCFInputComponent`][GCFInputComponent] all at once.
 
 ---
 
 ## 🎯 Benefits of This Design
 
-- **Complete Crash Resistance**  
-Even in asynchronous environments or under severe network lag, crashes caused by null pointer references are fundamentally prevented.
-  
-- **True Plug & Play**  
-When adding new vehicles or characters, no C++ code changes are required. Simply assigning a new InputConfig inside the [`UGCFPawnData`][GCFPawnData] enables the system to route inputs automatically.
-  
-- **Dynamic Input Attachment/Detachment**  
-When possession ends, the Manager calls `ClearBindingsOnContextChange()` to cleanly scrub the old body's inputs. This prevents input "ghosting" (bugs where inputs continue to process for an uncontrollable actor).
+- **High Robustness and Crash Resistance** Even in asynchronous environments or high-latency networks, crashes due to Null pointer references are suppressed at the design level.
+
+- **Realization of Plug-and-Play** When adding new vehicles or characters, the system can be expanded solely with DataAssets without modifying C++ code. By simply setting a new InputConfig in [`UGCFPawnData`][GCFPawnData], the system automatically establishes the routing.
+
+- **Dynamic Input Cleanup** When possession ends, the Manager calls `ClearBindingsOnContextChange()` to cleanly remove the inputs of the old Body, preventing input ghosts (bugs where processes run despite the inability to control the actor).
 
 
 [GCFPawnData]:                      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Actor/Data/GCFPawnData.h
