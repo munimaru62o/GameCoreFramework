@@ -4,16 +4,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Movement/Mover/Producer/GCFCachedInputProducer.h"
+#include "Movement/Mover/Producer/GCFLocomotionInputProducer.h"
 #include "GCFHumanoidInputProducer.generated.h"
 
 /**
  * @brief Input producer specifically for Pawns requiring Humanoid inputs (like Crouch).
- * Inherits basic movement logic and Jump actions from GCFCachedInputProducer,
+ * Inherits basic movement logic and Jump actions from GCFLocomotionInputProducer,
  * and adds additional interface polling for stance changes (Crouch) to inject into FGCFHumanoidInputs.
  */
 UCLASS(Blueprintable, ClassGroup = (GCF), meta = (BlueprintSpawnableComponent))
-class GAMECOREFRAMEWORK_API UGCFHumanoidInputProducer : public UGCFCachedInputProducer
+class GAMECOREFRAMEWORK_API UGCFHumanoidInputProducer : public UGCFLocomotionInputProducer
 {
 	GENERATED_BODY()
 

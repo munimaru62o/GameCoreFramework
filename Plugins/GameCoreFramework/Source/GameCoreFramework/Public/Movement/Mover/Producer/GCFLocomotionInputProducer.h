@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "MoverSimulationTypes.h"
-#include "GCFCachedInputProducer.generated.h"
+#include "GCFLocomotionInputProducer.generated.h"
 
 /**
  * @brief Mover input producer that bridges the GCF Input System with the Mover plugin.
@@ -18,7 +18,7 @@
  * * By utilizing the interface, it completely decouples from concrete Pawn classes.
  */
 UCLASS(Blueprintable, ClassGroup = (GCF), meta = (BlueprintSpawnableComponent))
-class GAMECOREFRAMEWORK_API UGCFCachedInputProducer : public UActorComponent, public IMoverInputProducerInterface
+class GAMECOREFRAMEWORK_API UGCFLocomotionInputProducer : public UActorComponent, public IMoverInputProducerInterface
 {
 	GENERATED_BODY()
 
