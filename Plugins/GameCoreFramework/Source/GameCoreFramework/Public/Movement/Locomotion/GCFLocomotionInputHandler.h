@@ -7,7 +7,6 @@
 #include "UObject/Interface.h"
 #include "GCFLocomotionInputHandler.generated.h"
 
-#define UE_API GAMECOREFRAMEWORK_API
 
 UINTERFACE(MinimalAPI, Blueprintable)
 class UGCFLocomotionInputHandler : public UInterface
@@ -20,7 +19,7 @@ class UGCFLocomotionInputHandler : public UInterface
  * The ControlComponent passes raw input via this interface, delegating the actual
  * movement logic, state caching, and calculations to the specific Pawn implementation.
  */
-class UE_API IGCFLocomotionInputHandler
+class GAMECOREFRAMEWORK_API IGCFLocomotionInputHandler
 {
 	GENERATED_BODY()
 
@@ -54,5 +53,3 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "GCF|Locomotion")
 	void HandleCrouchInput(bool bIsPressed);
 };
-
-#undef UE_API
