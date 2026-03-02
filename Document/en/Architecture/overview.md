@@ -1,5 +1,7 @@
 # Architecture Overview
 
+🌍 *Read this in other languages: [English](../../en/Architecture/overview.md) | [日本語 (Japanese)](../../ja/Architecture/overview.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
+
 ## Overview
 
 This project, "GameCoreFramework (GCF)," takes the modern architecture of Unreal Engine 5 (such as Lyra Starter Game), deconstructs it, and redesigns it as a **universal game framework** independent of any specific game genre.
@@ -13,63 +15,53 @@ It aims to provide an architectural answer to questions like "Why does it break?
 
 In game development involving multiplayer and complex player behaviors, the following problems frequently occur:
 
-- **Ambiguous Responsibilities:** Hesitation over where to place logic (Pawn, Controller, or PlayerState) leads to the creation of God Classes.
-
-- **Initialization Race Conditions:** Input, Ability, and Camera systems depend on each other, causing crashes due to differences in load order.
-
-- **State Desync:** Network latency and late-joiners cause discrepancies between visual representation and internal state.
-
+- **Ambiguous Responsibilities:** Confusion over where to place logic (Pawn, Controller, or PlayerState) often leads to the creation of "God Classes."
+- **Initialization Race Conditions:** Input, Ability, and Camera systems depend on each other, causing crashes due to inconsistent load orders.
+- **State Desync:** Network latency and late-joiners cause discrepancies between the visual representation and the internal state.
 - **Chain of Tight Coupling:** Direct coupling between inputs and abilities makes it difficult to swap out actors or playable characters.
 
-The primary objective of this project is to create a structure that prevents these issues **through systemic architecture, rather than relying on operational care (the programmer's attentiveness)**.
+The primary objective of this project is to create a structure that prevents these issues **through systemic architecture, rather than relying on operational care (the programmer's attentiveness).**
 
 ### 💡 Benefits of Adoption
 
 By adopting this framework, development teams will reap the following benefits:
 
 - Eliminates confusion about "where to write what" when dealing with possession and late-joiners.
-
 - Frees developers from the hassle of individually tweaking initialization order bugs and complex dependencies between systems.
-
 - Ensures the core design remains intact even when expanding gameplay mechanics like "riding vehicles" or "transforming into other characters."
 
 ---
 
 ## 📐 Core Design Philosophy
 
-### 1. Complete Separation of "Soul" (Player) and "Body" (Pawn)
-
+### 1. Clear Separation of "Soul" (Player) and "Body" (Pawn)
 This framework clearly separates the responsibilities of persistent data and temporary vessels.
 
-- **Player (Soul / Persistent):**
-  Defines stats and persistent abilities that are maintained even when switching bodies (Pawns) (primarily handled by the PlayerState).
-  Uses "Possession" of a body as a trigger to activate the features inherent to that body.
-
-- **Pawn (Body / Temporary):**
-  A physical entity that only defines the innate abilities and input bindings that its "shell" should possess (e.g., "accelerate/brake" for a car, "jump/walk" for a human).
+- **Player (Soul / Persistent):** Defines stats and persistent abilities that are maintained even when switching bodies (Pawns) (primarily handled by the PlayerState). Uses "Possession" of a body as a trigger to activate the features inherent to that body.
+- **Pawn (Body / Temporary):** A physical entity that only defines the innate abilities and input bindings that its "shell" should possess (e.g., "accelerate/brake" for a car, "jump/walk" for a human).
 
 This separation prevents logic from breaking in games involving possession and allows for the natural implementation of gameplay involving body-swapping.
 
 ### 2. Hybridization of Event-Driven and State-Based Models
 Initially, the design was purely event-driven (using notifications via Delegates). However, we faced limitations unique to asynchronous multiplayer, such as "late-joiners missing past events" and "crashes caused by initialization order when relying on fleeting events like `OnPossessed`."
 
-Therefore, we transitioned to a **hybrid architecture that treats these as "States" rather than events**, utilizing the `InitState` of the GameFrameworkComponentManager (GFCM). By implementing strict gate control that "prevents progressing to the next state until data, possession, and logic are all present," we achieved a robust structure where "the current situation can be perfectly replicated at any time of joining, based on the state at that moment."
+Therefore, we transitioned to a **hybrid architecture that treats these as "States" rather than events**, utilizing the `InitState` of the GameFrameworkComponentManager (GFCM). By implementing strict gate control that "prevents progressing to the next state until data, possession, and logic are all present," we achieved a robust structure where "the current situation can be accurately replicated at any time of joining, based on the state at that moment."
 
 ### 3. Gameplay Expansion via Data-Driven Design
 We adopted a design where behaviors and abilities are not hardcoded in C++, but rather expanded through variations in DataAssets. Pawn and Ability configurations can be flexibly switched according to the gameplay.
 
 ### 4. Minimizing Baseline Overhead via Tickless Design
-Fundamentally built on an **Event-Driven Model**, this framework strictly eliminates reliance on per-frame `Tick` processing by enforcing `PrimaryComponentTick.bCanEverTick = false` across its core components.
+Fundamentally built on an **Event-Driven Model**, this framework strictly eliminates reliance on per-frame `Tick` processing (`PrimaryComponentTick.bCanEverTick = true`) across its components.
 By deeply integrating with Gameplay Messages, Component Extension Events, and multicast delegates, unnecessary state polling has been eradicated.
-This architectural approach effectively **reduces the framework's baseline CPU overhead to near zero**. By doing so, it maximizes overall scalability and ensures ample CPU headroom is preserved for what truly matters: complex gameplay logic, high-density actor management, and physics simulations.
+
+This architectural approach **minimizes the framework's baseline CPU overhead**, maximizing overall scalability. As a result, it ensures ample CPU headroom is preserved for complex gameplay logic and high-density actor physics simulations.
 
 ---
 
-## ✨ Technical Highlights of This Framework
+## ✨ Unique Features of This Framework
 
 ### 1. Dual ASC Architecture and Tag-Based Routing
-
-In standard Gameplay Ability System (GAS) design, it is customary to place the Ability System Component (ASC) on *either* the PlayerState or the Pawn. However, to completely separate persistent abilities from swappable abilities, this framework adopts a **"Dual ASC Architecture," equipping both the PlayerState (Soul) and the Pawn (Body) with an ASC**.
+In standard Gameplay Ability System (GAS) design, it is customary to place the Ability System Component (ASC) on *either* the PlayerState or the Pawn. However, to clearly separate persistent abilities from swappable abilities, this framework adopts an architecture that **equips both the PlayerState (Soul) and the Pawn (Body) with an ASC (Dual ASC Architecture)**.
 
 The greatest technical challenge in this unique setup is the input routing problem: "When a player presses a button, to which ASC (Soul or Body) should the input be dispatched?"
 To eliminate tight coupling where inputs directly reference specific Ability classes or ASCs, this framework introduces the `InputBridge` and `AbilityRouter`.
@@ -77,39 +69,38 @@ To eliminate tight coupling where inputs directly reference specific Ability cla
 The `UGCFAbilityInputRouterComponent` automatically dispatches inputs based on the hierarchy of the tag passed during input, following these rules:
 - 🟢 When an `InputTag.Ability.Player.*` tag is received:
     - Routed to the **PlayerState's ASC** (Handled as a persistent ability of the soul, e.g., interaction).
-
 - 🟠 When an `InputTag.Ability.Pawn.*` tag is received:
     - Routed to the **Pawn's ASC** (Handled as an ability dependent on the current body, e.g., jumping or shooting).
 
 As a result, the input side (Controller or InputComponent) does not need to know "whose ASC it is." It becomes possible to **dynamically switch the execution target simply by throwing a "Tag."**
 
-### 2. Lag Mitigation and Optimization for Next-Gen Network Sync (NPP / Mover)
+### 2. Next-Gen Movement System (Mover) Integration and Loosely Coupled Architecture
+To maximize the potential of Unreal Engine 5's next-generation movement system, the "Mover" plugin, we have built a clean, lightweight `APawn`-based movement foundation that does not depend on the legacy `ACharacter`.
 
-When deploying Unreal Engine 5's next-generation network synchronization foundations—the Network Prediction Plugin (NPP) and the Mover plugin—in a production environment, this system solves fatal sync discrepancies and extrapolation runaways caused by the engine's internal specifications at the architectural level.
+- **The Intent "Bucket Relay" (Push ➔ Cache ➔ Pull):**
+  Communication from the player's "movement intent" to "physical behavior" is clearly separated via interfaces. The input side throws the intent (Push) without caring about the target's class; the Pawn interprets and retains it based on its own body (Cache); and finally, the Mover's producer extracts it (Pull). This realizes a highly decoupled architecture. Consequently, even if a player's possession switches from a "jumping human" to a "non-jumping car," operations switch seamlessly without breaking the code.
 
-- **Maintaining Clock Sync in Hybrid Environments (Adopting the Adapter Pattern):**  
-  In a game environment where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` coexist, NPP's simulation clock tends to isolate and sleep per system. As a result, when a player operates a CMC, network packets from others' Movers (e.g., drones) are discarded as "future data," causing freezing issues (Extrapolation Starvation). This system builds a robust infrastructure that keeps the NPP clock globally synchronized regardless of the Pawn the player possesses, by placing a "lightweight, physics-less dummy Mover" on the `PlayerController` side as an Adapter that constantly communicates with the server.
-
-- **Input Sanitization to Safely Prevent Extrapolation Runaway:**  
-  When packet loss occurs, Mover's Simulated Proxies reuse the last received input data to predict future positions (Extrapolation). However, in low-friction situations like flying, this "stale input" causes the character to accelerate and move forward infinitely, triggering severe rubber-banding (Rollback) upon packet arrival. This system implements a hack that strictly clears only the direction vector of the "disposable input snapshot for prediction calculations" generated every frame, just before processing, without polluting the NPP core buffer. This completely prevents fatal overshooting in laggy environments while fully ensuring the safety of NPP's rollback mechanism.
+- **Maintaining Clock Sync in Hybrid Environments (Adapter Pattern):**
+  In game environments where the legacy `CharacterMovementComponent` (CMC) and the new `Mover` (Network Prediction Plugin) coexist, the simulation clock tends to isolate and sleep per system. This causes issues where, when a player operates a CMC, network packets from others' Movers (e.g., drones) are discarded as "future data," leading to freezing (Extrapolation Starvation).
+  This system builds a robust infrastructure by placing a **"lightweight, physics-less dummy Mover"** on the `PlayerController` as an Adapter that constantly communicates with the server, keeping the network clock globally synchronized regardless of the possessed Pawn.
 
 ---
 
-## 🛠 Developer Experience (DX): Simple Extensibility Hiding Complex Internal Structures
+## 🛠 Developer Experience (DX): Simple Extensibility Encapsulating Complex Internals
 
-Although this framework executes extremely complex asynchronous processing and routing internally, **it completely hides (encapsulates) this complexity from the programmers and planners (users) who actually implement the gameplay.**
+Although this framework executes extremely complex asynchronous processing and routing internally, **it suppresses (encapsulates) this complexity to a minimum for the programmers and planners (users) who actually implement the gameplay.**
 
-When adding new features, users do not need to modify the existing core code at all. Safe expansion is possible with only the following extremely simple steps.
+When adding new features, users do not need to modify existing core code. Safe expansion is possible through the following extremely simple steps.
 
 ### Example 1: Binding New Abilities and Inputs by Planners (Data-Driven)
-There is no need to write a single line of C++ code. By simply configuring two DataAssets that separate "ability definition" and "physical input," the system automatically determines the appropriate ASC (Soul or Body) and performs the routing.
+There is no need to write new C++ code. By simply configuring two DataAssets that separate "ability definition" and "physical input," the system automatically determines the appropriate ASC (Soul or Body) and performs the routing.
 
 #### 1. Assign an "Input Tag" to the Ability (`UGCFAbilitySet`)
 Open the target ability set and configure the following elements:
 
 - **Granted Gameplay Abilities:**
   - **Ability:** `GA_Jump` (The ability class to add)
-  - **InputTag:** `InputTag.Ability.Pawn.Jump` (Target domain is automatically determined by the prefix)
+  - **InputTag:** `InputTag.Ability.Pawn.Jump` (Target domain automatically determined by the prefix)
 
 #### 2. Bind Physical Operations (InputAction) to the Tag (`UGCFInputConfig`)
 Open the input configuration and simply bind the standard Unreal InputAction to the tag defined above.
@@ -118,22 +109,24 @@ Open the input configuration and simply bind the standard Unreal InputAction to 
   - **InputAction:** `IA_Jump` (Physical input such as Spacebar or gamepad button)
   - **GameplayTag:** `InputTag.Ability.Pawn.Jump`
 
-### Example 2: Adding a "New Vehicle" by Programmers (Interface-Driven)
+### Example 2: Adding a "New Vehicle" by Programmers (Interface-Driven Opt-In)
 For example, if you want to add a "Hoverboard" with entirely new physics behavior, you do not need to rewrite the input processing (`Input_Move`, etc.) on the controller side.
-Simply implement the `IGCFLocomotionHandler` interface in the new Pawn class and convert the received universal vector into its unique propulsion force.
+Simply implement the `IGCFLocomotionInputHandler` interface in the new Pawn class, receive the universal "movement intent (vector)," and interpret it as its unique propulsion force.
 
 ```cpp
 // AGCFHoverboardPawn.cpp
-// Just by overriding the interface function, it accepts universal operations from the controller.
-void AGCFHoverboardPawn::HandleMoveInput(const FVector& MovementVector)
+// Just by overriding the interface function, it receives universal operations "pushed" from the controller.
+void AGCFHoverboardPawn::HandleMoveInput_Implementation(const FVector2D& InputValue, const FRotator& MovementRotation)
 {
-    // Receive the "desired direction (MovementVector)" calculated by the controller,
-    // and simply convert it into physics thruster processing specific to the hoverboard.
-    HoverThrusterComponent->AddForce(MovementVector * HoverThrustPower);
+    // Cache the "desired direction intent" calculated by the controller,
+    // and convert it into physics thruster processing specific to the hoverboard.
+    CachedMoveInput = InputValue;
+    CachedMoveRotation = MovementRotation;
+    UpdateHoverThrusters();
 }
 ```
 
-In this way, simply by operating "inside the rules of the architecture," we provide a foundation where anyone can safely and rapidly mass-produce features.
+By simply operating "inside the rules of the architecture" like this, we provide a foundation where anyone can safely and rapidly mass-produce features.
 
 ---
 
@@ -145,7 +138,7 @@ Rather than the initial speed of prototyping, this framework makes ensuring **"M
 
 To add a single button, it requires explicit procedures (rules) such as "creating a DataAsset" and "assigning a tag." Therefore, initial setup and learning require a certain cost. However, because of this enforced structure, **"adding the 100th ability" can be done with the exact same safety and order as "adding the 1st."**
 
-When entering the mid-to-long-term specification changes or the mass-production phase with a team of dozens, the iteration speed enabled by this "unbreakable foundation" will ultimately vastly outperform traditional prototype-style development.
+When entering mid-to-long-term specification changes or a mass-production phase with a team of dozens, the iteration speed enabled by this "unbreakable foundation" will ultimately vastly outperform traditional prototype-style development.
 
 **[Projects Where It Delivers the Most Value]**
 - Large-scale multiplayer games or long-term live-service titles planned for years of operation.
@@ -170,6 +163,18 @@ Now that the robust routing foundation and lifecycle management are complete, th
 - **Cosmetic & Feedback System:** Utilizing features like `GameplayCue` from the Gameplay Ability System to integrate mechanisms that dynamically apply visual and auditory feedback (e.g., character animations, VFX, sounds) without polluting the logic.
 
 - **Equipment & Inventory System:** A system to manage the equipped state of weapons and items, and dynamically grant abilities.
+
+---
+
+## 🖋️ Developer's Vision: A Philosophy on Architecture Design
+
+To me, system architecture design transcends mere engineering; it is a form of art and self-expression. Releasing this "GameCoreFramework" as an open-source project is not simply about providing a convenient tool, but rather an exhibition of a "piece of work" that embodies my personal aesthetics.
+
+Modern game development grows more complex by the day, yet I firmly believe that "if the internal structure is beautiful, the external behavior will inevitably be beautiful as well." Facing complex phenomena head-on, iterating through trial and error, and carving away the excess like a sculpture to form a single, polished crystal—I believe there is profound value in that very process of thought and exploration.
+
+Even in a future where all development processes become increasingly automated and highly efficient, I believe that the skill and joy of grasping the true essence with our own hands and minds to build beautiful structures will never fade.
+
+I hope that the design philosophies and ideas poured into this framework will serve as a source of inspiration for engineers around the world who share a love for "beautiful, highly maintainable systems."
 
 ---
 

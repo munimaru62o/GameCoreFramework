@@ -1,9 +1,11 @@
 # インプットシステム (InputBridge & Manager パターン)
 
+🌍 *他の言語で読む: [English](../../en/Architecture/input_system.md) | [日本語 (Japanese)](../../ja/Architecture/input_system.md)* 
+
 ## 概要
 本システムは、Unreal Engine 5の「Enhanced Input System」をベースにしながら、マルチプレイやポゼッション（憑依）特有の非同期問題（初期化のレースコンディション）を解決するために構築された入力ルーティング基盤です。
 
-入力を処理するコンポーネントが、特定の入力設定（InputConfig）や対象のアクター（Pawn等）に直接依存しないよう、**Bridgeパターン**と**Manager（仲介者）パターン**を用いて完全に疎結合化されています。
+入力を処理するコンポーネントが、特定の入力設定（InputConfig）や対象のアクター（Pawn等）に直接依存しないよう、**Bridgeパターン**と**Manager（仲介者）パターン**を用いて高度に抽象化され、疎結合な構成を実現しています。
 
 ---
 
@@ -12,10 +14,10 @@
 従来の入力バインド実装では、以下のような問題が頻発します。
 
 1. **一瞬のイベントへの依存（レースコンディション）:**  
-「ポゼス（憑依）された瞬間」という不確かなタイミングに依存すると、まだPawn側のデータロードが終わっていない状態で入力をバインドしようとし、Null参照によるクラッシュが頻発します。
+「ポゼス（憑依）された瞬間」という不確かなタイミングに依存すると、まだPawn側のデータロードが終わっていない状態で入力をバインドしようとし、Null参照によるクラッシュを招くリスクが高まります。
 
 2. **Pawnへの入力処理の直書き（ハードコーディング）**  
-`SetupPlayerInputComponent` 内に処理を直書きしてしまうと、乗り物（Vehicle）などに乗り換えた際の「動的な入力の切り替え（着脱）」が極めて困難になります。
+`SetupPlayerInputComponent` 内に処理を直書きしてしまうと、乗り物（Vehicle）などに乗り換えた際の「動的な入力の切り替え（着脱）」が柔軟な機能の着脱を妨げる要因となります。
 
 3. **魂と肉体の混同**  
 システムメニューを開く入力（魂）と、ジャンプする入力（肉体）が同じ場所に記述され、肥大化します。
@@ -51,7 +53,7 @@
 ### 3. Core Manager & Routing Layer (仲介・ブリッジレイヤー)
 本システムの中核であり、バインド要求と実際の入力設定を繋ぎ合わせるレイヤーです。
 
-- **[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent]**: 全ての入力バインド要求を受け付けるハブです。状態が未完了の場合は `ProcessPendingBindings()` によって要求を待機（キューイング）し、[`UGCFInputContextComponent`][GCFInputContextComponent] からのGOサインが出た瞬間に安全にバインドを実行します。
+- **[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent]**: 全ての入力バインド要求を受け付けるハブです。状態が未完了の場合は `ProcessPendingBindings()` によって要求を待機（キューイング）し、[`UGCFInputContextComponent`][GCFInputContextComponent] からの初期化シーケンスの完了が確認された直後に安全にバインドを実行します。
 
 - **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: [`IUGCFInputConfigProvider`][GCFInputConfigProvider] インターフェースを実装し、それが「魂の入力設定」なのか「肉体の入力設定」なのかを抽象化してManagerへ提供します。
 
@@ -82,11 +84,11 @@
 
 ## 🎯 この設計によって得られるメリット
 
-- **完全なクラッシュ耐性**  
-非同期環境やラグの激しいネットワーク下でも、ヌルポインタ参照によるクラッシュが原理的に発生しません。
+- **高い堅牢性とクラッシュ耐性**  
+非同期環境やラグの激しいネットワーク下でも、ヌルポインタ参照によるクラッシュを設計レベルで抑制しています。
 
 - **プラグアンドプレイの実現**  
-新しい乗り物やキャラクターを追加する際、C++コードの変更は一切不要です。[`UGCFPawnData`][GCFPawnData] に新しい InputConfig をセットするだけで、システムが自動的にルーティングを行います。
+新しい乗り物やキャラクターを追加する際、C++コードを改修することなく、データアセットのみで拡張可能です。[`UGCFPawnData`][GCFPawnData] に新しい InputConfig をセットするだけで、システムが自動的にルーティングを行います。
 
 - **入力の動的着脱**  
 ポゼッションが解除された際、Managerが `ClearBindingsOnContextChange()` を呼び出し、古い肉体の入力を綺麗にクリーンアップするため、入力のゴースト（操作できないのに処理が走るバグ）を防ぎます。

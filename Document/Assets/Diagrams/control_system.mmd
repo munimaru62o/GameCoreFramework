@@ -21,29 +21,57 @@ classDiagram
         +BroadcastMessage
     }
 
-    %% Actorクラス
-    class AGCFCharacter {
-        +HandleMoveInput()
-        +HandleMoveUpInput()
+    %% Actorクラス (基底)
+    class APawn {
+        +AddControllerPitchInput()
+        +AddControllerYawInput()
     }
     class AGCFWheeledVehiclePawn {
         +HandleMoveInput()
-        +HandleMoveUpInput()
-    }
-    class APawn {
-        +AddControllerPitchInput()
-        +AddControllerInput()
-    }
-    class AGCFPawn {
-        +HandleMoveInput()
-        +HandleMoveUpInput()
-    }
-    class IGCFLocomotionHandler {
-        <<interface>>
-        +HandleMoveInput()
-        +HandleMoveUpInput()
+        +HandleHandbrakeInput()
     }
 
+    %% GCF Pawn 3層アーキテクチャ
+    class AGCFPawn {
+        +CachedTargetMovement
+        +CachedMoveRotation
+        +HandleMoveInput()
+        +GetMovementIntent()
+        +GetOrientationIntent()
+    }
+    class AGCFAvatarPawn {
+        +bIsJumpPressed
+        +HandleJumpInput()
+    }
+    class AGCFHumanoid {
+        +bWantsToCrouch
+        +HandleCrouchInput()
+    }
+
+    %% 旧来のCharacter (レガシー/比較用)
+    class AGCFCharacter {
+        <<ACharacter>>
+        +HandleMoveInput()
+        +HandleJumpInput()
+        +HandleCrouchInput()
+    }
+
+    %% インターフェース (Push & Pull)
+    class IGCFLocomotionInputHandler {
+        <<interface>>
+        +HandleMoveInput()
+        +HandleJumpInput()
+        +HandleCrouchInput()
+    }
+    class IGCFLocomotionInputProvider {
+        <<interface>>
+        +GetMovementIntent()
+        +GetOrientationIntent()
+        +GetIsJumpPressed()
+        +GetWantsToCrouch()
+    }
+
+    %% Input & Controllerドメイン (魂)
     class AGCFPlayerController {
         <<InputAuthority>>
         -UGCFInputComponent
@@ -51,9 +79,7 @@ classDiagram
     class UGCFInputComponent {
         <<UEnhancedInputComponent>>
     }
-
-    %% Controllerドメインクラス
-    class UGCFMovementControlComponent {
+    class UGCFLocomotionDirectionComponent {
         <<ControllerComponent>>
         -Input_Move()
         -CalcMovementRotation()
@@ -61,11 +87,11 @@ classDiagram
     class UGCFCameraControlComponent {
         <<ControllerComponent>>
         -Input_Zoom()
-        -Input_Look()
+        -Input_LookStick()
     }
 
-    %% Pawnドメインクラス
-    class UGCFCharacterControlComponent {
+    %% Actionドメイン (肉体への命令)
+    class UGCFLocomotionActionComponent {
         <<PawnComponent>>
         -Input_Jump()
         -Input_Crouch()
@@ -75,12 +101,32 @@ classDiagram
         -Input_HandBrake()
         -Input_HeadLight()
     }
-    class UGCFCharacterMovementComponent {
-        <<CharacterMovementComponent>>
-        +ApplyMovementConfig()
+
+    %% シミュレーション & 物理ドメイン (Mover)
+    class UGCFLocomotionInputProducer {
+        <<MoverInputProducer>>
+        +ProduceInput()
+    }
+    class UGCFHumanoidInputProducer {
+        <<MoverInputProducer>>
+        +ProduceInput()
+    }
+    class FGCFHumanoidInputs {
+        <<MoverInputCmd>>
+        +bWantsToCrouch
     }
     class UGCFMoverComponent {
         <<UMoverComponent>>
+        +ApplyMovementConfig()
+    }
+    class UGCFCharacterMoverComponent {
+        <<GCFMoverWrapper>>
+        +WalkingMode
+        +FallingMode
+        +FlyingMode
+    }
+    class UGCFCharacterMovementComponent {
+        <<CharacterMovementComponent>>
         +ApplyMovementConfig()
     }
     class IGCFMovementConfigReceiver {
@@ -98,48 +144,58 @@ classDiagram
         <<Abstract>>
         -CameraPolicy
     }
-    class GCFCameraMode_Orbit {
-        <<GCFCameraMode>>
-        -CameraPolicy
-    }
-    class GCFCameraMode_ThirdPerson {
-        <<GCFCameraMode>>
-        -CameraPolicy
-    }
 
-
+    %% 構造的関係
     AGCFPlayerController o-- UGCFInputComponent
     UGCFPawnExtensionComponent o-- UGCFPawnData
     UGCFPawnData o-- UGCFMovementConfig
-    AGCFCharacter o-- UGCFCharacterMovementComponent
+    
+    %% Moverコンポーネントの保持
     AGCFPawn o-- UGCFMoverComponent
+    AGCFHumanoid o-- UGCFCharacterMoverComponent
+    AGCFCharacter o-- UGCFCharacterMovementComponent
     GCFCameraComponent o-- GCFCameraMode
 
-    GCFCameraMode <|-- GCFCameraMode_Orbit
-    GCFCameraMode <|-- GCFCameraMode_ThirdPerson
-
+    %% クラスの継承関係
     APawn <|-- AGCFPawn
+    AGCFPawn <|-- AGCFAvatarPawn
+    AGCFAvatarPawn <|-- AGCFHumanoid
+    
     APawn <|-- AGCFCharacter
     APawn <|-- AGCFWheeledVehiclePawn
 
+    UGCFMoverComponent <|-- UGCFCharacterMoverComponent
+    UGCFLocomotionInputProducer <|-- UGCFHumanoidInputProducer
+
+    %% インターフェースの実装 (親クラスのみに集約)
     IGCFMovementConfigReceiver <|.. UGCFMoverComponent
     IGCFMovementConfigReceiver <|.. UGCFCharacterMovementComponent
 
-    IGCFLocomotionHandler <|.. AGCFPawn
-    IGCFLocomotionHandler <|.. AGCFCharacter
-    IGCFLocomotionHandler <|.. AGCFWheeledVehiclePawn
+    IGCFLocomotionInputHandler <|.. AGCFPawn
+    IGCFLocomotionInputProvider <|.. AGCFPawn
+    IGCFLocomotionInputHandler <|.. AGCFCharacter
+    IGCFLocomotionInputHandler <|.. AGCFWheeledVehiclePawn
 
-    UGCFMovementControlComponent --> IGCFLocomotionHandler : exec movement input
-    UGCFCameraControlComponent --> APawn : add controller pitch
+    %% バケツリレーのデータフロー (Push -> Cache -> Pull)
+    UGCFLocomotionDirectionComponent --> IGCFLocomotionInputHandler : Push Directional Intent
+    UGCFLocomotionActionComponent --> IGCFLocomotionInputHandler : Push Action Intent
+    
+    UGCFLocomotionInputProducer --> IGCFLocomotionInputProvider : Pull Cached Intents
+    UGCFHumanoidInputProducer --> IGCFLocomotionInputProvider : Pull Crouch Intent
+    
+    UGCFLocomotionInputProducer --> UGCFMoverComponent : Inject to InputCmd
+    UGCFHumanoidInputProducer ..> FGCFHumanoidInputs : Inject to InputCollection
+
+    %% その他の制御フロー
+    UGCFCameraControlComponent --> APawn : add controller pitch/yaw
     UGCFCameraControlComponent --> GCFCameraComponent : set zoom ratio
-    UGCFCharacterControlComponent --> AGCFCharacter : control character action
     UGCFVehicleControlComponent --> AGCFWheeledVehiclePawn : control vehicle action
 
     UGCFPawnExtensionComponent ..> IGCFMovementConfigReceiver : apply movement config
     GCFCameraComponent ..> UGameplayMessageSubsystem : send camera policy message
-    UGCFMovementControlComponent ..> UGameplayMessageSubsystem : observe camera policy message
+    UGCFLocomotionDirectionComponent ..> UGameplayMessageSubsystem : observe camera policy message
     
-    UGCFInputComponent ..> UGCFCharacterControlComponent : bind input actions
-    UGCFInputComponent ..> UGCFMovementControlComponent : bind input actions
+    UGCFInputComponent ..> UGCFLocomotionActionComponent : bind input actions
+    UGCFInputComponent ..> UGCFLocomotionDirectionComponent : bind input actions
     UGCFInputComponent ..> UGCFCameraControlComponent : bind input actions
     UGCFInputComponent ..> UGCFVehicleControlComponent : bind input actions
