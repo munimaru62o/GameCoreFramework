@@ -11,13 +11,15 @@ void UGCFHumanoidInputProducer::ProduceInput_Implementation(int32 SimTime, FMove
 	// Call the base class to handle standard directional movement and jumps via interface.
 	Super::ProduceInput_Implementation(SimTime, InputCmdResult);
 
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn && OwnerPawn->IsLocallyControlled()) {
+	if (CachedOwnerPawn && CachedOwnerPawn->IsLocallyControlled()) {
 
-		if (OwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
+		if (CachedLocomotionInputProvider) {
+			// Get the underlying UObject from TScriptInterface
+			UObject* ProviderObj = CachedLocomotionInputProvider.GetObject();
+
 			// --- Crouch Handling ---
 			FGCFHumanoidInputs& HumanoidInputs = InputCmdResult.InputCollection.FindOrAddMutableDataByType<FGCFHumanoidInputs>();
-			HumanoidInputs.bWantsToCrouch = IGCFLocomotionInputProvider::Execute_GetWantsToCrouch(OwnerPawn);
+			HumanoidInputs.bWantsToCrouch = IGCFLocomotionInputProvider::Execute_GetWantsToCrouch(ProviderObj);
 		}
 	}
 }
