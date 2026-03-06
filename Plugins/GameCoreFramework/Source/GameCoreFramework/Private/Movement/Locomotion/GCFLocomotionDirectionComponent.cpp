@@ -68,7 +68,7 @@ void UGCFLocomotionDirectionComponent::HandleMovementRotationPolicyChanged(EGCFM
 void UGCFLocomotionDirectionComponent::HandlePossessedPawnChanged(AActor* Actor, bool bPossessed)
 {
 	if (bPossessed) {
-		CachedPawn = Cast<APawn>(Actor);
+		APawn* PossessedPawn = Cast<APawn>(Actor);
 
 		// Cache the interface to eliminate the costly Implements<U...>() search loop in the Hot Path.
 		// We deliberately use TScriptInterface here to preserve Blueprint extensibility (Execute_ routing).
@@ -82,17 +82,16 @@ void UGCFLocomotionDirectionComponent::HandlePossessedPawnChanged(AActor* Actor,
 		
 		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
 		// If the underlying object does not implement it, this will safely resolve to nullptr.
-		CachedLocomotionInputHandler = CachedPawn;
+		CachedLocomotionInputHandler = PossessedPawn;
 
 #if !UE_BUILD_SHIPPING
 		if (!CachedLocomotionInputHandler) {
 			UE_LOG(LogGCFCommon , Warning, TEXT("[%s] The possessed Pawn [%s] does not implement IGCFLocomotionInputHandler! Directional input (Move) will be ignored."),
-				   *GetName(), *GetNameSafe(CachedPawn));
+				   *GetName(), *GetNameSafe(PossessedPawn));
 		}
 #endif
 	} else {
 		// Clear cache on unpossess
-		CachedPawn = nullptr;
 		CachedLocomotionInputHandler = nullptr;
 	}
 }

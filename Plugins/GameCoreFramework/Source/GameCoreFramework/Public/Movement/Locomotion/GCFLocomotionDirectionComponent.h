@@ -62,10 +62,6 @@ private:
 
 	EGCFMovementRotationPolicy CachedPolicy;
 
-	// Cached Pawn to avoid calling GetPawn() every input frame
-	UPROPERTY()
-	TObjectPtr<APawn> CachedPawn = nullptr;
-
 	// Cached interface pointer to eliminate Implements<U...>() search loop in Hot Path
 	UPROPERTY()
 	TScriptInterface<IGCFLocomotionInputHandler> CachedLocomotionInputHandler;
