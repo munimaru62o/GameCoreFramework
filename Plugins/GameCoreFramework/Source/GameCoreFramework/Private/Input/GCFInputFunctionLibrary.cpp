@@ -4,6 +4,7 @@
 #include "Input/GCFInputFunctionLibrary.h"
 
 #include "GCFShared.h"
+#include "Common/GCFContextUtils.h"
 #include "Player/GCFPlayerController.h"
 #include "Actor/GCFActorFunctionLibrary.h"
 #include "Input/GCFInputConfigProvider.h"

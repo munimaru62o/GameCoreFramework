@@ -4,6 +4,7 @@
 #include "Actor/GCFActorFunctionLibrary.h"
 
 #include "GCFShared.h"
+#include "Common/GCFContextUtils.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerState.h"
 

@@ -20,6 +20,7 @@
 #include "Common/GCFGameplayTags.h"
 #include "System/Binder/GCFPawnReadyStateBinder.h"
 #include "System/Binder/GCFPawnPossessionBinder.h"
+#include "Common/GCFBitmaskUtils.h"
 
 #include "Misc/EnumClassFlags.h"
 #include "Camera/PlayerCameraManager.h"
