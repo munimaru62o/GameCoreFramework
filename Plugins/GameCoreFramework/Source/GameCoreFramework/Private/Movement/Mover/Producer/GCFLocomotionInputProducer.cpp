@@ -21,8 +21,17 @@ void UGCFLocomotionInputProducer::BeginPlay()
 	// pointer (IGCFLocomotionInputProvider*) and call the _Implementation functions directly.
 	// This will completely bypass the VM routing overhead, but it will silently break any 
 	// Blueprint overrides.
-	if (CachedOwnerPawn && CachedOwnerPawn->Implements<UGCFLocomotionInputProvider>()) {
+	if (CachedOwnerPawn) {
+		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
+		// If the underlying object does not implement it, this will safely resolve to nullptr.
 		CachedLocomotionInputProvider = CachedOwnerPawn;
+
+#if !UE_BUILD_SHIPPING
+		if (!CachedLocomotionInputProvider) {
+			UE_LOG(LogTemp, Warning, TEXT("[%s] The owning Pawn [%s] does not implement IGCFLocomotionInputProvider! Producer input will be ignored."),
+				   *GetName(), *GetNameSafe(CachedOwnerPawn));
+		}
+#endif
 	}
 }
 

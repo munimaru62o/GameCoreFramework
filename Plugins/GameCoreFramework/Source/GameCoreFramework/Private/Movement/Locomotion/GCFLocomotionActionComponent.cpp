@@ -41,11 +41,16 @@ void UGCFLocomotionActionComponent::BeginPlay()
 	// This will completely bypass the VM routing overhead, but it will silently break any 
 	// Blueprint overrides.
 	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-			CachedLocomotionInputHandler = Pawn;
-		} else {
-			CachedLocomotionInputHandler = nullptr;
+		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
+		// If the underlying object does not implement it, this will safely resolve to nullptr.
+		CachedLocomotionInputHandler = Pawn;
+
+#if !UE_BUILD_SHIPPING
+		if (!CachedLocomotionInputHandler) {
+			UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The owning Pawn [%s] does not implement IGCFLocomotionInputHandler! Locomotion actions (Jump, Crouch) will be ignored."),
+				   *GetName(), *GetNameSafe(Pawn));
 		}
+#endif
 	}
 }
 

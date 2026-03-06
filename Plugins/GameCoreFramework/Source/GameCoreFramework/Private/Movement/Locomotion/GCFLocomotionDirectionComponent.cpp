@@ -79,11 +79,17 @@ void UGCFLocomotionDirectionComponent::HandlePossessedPawnChanged(AActor* Actor,
 		// pointer (IGCFLocomotionInputHandler*) and call the _Implementation functions directly.
 		// This will completely bypass the VM routing overhead, but it will silently break any 
 		// Blueprint overrides.
-		if (CachedPawn && CachedPawn->Implements<UGCFLocomotionInputHandler>()) {
-			CachedLocomotionInputHandler = CachedPawn;
-		} else {
-			CachedLocomotionInputHandler = nullptr;
+		
+		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
+		// If the underlying object does not implement it, this will safely resolve to nullptr.
+		CachedLocomotionInputHandler = CachedPawn;
+
+#if !UE_BUILD_SHIPPING
+		if (!CachedLocomotionInputHandler) {
+			UE_LOG(LogTemp, Warning, TEXT("[%s] The possessed Pawn [%s] does not implement IGCFLocomotionInputHandler! Directional input (Move) will be ignored."),
+				   *GetName(), *GetNameSafe(CachedPawn));
 		}
+#endif
 	} else {
 		// Clear cache on unpossess
 		CachedPawn = nullptr;
