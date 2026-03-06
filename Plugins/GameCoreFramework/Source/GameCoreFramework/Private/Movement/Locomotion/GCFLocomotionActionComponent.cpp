@@ -67,7 +67,7 @@ void UGCFLocomotionActionComponent::HandlePawnReadyStateChanged(const FGCFPawnRe
 	// We require both "Possessed" (Input Routing established) and "GamePlay" (Logic Initialized).
 	static const EGCFPawnReadyState Required = EGCFPawnReadyState::Possessed | EGCFPawnReadyState::GamePlay;
 
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPawnReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPawnReadyState, Snapshot.State, Required)) {
 		if (GCF::Bitmask::AreFlagsSet(Snapshot.State, Required)) {
 			// Now that the pawn is fully ready, register the input bindings.
 			GCF_REGISTER_INPUT_BINDING(this, &ThisClass::HandleInputBinding);

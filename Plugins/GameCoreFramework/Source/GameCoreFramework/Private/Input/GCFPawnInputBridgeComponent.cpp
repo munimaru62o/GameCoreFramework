@@ -94,7 +94,7 @@ void UGCFPawnInputBridgeComponent::HandlePawnReadyStateChanged(const FGCFPawnRea
 {
 	// Requirements: "Possessed" (Controller assigned) AND "GamePlay" (Extensions loaded).
 	static const EGCFPawnReadyState Required = EGCFPawnReadyState::Possessed | EGCFPawnReadyState::GamePlay;
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPawnReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPawnReadyState, Snapshot.State, Required)) {
 		if (GCF::Bitmask::AreFlagsSet(Snapshot.State, Required)) {
 			// 1. Resolve dependencies
 			if (AController* Controller = GetController<AController>()) {

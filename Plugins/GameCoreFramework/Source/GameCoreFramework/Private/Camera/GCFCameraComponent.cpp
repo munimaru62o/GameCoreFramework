@@ -86,7 +86,7 @@ void UGCFCameraComponent::OnRegister()
 void UGCFCameraComponent::HandlePawnReadyStateChanged(const FGCFPawnReadyStateSnapshot& Snapshot)
 {
 	static const EGCFPawnReadyState Required = EGCFPawnReadyState::GamePlay | EGCFPawnReadyState::Possessed;
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPawnReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPawnReadyState, Snapshot.State, Required)) {
 		if (GCF::Bitmask::AreFlagsSet(Snapshot.State, Required)) {
 			AttemptInitialize();
 			AttemptCameraModeChanged();
