@@ -3,6 +3,7 @@
 
 #include "Movement/Mover/Producer/GCFLocomotionInputProducer.h"
 #include "Movement/Locomotion/GCFLocomotionInputProvider.h"
+#include "GCFShared.h"
 
 
 void UGCFLocomotionInputProducer::BeginPlay()
@@ -28,7 +29,7 @@ void UGCFLocomotionInputProducer::BeginPlay()
 
 #if !UE_BUILD_SHIPPING
 		if (!CachedLocomotionInputProvider) {
-			UE_LOG(LogTemp, Warning, TEXT("[%s] The owning Pawn [%s] does not implement IGCFLocomotionInputProvider! Producer input will be ignored."),
+			UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The owning Pawn [%s] does not implement IGCFLocomotionInputProvider! Producer input will be ignored."),
 				   *GetName(), *GetNameSafe(CachedOwnerPawn));
 		}
 #endif
