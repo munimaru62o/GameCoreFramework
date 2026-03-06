@@ -4,6 +4,7 @@
 #include "Input/GCFInputContextComponent.h"
 
 #include "GCFShared.h"
+#include "Common/GCFBitmaskUtils.h"
 #include "System/Binder/GCFPossessedPawnReadyStateBinder.h"
 #include "System/Binder/GCFPlayerReadyStateBinder.h"
 #include "System/Binder/GCFControllerPossessionBinder.h"

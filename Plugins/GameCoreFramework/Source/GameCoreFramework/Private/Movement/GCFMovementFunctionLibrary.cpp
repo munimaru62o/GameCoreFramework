@@ -3,6 +3,7 @@
 
 #include "Movement/GCFMovementFunctionLibrary.h"
 #include "GCFShared.h"
+#include "Common/GCFContextUtils.h"
 #include "Movement/GCFMovementConfigReceiver.h"
 #include "Movement/Locomotion/GCFLocomotionInputHandler.h"
 

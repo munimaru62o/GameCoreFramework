@@ -4,6 +4,7 @@
 #include "Actor/Vehicle/GCFVehicleControlComponent.h"
 
 #include "GCFShared.h"
+#include "Common/GCFBitmaskUtils.h"
 #include "System/Binder/GCFPawnReadyStateBinder.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "Input/GCFInputConfigProvider.h"

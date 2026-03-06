@@ -6,6 +6,7 @@
 #include "Input/GCFInputComponent.h"
 #include "Input/GCFInputConfig.h"
 #include "Input/GCFInputBindingManagerComponent.h"
+#include "Common/GCFBitmaskUtils.h"
 #include "Input/GCFAbilityInputRouterComponent.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"

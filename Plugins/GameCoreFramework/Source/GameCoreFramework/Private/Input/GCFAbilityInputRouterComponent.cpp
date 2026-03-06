@@ -3,6 +3,7 @@
 
 #include "Input/GCFAbilityInputRouterComponent.h"
 #include "GCFShared.h"
+#include "Common/GCFBitmaskUtils.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
