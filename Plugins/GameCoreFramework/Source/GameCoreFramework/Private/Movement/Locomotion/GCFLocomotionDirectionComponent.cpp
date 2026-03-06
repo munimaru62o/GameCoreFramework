@@ -86,8 +86,13 @@ void UGCFLocomotionDirectionComponent::HandlePossessedPawnChanged(AActor* Actor,
 
 #if !UE_BUILD_SHIPPING
 		if (!CachedLocomotionInputHandler) {
-			UE_LOG(LogGCFCommon , Warning, TEXT("[%s] The possessed Pawn [%s] does not implement IGCFLocomotionInputHandler! Directional input (Move) will be ignored."),
-				   *GetName(), *GetNameSafe(PossessedPawn));
+			if (PossessedPawn) {
+				UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The possessed Pawn [%s] does not implement IGCFLocomotionInputHandler! Directional input (Move) will be ignored."),
+					   *GetName(), *GetNameSafe(PossessedPawn));
+			} else if (Actor) {
+				UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The possessed Actor [%s] is not a Pawn! Directional input (Move) will be ignored."),
+					   *GetName(), *GetNameSafe(Actor));
+			}
 		}
 #endif
 	} else {
