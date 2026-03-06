@@ -30,6 +30,28 @@ void UGCFLocomotionActionComponent::BeginPlay()
 	if (UGameFrameworkComponentManager* GFCM = UGameFrameworkComponentManager::GetForActor(GetOwner())) {
 		Binder = FGCFPawnReadyStateBinder::CreateBinder(GFCM, GetPawn<APawn>(), FGCFOnPawnReadyStateChangedNative::FDelegate::CreateUObject(this, &ThisClass::HandlePawnReadyStateChanged));
 	}
+
+	// Cache the interface to eliminate the costly Implements<U...>() search loop in the Hot Path.
+	// We deliberately use TScriptInterface here to preserve Blueprint extensibility (Execute_ routing).
+	// 
+	// [Optimization NOTE for Production]
+	// If your project requires extreme performance and you guarantee that this interface 
+	// is ONLY implemented in native C++ (no Blueprint overrides), you can cast to the native 
+	// pointer (IGCFLocomotionInputHandler*) and call the _Implementation functions directly.
+	// This will completely bypass the VM routing overhead, but it will silently break any 
+	// Blueprint overrides.
+	if (APawn* Pawn = GetPawn<APawn>()) {
+		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
+		// If the underlying object does not implement it, this will safely resolve to nullptr.
+		CachedLocomotionInputHandler = Pawn;
+
+#if !UE_BUILD_SHIPPING
+		if (!CachedLocomotionInputHandler) {
+			UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The owning Pawn [%s] does not implement IGCFLocomotionInputHandler! Locomotion actions (Jump, Crouch) will be ignored."),
+				   *GetName(), *GetNameSafe(Pawn));
+		}
+#endif
+	}
 }
 
 
@@ -81,19 +103,15 @@ TArray<FGCFBindingReceipt> UGCFLocomotionActionComponent::HandleInputBinding(UGC
 
 void UGCFLocomotionActionComponent::Input_Jump(const FInputActionValue& InputActionValue)
 {
-	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-			IGCFLocomotionInputHandler::Execute_HandleJumpInput(Pawn, InputActionValue.Get<bool>());
-		}
+	if (CachedLocomotionInputHandler) {
+		IGCFLocomotionInputHandler::Execute_HandleJumpInput(CachedLocomotionInputHandler.GetObject(), InputActionValue.Get<bool>());
 	}
 }
 
 
 void UGCFLocomotionActionComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
-	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-			IGCFLocomotionInputHandler::Execute_HandleCrouchInput(Pawn, InputActionValue.Get<bool>());
-		}
+	if (CachedLocomotionInputHandler) {
+		IGCFLocomotionInputHandler::Execute_HandleCrouchInput(CachedLocomotionInputHandler.GetObject(), InputActionValue.Get<bool>());
 	}
 }

@@ -8,6 +8,8 @@
 #include "MoverSimulationTypes.h"
 #include "GCFLocomotionInputProducer.generated.h"
 
+class IGCFLocomotionInputProvider;
+
 /**
  * @brief Mover input producer that bridges the GCF Input System with the Mover plugin.
  *
@@ -28,4 +30,19 @@ public:
 	 * Retrieves cached intents (Move, Jump) via Interface and injects them into Mover's data model.
 	 */
 	virtual void ProduceInput_Implementation(int32 SimTime, FMoverInputCmdContext& InputCmdResult) override;
+
+protected:
+	virtual void BeginPlay() override;
+
+protected:
+	// --- Cache Variables ---
+
+	// The owning Pawn (cached to avoid calling Cast or GetOwner every frame)
+	UPROPERTY()
+	TObjectPtr<APawn> CachedOwnerPawn = nullptr;
+
+	// Cached interface pointer to avoid the expensive O(N) Implements<U...>() search every frame.
+	// This uses TScriptInterface to safely support both C++ and Blueprint implementations.
+	UPROPERTY()
+	TScriptInterface<IGCFLocomotionInputProvider> CachedLocomotionInputProvider;
 };

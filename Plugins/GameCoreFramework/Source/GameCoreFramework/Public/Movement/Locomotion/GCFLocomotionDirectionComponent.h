@@ -11,6 +11,8 @@
 #include "GCFLocomotionDirectionComponent.generated.h"
 
 class UGCFInputComponent;
+class IGCFLocomotionInputHandler;
+class FGCFContextBinder;
 struct FInputActionValue;
 
 /**
@@ -43,15 +45,24 @@ protected:
 	FRotator CalcMovementRotation(AController* Controller) const;
 
 private:
-	/** Binds Input Actions when the Input Component is ready. */
-	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
-
 	/** Called when the Camera Policy changes (e.g., FreeLook <-> Locked). */
 	void HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy);
+
+	void HandlePossessedPawnChanged(AActor* Actor, bool bPossessed);
+
+	/** Binds Input Actions when the Input Component is ready. */
+	TArray<FGCFBindingReceipt> HandleInputBinding(UGCFInputComponent* InputComponent, TScriptInterface<IGCFInputConfigProvider> Provider);
 
 private:
 	/** Handle for rotation policy delegate. */
 	TUniquePtr<FGCFDelegateHandle> Handle;
 
+	// Binder handle to observe pawn possession changes
+	TUniquePtr<FGCFContextBinder> PossessionBinder;
+
 	EGCFMovementRotationPolicy CachedPolicy;
+
+	// Cached interface pointer to eliminate Implements<U...>() search loop in Hot Path
+	UPROPERTY()
+	TScriptInterface<IGCFLocomotionInputHandler> CachedLocomotionInputHandler;
 };

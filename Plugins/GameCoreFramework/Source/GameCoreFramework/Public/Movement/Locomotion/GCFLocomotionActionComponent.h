@@ -12,6 +12,7 @@
 
 class IGCFInputConfigProvider;
 class UGCFInputComponent;
+class IGCFLocomotionInputHandler;
 struct FInputActionValue;
 
 /**
@@ -52,4 +53,8 @@ private:
 	TUniquePtr<FGCFContextBinder> Binder;
 
 	EGCFPawnReadyState CachedPawnReadyState;
+
+	// Cached interface pointer to eliminate Implements<U...>() search loop in Hot Path
+	UPROPERTY()
+	TScriptInterface<IGCFLocomotionInputHandler> CachedLocomotionInputHandler;
 };

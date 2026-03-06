@@ -9,6 +9,8 @@
 #include "Input/GCFInputConfigProvider.h"
 #include "Input/GCFInputConfig.h"
 #include "Input/GCFInputComponent.h"
+#include "System/Binder/GCFControllerPossessionBinder.h"
+#include "Components/GameFrameworkComponentManager.h"
 
 
 UGCFLocomotionDirectionComponent::UGCFLocomotionDirectionComponent(const FObjectInitializer& ObjectInitializer)
@@ -39,6 +41,11 @@ void UGCFLocomotionDirectionComponent::BeginPlay()
 			FGCFOnMovementRotationPolicyChanged::FDelegate::CreateUObject(this, &ThisClass::HandleMovementRotationPolicyChanged)
 		);
 
+		if (UGameFrameworkComponentManager* GFCM = UGameFrameworkComponentManager::GetForActor(Controller)) {
+			PossessionBinder = FGCFControllerPossessionBinder::CreateBinder(
+				GFCM, Controller, FGCFBooleanStateSignature::CreateUObject(this, &ThisClass::HandlePossessedPawnChanged));
+		}
+
 		// Auto-register input bindings
 		GCF_REGISTER_INPUT_BINDING(this, &ThisClass::HandleInputBinding);
 	}
@@ -47,6 +54,7 @@ void UGCFLocomotionDirectionComponent::BeginPlay()
 void UGCFLocomotionDirectionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Handle.Reset();
+	PossessionBinder.Reset();
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -54,6 +62,43 @@ void UGCFLocomotionDirectionComponent::EndPlay(const EEndPlayReason::Type EndPla
 void UGCFLocomotionDirectionComponent::HandleMovementRotationPolicyChanged(EGCFMovementRotationPolicy Policy)
 {
 	CachedPolicy = Policy;
+}
+
+
+void UGCFLocomotionDirectionComponent::HandlePossessedPawnChanged(AActor* Actor, bool bPossessed)
+{
+	if (bPossessed) {
+		APawn* PossessedPawn = Cast<APawn>(Actor);
+
+		// Cache the interface to eliminate the costly Implements<U...>() search loop in the Hot Path.
+		// We deliberately use TScriptInterface here to preserve Blueprint extensibility (Execute_ routing).
+		// 
+		// [Optimization NOTE for Production]
+		// If your project requires extreme performance and you guarantee that this interface 
+		// is ONLY implemented in native C++ (no Blueprint overrides), you can cast to the native 
+		// pointer (IGCFLocomotionInputHandler*) and call the _Implementation functions directly.
+		// This will completely bypass the VM routing overhead, but it will silently break any 
+		// Blueprint overrides.
+		
+		// Assigning to a TScriptInterface automatically validates if the interface is implemented.
+		// If the underlying object does not implement it, this will safely resolve to nullptr.
+		CachedLocomotionInputHandler = PossessedPawn;
+
+#if !UE_BUILD_SHIPPING
+		if (!CachedLocomotionInputHandler) {
+			if (PossessedPawn) {
+				UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The possessed Pawn [%s] does not implement IGCFLocomotionInputHandler! Directional input (Move) will be ignored."),
+					   *GetName(), *GetNameSafe(PossessedPawn));
+			} else if (Actor) {
+				UE_LOG(LogGCFCommon, Warning, TEXT("[%s] The possessed Actor [%s] is not a Pawn! Directional input (Move) will be ignored."),
+					   *GetName(), *GetNameSafe(Actor));
+			}
+		}
+#endif
+	} else {
+		// Clear cache on unpossess
+		CachedLocomotionInputHandler = nullptr;
+	}
 }
 
 
@@ -88,10 +133,8 @@ void UGCFLocomotionDirectionComponent::Input_Move(const FInputActionValue& Value
 		const FRotator MovementRotation = CalcMovementRotation(Controller);
 		const FVector2D MovementVector = Value.Get<FVector2D>();
 
-		if (APawn* Pawn = GetPawn<APawn>()) {
-			if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-				IGCFLocomotionInputHandler::Execute_HandleMoveInput(Pawn, MovementVector, MovementRotation);
-			}
+		if (CachedLocomotionInputHandler) {
+			IGCFLocomotionInputHandler::Execute_HandleMoveInput(CachedLocomotionInputHandler.GetObject(), MovementVector, MovementRotation);
 		}
 	}
 }
@@ -104,10 +147,8 @@ void UGCFLocomotionDirectionComponent::Input_Move(const FInputActionValue& Value
 void UGCFLocomotionDirectionComponent::Input_Move_Completed(const FInputActionValue& Value)
 {
 	if (AController* Controller = GetController<AController>()) {
-		if (APawn* Pawn = GetPawn<APawn>()) {
-			if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-				IGCFLocomotionInputHandler::Execute_HandleMoveInput(Pawn, FVector2D::ZeroVector, Controller->GetControlRotation());
-			}
+		if (CachedLocomotionInputHandler) {
+			IGCFLocomotionInputHandler::Execute_HandleMoveInput(CachedLocomotionInputHandler.GetObject(), FVector2D::ZeroVector, Controller->GetControlRotation());
 		}
 	}
 }
@@ -117,10 +158,8 @@ void UGCFLocomotionDirectionComponent::Input_MoveUp(const FInputActionValue& Val
 {
 	const float UpValue = Value.Get<float>();
 
-	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-			IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(Pawn, UpValue);
-		}
+	if (CachedLocomotionInputHandler) {
+		IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(CachedLocomotionInputHandler.GetObject(), UpValue);
 	}
 }
 
@@ -131,10 +170,8 @@ void UGCFLocomotionDirectionComponent::Input_MoveUp(const FInputActionValue& Val
  */
 void UGCFLocomotionDirectionComponent::Input_MoveUp_Completed(const FInputActionValue& Value)
 {
-	if (APawn* Pawn = GetPawn<APawn>()) {
-		if (Pawn->Implements<UGCFLocomotionInputHandler>()) {
-			IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(Pawn, 0.0f);
-		}
+	if (CachedLocomotionInputHandler) {
+		IGCFLocomotionInputHandler::Execute_HandleMoveUpInput(CachedLocomotionInputHandler.GetObject(), 0.0f);
 	}
 }
 
