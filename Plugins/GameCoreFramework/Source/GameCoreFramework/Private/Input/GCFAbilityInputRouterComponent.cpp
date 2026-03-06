@@ -92,7 +92,10 @@ void UGCFAbilityInputRouterComponent::RouteInputTag(const FGameplayTag& InputTag
 	const bool bIsPawnTag = InputTag.MatchesTag(GCFGameplayTags::InputTag_Ability_Pawn);
 
 	if (!bIsPlayerTag && !bIsPawnTag) {
-		UE_LOG(LogGCFSystem, Warning, TEXT("GCFAbilityInputRouter: Invalid input tag [%s]. Expected Ability.Input.Player.* or Ability.Input.Pawn.*"), *InputTag.ToString());
+		UE_LOG(LogGCFSystem, Warning, TEXT("GCFAbilityInputRouter: Invalid input tag [%s]. Expected %s.* or %s.*"), 
+			*InputTag.ToString(), 
+			*GCFGameplayTags::InputTag_Ability_Player.GetTag().ToString(), 
+			*GCFGameplayTags::InputTag_Ability_Pawn.GetTag().ToString());
 		return;
 	}
 
