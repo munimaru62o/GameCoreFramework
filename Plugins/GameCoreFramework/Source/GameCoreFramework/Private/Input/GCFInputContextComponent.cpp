@@ -75,7 +75,7 @@ void UGCFInputContextComponent::HandlePlayerReadyStateChanged(const FGCFPlayerRe
 	// Define requirements: Need both Gameplay logic and Possession to be valid.
 	static const EGCFPlayerReadyState Required = EGCFPlayerReadyState::GamePlay | EGCFPlayerReadyState::Controller;
 	// Check if the relevant flags have changed compared to the cached state
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPlayerReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPlayerReadyState, Snapshot.State, Required)) {
 		UpdateState(EGCFInputContextState::PlayerReady, GCF::Bitmask::AreFlagsSet(Snapshot.State, Required));
 	}
 	CachedPlayerReadyState = Snapshot.State;
@@ -87,7 +87,7 @@ void UGCFInputContextComponent::HandlePawnReadyStateChanged(const FGCFPawnReadyS
 	// Define requirements: Pawn must have Gameplay extensions and be Possessed.
 	static const EGCFPawnReadyState Required = EGCFPawnReadyState::GamePlay | EGCFPawnReadyState::Possessed;
 	// Check for changes
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPawnReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPawnReadyState, Snapshot.State, Required)) {
 		UpdateState(EGCFInputContextState::PawnReady, GCF::Bitmask::AreFlagsSet(Snapshot.State, Required));
 	}
 	CachedPawnReadyState = Snapshot.State;

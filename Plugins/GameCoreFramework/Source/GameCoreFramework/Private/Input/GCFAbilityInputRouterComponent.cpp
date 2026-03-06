@@ -76,7 +76,7 @@ void UGCFAbilityInputRouterComponent::HandlePossessedPawnChanged(AActor* Actor, 
 void UGCFAbilityInputRouterComponent::HandlePlayerReadyStateChanged(const FGCFPlayerReadyStateSnapshot& Snapshot)
 {
 	static const EGCFPlayerReadyState Required = EGCFPlayerReadyState::GamePlay;
-	if (GCF::Bitmask::HasFlagsChanged(Snapshot.State, CachedPlayerReadyState, Required)) {
+	if (GCF::Bitmask::HasFlagsChanged(CachedPlayerReadyState, Snapshot.State, Required)) {
 		if (GCF::Bitmask::AreFlagsSet(Snapshot.State, Required)) {
 			PlayerStateASC = UGCFAbilitySystemFunctionLibrary::GetPlayerStateAbilitySystemComponent<UGCFAbilitySystemComponent>(Snapshot.PlayerState.Get());
 		}
