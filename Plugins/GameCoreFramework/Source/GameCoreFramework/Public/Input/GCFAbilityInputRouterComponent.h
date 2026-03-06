@@ -24,8 +24,8 @@ class UGCFAbilitySystemComponent;
  *
  * [Routing Logic]
  * It inspects the GameplayTag associated with the input and routes it based on the namespace:
- * - "Ability.Input.Player.*" -> Routes to the PlayerState's ASC (Soul Context).
- * - "Ability.Input.Pawn.*"   -> Routes to the currently possessed Pawn's ASC (Body Context).
+ * - "InputTag.Ability.Player.*" -> Routes to the PlayerState's ASC (Soul Context).
+ * - "InputTag.Ability.Pawn.*"   -> Routes to the currently possessed Pawn's ASC (Body Context).
  *
  * [Benefit]
  * This decoupling allows the Controller to trigger abilities on the Pawn without

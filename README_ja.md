@@ -85,6 +85,7 @@ GameCoreFramework/ (クローンしたリポジトリのルート)
  ├── Source/
  └── Plugins/
      ├── GameCoreFramework/      <-- 本フレームワーク（最初から含まれています）
+     │   └── Content/            <-- 🎨 デモ動作に必要なサンプルアセットや基本UIが含まれています
      ├── CommonGame/             <-- 📥 Lyraからコピーして配置
      ├── GameplayMessageRouter/  <-- 📥 Lyraからコピーして配置
      └── ... (その他のコピーしたプラグイン)

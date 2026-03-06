@@ -55,12 +55,12 @@
 
 - **[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent]**: 全ての入力バインド要求を受け付けるハブです。状態が未完了の場合は `ProcessPendingBindings()` によって要求を待機（キューイング）し、[`UGCFInputContextComponent`][GCFInputContextComponent] からの初期化シーケンスの完了が確認された直後に安全にバインドを実行します。
 
-- **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: [`IUGCFInputConfigProvider`][GCFInputConfigProvider] インターフェースを実装し、それが「魂の入力設定」なのか「肉体の入力設定」なのかを抽象化してManagerへ提供します。
+- **[`UGCFPlayerInputBridgeComponent`][GCFPlayerInputBridgeComponent]** / **[`UGCFPawnInputBridgeComponent`][GCFPawnInputBridgeComponent]**: [`IGCFInputConfigProvider`][GCFInputConfigProvider] インターフェースを実装し、それが「魂の入力設定」なのか「肉体の入力設定」なのかを抽象化してManagerへ提供します。
 
 ### 4. Consumer Layer (消費者レイヤー)
 実際の入力を利用してゲームロジックを動かすレイヤーです。
 
-- **[`UGCFMovementControlComponent`][GCFMovementControlComponent]** / **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: これらは自分が「何のPawnを動かしているか」を知る必要がありません。単に [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] に対して「移動の入力をバインドしてほしい」と要求（Request）を投げるだけです。
+- **[`UGCFLocomotionDirectionComponent`][GCFLocomotionDirectionComponent]** / **[`UGCFLocomotionActionComponent`][GCFLocomotionActionComponent]** / **[`UGCFCameraControlComponent`][GCFCameraControlComponent]**: これらは自分が「何のPawnを動かしているか」を知る必要がありません。単に [`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] に対して「移動の入力をバインドしてほしい」と要求（Request）を投げるだけです。
 
 ---
 
@@ -69,7 +69,7 @@
 本システムにおける「入力バインドが安全に完了するまでの流れ」は以下の通りです。
 
 1. **バインドの要求 (Request)**  
-   コンシューマー（例：[`UGCFMovementControlComponent`][GCFMovementControlComponent]）が、[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] に対して入力アクションのバインドを要求します。
+   コンシューマー（例：[`UGCFLocomotionDirectionComponent`][GCFLocomotionDirectionComponent]）が、[`UGCFInputBindingManagerComponent`][GCFInputBindingManagerComponent] に対して入力アクションのバインドを要求します。
 
 2. **待機 (Pending)**  
    この時点では、Pawnのデータがまだ非同期ロード中かもしれません。Managerは要求を即座に実行せず、**内部キュー（PendingBindings）に一時保存**します。
@@ -108,6 +108,7 @@
 [GCFPawnInputBridgeComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFPawnInputBridgeComponent.h
 [GCFInputConfigProvider]:           ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Input/GCFInputConfigProvider.h
 
-[GCFMovementControlComponent]:      ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/GCFMovementControlComponent.h
+[GCFLocomotionDirectionComponent]:  ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionDirectionComponent.h
+[GCFLocomotionActionComponent]:     ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Movement/Locomotion/GCFLocomotionActionComponent.h
 
 [GCFCameraControlComponent]:        ../../../Plugins/GameCoreFramework/Source/GameCoreFramework/Public/Camera/GCFCameraControlComponent.h
