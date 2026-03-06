@@ -1,12 +1,10 @@
-// Copyright (c) 2026 munimaru62o. All rights reserved.
+﻿// Copyright (c) 2026 munimaru62o. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
 
 #include "CoreMinimal.h"
 
-// Heavy includes required for ResolveInterface traversal logic.
-// Include this header only where GCF::Context::ResolveInterface is actually needed.
 #include "GameFramework/Actor.h"
 #include "GameFramework/Controller.h"
 #include "Components/ActorComponent.h"
@@ -37,10 +35,8 @@ static TScriptInterface<InterfaceType> ResolveInterface(const UObject* Context)
 
 	// 2. If Actor, search components
 	if (const AActor* Actor = Cast<AActor>(Context)) {
-		if (InterfaceType* FoundInterface = Actor->FindComponentByInterface<InterfaceType>()) {
-			if (UObject* FoundObject = Cast<UObject>(FoundInterface)) {
-				return TScriptInterface<InterfaceType>(FoundObject);
-			}
+		if (UActorComponent* FoundComponent = Actor->FindComponentByInterface(UInterfaceClass::StaticClass())) {
+			return TScriptInterface<InterfaceType>(FoundComponent);
 		}
 	}
 
