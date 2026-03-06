@@ -158,6 +158,10 @@ void AGCFHoverboardPawn::HandleMoveInput_Implementation(const FVector2D& InputVa
 - 拡張性を考慮せず、数週間で使い捨てる予定のモックアップ開発
 - 単一Pawn・単一視点のみで完結し、マルチプレイや状態遷移を一切想定しない小規模なゲーム
 
+### ⚠️ パフォーマンス上のトレードオフについて
+本フレームワークの「Tickレス設計」はベースラインのCPU負荷を下げる強力なアプローチですが、その反面、`GameplayMessageRouter` や `GameFrameworkComponentManager (GFCM)` などのイベント・状態監視駆動モデルに依存しています。
+そのため、**毎フレーム発火するような極端な高頻度処理（Tickの完全な代用など）にこれらを乱用すると、逆にデリゲート呼び出しのオーバーヘッドが全体的なパフォーマンス低下を招く**というアーキテクチャ上の落とし穴が存在します。用法・用量を守り、Tickすべき処理（物理演算や毎フレームのカメラ更新など）は適切にTickで処理するバランスが重要です。
+
 ---
 
 ## 🚀 今後の展望とロードマップ (Roadmap & Future Integrations)

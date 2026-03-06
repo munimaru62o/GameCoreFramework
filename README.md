@@ -83,6 +83,7 @@ GameCoreFramework/ (Root of the cloned repository)
  ├── Source/
  └── Plugins/
      ├── GameCoreFramework/      <-- This framework (Included by default)
+     │   └── Content/            <-- 🎨 Contains sample assets and basic UI required for the demo
      ├── CommonGame/             <-- 📥 Copied from Lyra
      ├── GameplayMessageRouter/  <-- 📥 Copied from Lyra
      └── ... (Other copied plugins)

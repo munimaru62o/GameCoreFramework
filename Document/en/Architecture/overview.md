@@ -149,6 +149,10 @@ When entering mid-to-long-term specification changes or a mass-production phase 
 - Mockup development intended to be thrown away in a few weeks without considering scalability.
 - Small-scale games completed with only a single Pawn and single perspective, without any multiplayer or state transitions expected.
 
+### ⚠️ About Performance Trade-offs
+While this framework's "tickless design" is a powerful approach to lowering baseline CPU overhead, it relies heavily on event and state-monitoring driven models like `GameplayMessageRouter` and `GameFrameworkComponentManager (GFCM)`. 
+Because of this, **if these systems are abused for extremely high-frequency processing that fires every frame (e.g., as a complete replacement for Tick), the overhead of delegate calls can conversely lead to an overall decrease in performance**. This is an architectural pitfall to be aware of. It is crucial to maintain a balance: use these systems appropriately, while ensuring that processes which genuinely need to Tick (such as physics calculations or per-frame camera updates) continue to be handled via Tick.
+
 ---
 
 ## 🚀 Future Outlook and Roadmap (Future Integrations)
