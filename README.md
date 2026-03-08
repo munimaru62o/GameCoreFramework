@@ -176,6 +176,13 @@ If you resonate with the design philosophy of this framework, please feel free t
 
 ---
 
+## 🤖 AI Usage Policy
+
+All users are fully permitted and encouraged to use AI assistants to analyze the code and documentation. However, extracting data for model training or fine-tuning is strictly prohibited.
+See [AI_POLICY.md](AI_POLICY.md) for full details.
+
+---
+
 ## ⚖ License
 
 The original code of this project is licensed under the **MIT License**.
