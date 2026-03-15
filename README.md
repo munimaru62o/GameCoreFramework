@@ -4,7 +4,29 @@
 ![Version](https://img.shields.io/badge/Version-0.9.0_Beta-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
+**Code Quality:**  
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/81b2b1c82dd345e0abb35dbef49c258b)](https://app.codacy.com/gh/munimaru62o/GameCoreFramework/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=munimaru62o_GameCoreFramework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=munimaru62o_GameCoreFramework)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=munimaru62o_GameCoreFramework&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=munimaru62o_GameCoreFramework)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=munimaru62o_GameCoreFramework&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=munimaru62o_GameCoreFramework)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=munimaru62o_GameCoreFramework&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=munimaru62o_GameCoreFramework)
+
 🌍 *Read this in other languages: [English](README.md) | [日本語 (Japanese)](README_ja.md)* *(Note: The English documentation is AI-translated from the original Japanese).*
+
+## 📑 Table of Contents
+- [🎯 Project Overview](#-project-overview)
+- [💡 Core Design Philosophy](#-core-design-philosophy)
+- [📚 Detailed Documentation](#-detailed-documentation)
+- [🚀 Quick Start (Installation Guide)](#-quick-start-installation-guide)
+  - [Step 1: Clone the Repository](#step-1-clone-the-repository)
+  - [Step 2: Transplant Lyra Dependency Plugins (Required)](#step-2-transplant-lyra-dependency-plugins-required)
+  - [Step 3: Build the Project](#step-3-build-the-project)
+  - [Integrating into Your Own Project](#integrating-into-your-own-project)
+- [🎬 Demo & Samples](#-demo--samples)
+- [📌 Project Status and Contribution](#-project-status-and-contribution)
+- [💖 Credits & Acknowledgments](#-credits--acknowledgments)
+- [🤖 AI Usage Policy](#-ai-usage-policy)
+- [⚖ License](#-license)
 
 ## 🎯 Project Overview
 
@@ -32,6 +54,10 @@ This project is a highly extensible, loosely coupled modular game framework buil
 ---
 
 ## 📚 Detailed Documentation
+
+> 💡 **Reference Article: Architecture Background**  
+> Before diving into the code, I highly recommend reading the following technical article (originally in Japanese). It explains the core design philosophy of this framework—**"Loose coupling to enable emergent, unpredictable gameplay."** It covers the severe trade-offs encountered during development and the resulting architectural solutions  
+> 🔗 [Why I am Obsessed with Loose Coupling and Component-Oriented Design in Game Development](https://zenn.dev/munimaru62o/articles/c6ed730c6e4c61?locale=en)
 
 For details on the design philosophy and individual systems of GCF, please refer to the following documentation:
 
@@ -116,7 +142,8 @@ GameCoreFramework/Content/Sample
 └── UI/             # UI definitions for the Debug HUD
 ```
 
-> **⚠️ Note on Experience Loading Functionality:** Because this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of the core foundation, dynamic Experience switching via UI is not currently implemented. Assigning or changing the Experience is designed to be done solely via the "Default Gameplay Experience" setting within the target map's `World Settings`.
+> **⚠️ Note on Experience Loading Functionality:**  
+> Because this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of the core foundation, dynamic Experience switching via UI is not currently implemented. Assigning or changing the Experience is designed to be done solely via the "Default Gameplay Experience" setting within the target map's `World Settings`.
 
 ### 🖥️ Sample Video
 
