@@ -56,7 +56,7 @@ This project is a highly extensible, loosely coupled modular game framework buil
 ## 📚 Detailed Documentation
 
 > 💡 **Reference Article: Architecture Background**  
-> Before diving into the code, I highly recommend reading the following technical article (in Japanese). It explains the core design philosophy of this framework—**"Loose coupling to enable emergent, unpredictable gameplay."** It covers the severe trade-offs encountered during development and the resulting architectural solutions  
+> Before diving into the code, I highly recommend reading the following technical article (originally in Japanese). It explains the core design philosophy of this framework—**"Loose coupling to enable emergent, unpredictable gameplay."** It covers the severe trade-offs encountered during development and the resulting architectural solutions  
 > 🔗 [Why I am Obsessed with Loose Coupling and Component-Oriented Design in Game Development](https://zenn.dev/munimaru62o/articles/c6ed730c6e4c61?locale=en)
 
 For details on the design philosophy and individual systems of GCF, please refer to the following documentation:
