@@ -55,9 +55,9 @@ This project is a highly extensible, loosely coupled modular game framework buil
 
 ## 📚 Detailed Documentation
 
-> 💡 **Reference Article: Architecture Background**
-> Before diving into the code, I highly recommend reading the following technical article (in Japanese). It explains the core design philosophy of this framework—**"Loose coupling to enable emergent, unpredictable gameplay."** It covers the severe trade-offs encountered during development and the resulting architectural solutions
-> 🔗 [Why I Obsess Over Loose Coupling and Component-Oriented Design in Game Development](https://zenn.dev/munimaru62o/articles/c6ed730c6e4c61?locale=en)
+> 💡 **Reference Article: Architecture Background**  
+> Before diving into the code, I highly recommend reading the following technical article (in Japanese). It explains the core design philosophy of this framework—**"Loose coupling to enable emergent, unpredictable gameplay."** It covers the severe trade-offs encountered during development and the resulting architectural solutions  
+> 🔗 [Why I am Obsessed with Loose Coupling and Component-Oriented Design in Game Development](https://zenn.dev/munimaru62o/articles/c6ed730c6e4c61?locale=en)
 
 For details on the design philosophy and individual systems of GCF, please refer to the following documentation:
 
@@ -141,7 +141,8 @@ GameCoreFramework/Content/Sample
 └── UI/             # UI definitions for the Debug HUD
 ```
 
-> **⚠️ Note on Experience Loading Functionality:** Because this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of the core foundation, dynamic Experience switching via UI is not currently implemented. Assigning or changing the Experience is designed to be done solely via the "Default Gameplay Experience" setting within the target map's `World Settings`.
+> **⚠️ Note on Experience Loading Functionality:**  
+> Because this framework is built as a Minimum Viable Product (MVP) prioritizing the robustness of the core foundation, dynamic Experience switching via UI is not currently implemented. Assigning or changing the Experience is designed to be done solely via the "Default Gameplay Experience" setting within the target map's `World Settings`.
 
 ### 🖥️ Sample Video
 
